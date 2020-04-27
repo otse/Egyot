@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "sourceMap": false,
+        "module": "es6",
+        "target": "es6",
+        "jsx": "preserve",
+        "lib": [
+            "dom",
+            "es6"
+        ],
+        "outDir": "js/",
+        "allowSyntheticDefaultImports": true,
+        "moduleResolution": "node",
+        "strictNullChecks": true
+    },
+    "files": [
+        "src/Declare.d.ts"
+    ],
+    "include": [
+        "src",
+        "util"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/node_modules/*"
+    ]
+}
