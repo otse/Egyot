@@ -158,8 +158,9 @@ class Game {
 
 		if (App.wheel > 0) {
 			this.scale += factor;
-			if (this.scale > 4 / window.devicePixelRatio)
-				this.scale = 4 / window.devicePixelRatio;
+			if (this.scale > 5 / window.devicePixelRatio)
+				this.scale = 5 / window.devicePixelRatio;
+			console.log('scale is', this.scale);
 		}
 
 		else if (App.wheel < 0) {

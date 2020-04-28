@@ -108,13 +108,13 @@ export namespace ThreeQuarter {
 
 		let width = enderWidth;
 		let height = enderHeight;
-			
-		if (window.devicePixelRatio > 1) {
-			console.warn('~~~');
-			console.warn('you are scaling. scaling buffer also!!!');
-			console.warn('~~~');
-			width *= window.devicePixelRatio;
-			height *= window.devicePixelRatio;
+		
+		let dpi = window.devicePixelRatio;
+
+		if (dpi == 2) {
+			console.warn('DPI > 1. Egyt will scale by whole factors.');
+			width *= dpi;
+			height *= dpi;
 		}
 
 		console.log('Two WebGLRenderTarget ' + width + ', ' + height);
@@ -124,7 +124,7 @@ export namespace ThreeQuarter {
 			{ minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat });
 
 		renderer = new WebGLRenderer({ antialias: false });
-		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.setPixelRatio(dpi);
 		renderer.setSize(
 			window.innerWidth, window.innerHeight);
 		renderer.autoClear = true;
