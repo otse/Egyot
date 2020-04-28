@@ -109,10 +109,12 @@ export namespace ThreeQuarter {
 		let width = enderWidth;
 		let height = enderHeight;
 			
-		if (window.devicePixelRatio == 2) {
-			console.log('ThreeQuarter.ts - your device scaling is 2. Scaling render target.');
-			//width *= 2;
-			//height *= 2;
+		if (window.devicePixelRatio > 1) {
+			console.warn('~~~');
+			console.warn('you are scaling. scaling buffer also!!!');
+			console.warn('~~~');
+			width *= window.devicePixelRatio;
+			height *= window.devicePixelRatio;
 		}
 
 		console.log('Two WebGLRenderTarget ' + width + ', ' + height);

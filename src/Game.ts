@@ -124,9 +124,9 @@ class Game {
 		this.objs = [];
 
 		this.pos = [0, 0, 0];
-		this.scale = 1;
+		this.scale = 1 / window.devicePixelRatio;
 
-		this.scaleRange = [0.25, 3];
+		this.scaleRange = [0.25, 4];
 	}
 
 	update() {
@@ -158,8 +158,8 @@ class Game {
 
 		if (App.wheel > 0) {
 			this.scale += factor;
-			if (this.scale > 3)
-				this.scale = 3;
+			if (this.scale > 4 / window.devicePixelRatio)
+				this.scale = 4 / window.devicePixelRatio;
 		}
 
 		else if (App.wheel < 0) {
