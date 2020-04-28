@@ -1,7 +1,7 @@
-import { Two } from "./Two";
+import { ThreeQuarter as ThreeQuarter } from "./ThreeQuarter";
 
 import Game from "./Game";
-import Egypt from "./Egypt";
+import Egyt from "./Egyt";
 
 export const enum KEY {
 	OFF = 0,
@@ -67,24 +67,18 @@ export namespace App {
 	export function Boot() {
 
 		document.onkeydown = document.onkeyup = onkeys;
-
 		document.onmousemove = onmove;
-
 		document.onmousedown = ondown;
-
 		document.onmouseup = onup;
-
 		document.onwheel = onwheel;
 
-		Two.Init();
-
-		Game.Init();
-		
-		Egypt.Init();
+		ThreeQuarter.Init();
+		Game.init();
+		Egyt.init();
 
 		loo(0);
 
-		setTimeout(() => Two.changes = true, 10);
+		setTimeout(() => ThreeQuarter.changes = true, 10);
 	}
 
 	// Lokale functies
@@ -105,11 +99,10 @@ export namespace App {
 	const loo = (timestamp) => {
 		requestAnimationFrame(loo);
 
-		Two.Update();
-
-		Game.Update2();
-
-		Two.Render();
+		ThreeQuarter.Update();
+		Game.update2();
+		
+		ThreeQuarter.Render();
 
 		wheel = 0;
 

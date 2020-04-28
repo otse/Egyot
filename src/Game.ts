@@ -1,13 +1,10 @@
-import { Two, THREE } from "./Two";
+import { ThreeQuarter, THREE } from "./ThreeQuarter";
 
 import App from "./App";
 
 import Rekt from "./Nieuw mapje/Rekt";
 import Obj from "./Nieuw mapje/Obj";
 
-import Estate from "./Nieuw mapje 2/Estate";
-import Turf from "./Nieuw mapje 3/Turf";
-import Land from "./Nieuw mapje 3/Land";
 import Selection from "./Nieuw mapje 5/Selection";
 
 export var game;
@@ -83,7 +80,7 @@ export namespace Maths {
 		let wen = [...a] as Zx;
 
 		Divide(wen, n);
-		
+
 		return wen;
 	}
 
@@ -110,15 +107,14 @@ class Game {
 	scale: number
 	scaleRange: [number, number]
 
-	static Init() {
+	static init() {
 		game = new Game();
+
 		(window as any).game_ = game;
-		game.LilTown();
-		game.Turfs();
 	}
 
-	static Update2() {
-		game.Update();
+	static update2() {
+		game.update();
 	}
 
 	constructor() {
@@ -130,107 +126,64 @@ class Game {
 		this.pos = [0, 0, 0];
 		this.scale = 1;
 
-		this.scaleRange = [0.5, 2];
+		this.scaleRange = [0.25, 3];
 	}
 
-	LilTown() {
+	update() {
 
-		// Make Land Lots
-		const every = (p: Zx) => {
+		this.sels();
 
-			let pos = Maths.MultpClone(
-				p, 20 + 5, 16 + 5);
+		//let pos = [...this.pos];
+		//let scale = this.scale;
 
-			let zone = new Land({ pos: pos as Zx, dim: [20, 16] });
+		let speed = 5;
+		const factor = 1 / window.devicePixelRatio;
 
-			console.log('New Land Lot');
-
-			zone.Make();
-		};
-
-		Areas.Loop([0, 0, 2, 2], every);
-
-		Two.changes = true;
-
-		let estate = new Estate({
-			name: "Brick House",
-			pos: [0, 0],
-			dim: [9, 9]
-		}, null);
-
-		let estate2 = new Estate({
-			name: "Soup Kitchen",
-			pos: [9, 0],
-			dim: [11, 12]
-		}, null);
-
-		let estate3 = new Estate({
-			name: "Soup Kitchen",
-			pos: [0, 9],
-			dim: [9, 7]
-		}, null);
-
-		estate.Make();
-		estate2.Make();
-		estate3.Make();
-
-	}
-
-	Turfs() {
-		let area: Zxcv = [-5, -5, 10, 10];
-
-		const every = (p: Zx) => {
-			let turf = new Turf({
-				pos: [...p, 0] as Zxc
-			});
-
-			turf.Make();
-		}
-
-		Areas.Loop(area, every);
-	}
-
-	Update() {
-
-		this.Selections();
-
-		let pos = [...this.pos];
-		let scale = this.scale;
-
-		const speed = 5;
-		const add = .5;
+		if (App.map['x'])
+			speed *= 10;
 
 		if (App.map['w'] || App.map['W'])
 			this.pos[1] -= speed;
+
 		if (App.map['s'] || App.map['S'])
 			this.pos[1] += speed;
+
 		if (App.map['a'] || App.map['A'])
 			this.pos[0] += speed;
+
 		if (App.map['d'] || App.map['D'])
 			this.pos[0] -= speed;
 
-		if (App.wheel > 0)
-			this.scale += add;
-		else if (App.wheel < 0)
-			this.scale -= add;
+		let oldScale = this.scale;
 
-		if (pos[0] != this.pos[0] ||
-			pos[1] != this.pos[1] ||
-			scale != this.scale) {
-			Two.changes = true;
+		if (App.wheel > 0) {
+			this.scale += factor;
+			if (this.scale > 3)
+				this.scale = 3;
 		}
 
-		this.scale = Math.max(
-			this.scaleRange[0], Math.min(
-				this.scale, this.scaleRange[1]));
+		else if (App.wheel < 0) {
+			this.scale -= factor;
+			if (this.scale < .25)
+				this.scale = .25;
+		}
+		
+		if (oldScale != this.scale) {
+			//console.log('multiply coords to scale?');
+			
+			//this.pos[0] *= this.scale;
+			//this.pos[1] *= this.scale;
+			//ThreeQuarter.camera.zoom = this.scale;
+			//ThreeQuarter.camera.updateProjectionMatrix();
+		}
 
-		Two.scene.scale.set(this.scale, this.scale, 1);
+		ThreeQuarter.scene.scale.set(this.scale, this.scale, 1);
 
-		Two.scene.position.set(this.pos[0], this.pos[1], this.pos[2]);
+		ThreeQuarter.scene.position.set(this.pos[0], this.pos[1], this.pos[2]);
 	}
 
-	Selections() {
-		if (App.left) {
+	sels() {
+		/*if (App.left) {
 			if (!this.selection)
 				this.selection = new Selection();
 
@@ -244,7 +197,7 @@ class Game {
 		else if (this.selection) {
 			this.selection.End();
 			this.selection = null;
-		}
+		}*/
 	}
 }
 

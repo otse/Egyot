@@ -25,7 +25,9 @@ void main() {
 	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }`
 
-export namespace Two {
+// 2:1 renderer
+
+export namespace ThreeQuarter {
 
 	export var changes = true;
 	export var delta = 0;
@@ -54,8 +56,8 @@ export namespace Two {
 
 	export function Render() {
 
-		if (!changes)
-			return;
+		//if (!changes)
+			//return;
 
 		renderer.setRenderTarget(target);
 		renderer.clear();
@@ -65,7 +67,7 @@ export namespace Two {
 		renderer.clear();
 		renderer.render(scene2, camera);
 
-		changes = false;
+		//changes = false;
 	}
 
 	export var enderWidth;
@@ -106,11 +108,11 @@ export namespace Two {
 
 		let width = enderWidth;
 		let height = enderHeight;
-
+			
 		if (window.devicePixelRatio == 2) {
-			console.log('Two.js - your device scaling is 2. Scaling render target.');
-			width *= 2;
-			height *= 2;
+			console.log('ThreeQuarter.ts - your device scaling is 2. Scaling render target.');
+			//width *= 2;
+			//height *= 2;
 		}
 
 		console.log('Two WebGLRenderTarget ' + width + ', ' + height);
@@ -132,7 +134,7 @@ export namespace Two {
 
 		SomeMore();
 
-		(window as any).Two_ = Two;
+		(window as any).Two_ = ThreeQuarter;
 	}
 
 	function SomeMore() {

@@ -1,6 +1,8 @@
+import { Map } from "./Map";
 
-export namespace Egypt {
+export namespace Egyt {
 
+	export var map: Map;
 	export var ply: null;
 
 	var started = false;
@@ -47,14 +49,14 @@ export namespace Egypt {
 
 	}
 
-	export function Init() {
-		console.log('egypt init');
+	export function init() {
+		console.log('egyt init');
 
 		resourced('UNDEFINED_OR_INIT');
 
-		//Phong2.rig();
+		map = Map.rig();
 
-		(window as any).Egypt = Egypt;
+		(window as any).Egypt = Egyt;
 	}
 
 	export function start() {
@@ -62,7 +64,7 @@ export namespace Egypt {
 		if (started)
 			return;
 
-		console.log('egypt starting');
+		console.log('egyt starting');
 
 		started = true;
 	}
@@ -71,10 +73,10 @@ export namespace Egypt {
 
 		if (!started)
 			return;
-	
-		//city.update();
+
+		map.update();
 	}
 
 }
 
-export default Egypt;
+export default Egyt;

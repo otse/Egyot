@@ -14,7 +14,7 @@
         "strictNullChecks": true
     },
     "files": [
-        "src/Declare.d.ts"
+        "src/Egyt.d.ts"
     ],
     "include": [
         "src",

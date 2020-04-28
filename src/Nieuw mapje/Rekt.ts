@@ -1,9 +1,11 @@
-import { Two, THREE } from "../Two";
+import { ThreeQuarter, THREE } from "../ThreeQuarter";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 import { game } from "../Game";
 
 class Rekt {
+
+	dontFang = false // use normal coordinates
 
 	readonly stats: {
 		name?: string
@@ -42,7 +44,7 @@ class Rekt {
 		return this.stats.dim;
 	}
 
-	public Make() {
+	public make() {
 
 		// At least 2, 1 segments or glitch
 		this.geometry = new PlaneBufferGeometry(
@@ -51,7 +53,7 @@ class Rekt {
 		let map;
 
 		if (this.stats.asset)
-			map = Two.LoadTexture(`assets/${this.stats.asset}.png`);
+			map = ThreeQuarter.LoadTexture(`assets/${this.stats.asset}.png`);
 
 		this.material = new MeshBasicMaterial({
 			map: map,
@@ -69,32 +71,40 @@ class Rekt {
 
 		//UV.FlipPlane(this.geometry, 0, true);
 
-		this.SetPos();
+		this.set_pos();
 
-		Two.scene.add(this.mesh);
+		ThreeQuarter.scene.add(this.mesh);
 	}
 
-	public Unmake() {
-		Two.scene.remove(this.mesh);
+	public unmake() {
+		ThreeQuarter.scene.remove(this.mesh);
 
 		this.geometry.dispose();
 		this.material.dispose();
 	}
 
-	SetPos() {
+	set_pos() {
 		const p = this.stats.pos;
 		const d = this.stats.dim;
 
-		let x = p[0] / 2 + p[1] / 2;
-		let y = p[1] / 4 - p[0] / 4;
+		let x, y;
 
-		let w = d[0] / 2;
-		let h = d[1] / 2;
+		if (this.dontFang) {
+			x = p[0];
+			y = p[1];
+		}
+		else {
+			x = p[0] / 2 + p[1] / 2;
+			y = p[1] / 4 - p[0] / 4;
 
-		this.mesh.renderOrder = -y;
+			let w = d[0] / 2;
+			let h = d[1] / 2;
 
-		x += w;
-		y += h;
+			this.mesh.renderOrder = -y;
+
+			x += w;
+			y += h;
+		}
 
 		this.posCalc.set(x, y, 0);
 

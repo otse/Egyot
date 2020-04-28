@@ -4,7 +4,7 @@ import Rekt from "../Nieuw mapje/Rekt";
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 
 import { Maths, Fiftytwo, game } from "../Game";
-import { Two } from "../Two";
+import { ThreeQuarter } from "../ThreeQuarter";
 
 class Selection {
 
@@ -40,7 +40,7 @@ class Selection {
 
 		this.mesh.renderOrder = 500;
 
-		Two.scene.add(this.mesh);
+		ThreeQuarter.scene.add(this.mesh);
 	}
 
 	Update(mouse: Zx) {
@@ -69,7 +69,7 @@ class Selection {
 			mouse, game.pos);
 
 		Maths.Subtr(
-			mouse, Maths.DivideClone(Two.ender, 2));
+			mouse, Maths.DivideClone(ThreeQuarter.ender, 2));
 
 		let scale = 1;
 
@@ -100,19 +100,19 @@ class Selection {
 		this.mesh.scale.set(size[0], size[1], 1);
 		this.mesh.position.set(pos[0], pos[1], 0);
 
-		Two.changes = true;
+		ThreeQuarter.changes = true;
 	}
 
 	End() {
 		if (!this.enuf)
 			return;
 
-		Two.scene.remove(this.mesh);
+		ThreeQuarter.scene.remove(this.mesh);
 
 		this.geometry.dispose();
 		this.material.dispose();
 
-		Two.changes = true;
+		ThreeQuarter.changes = true;
 	}
 }
 
