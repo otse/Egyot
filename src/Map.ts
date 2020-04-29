@@ -40,7 +40,6 @@ export class Chump {
 				swab.make(y, oy, x, ox, cx, cy);
 
 				this.swabs.push(swab);
-
 			}
 
 		}
@@ -67,7 +66,7 @@ export class TileSwab {
 	wire: Rekt
 
 	constructor() {
-
+		this.initiated = false;
 	}
 
 	make(y, oy, x, ox, cx, cy) {
@@ -85,8 +84,8 @@ export class TileSwab {
 		let pos = Zxcvs.MultpClone(p, 128);
 
 		this.aabb = new aabb3(
-			[pos[0]-64, pos[1]-64, 0],
-			[pos[0]+64, pos[1]+64, 0]);
+			[pos[0] - 64, pos[1] - 64, 0],
+			[pos[0] + 64, pos[1] + 64, 0]);
 
 		this.rekt = new Rekt({
 			name: 'TileSwab',
@@ -96,10 +95,23 @@ export class TileSwab {
 		});
 
 		this.rekt.dontFang = true; // dont 2:1
+	}
+
+	initiated: boolean;
+
+	initiate() {
+		if (this.initiated)
+			return;
 
 		this.rekt.make();
 
 		this.frame();
+
+		this.initiated = true;
+	}
+
+	deinitiate() {
+
 	}
 
 	frame() {
@@ -118,14 +130,16 @@ export class TileSwab {
 	}
 
 	update() {
-		
+
 		let s = game.aabb.intersect(this.aabb);
 
-		if (s == INTERSECTION.INTERSECT) {
+		if (s == INTERSECTION.INTERSECT || s == INTERSECTION.INSIDE) {
+			this.initiate();
 			this.wire.material.color = new Color('blue');
 		}
 		else if (s == INTERSECTION.OUTSIDE) {
-			this.wire.material.color = new Color('red');
+			//this.wire.material.color = new Color('red');
+			this.deinitiate();
 		}
 	}
 
@@ -138,10 +152,14 @@ export class Map {
 	constructor() {
 		this.chumps = [];
 
+		this.load_chunk(-1, -7);
+		this.load_chunk(-1, -8);
 		this.load_chunk(0, -7);
 		this.load_chunk(0, -8);
 		this.load_chunk(1, -7);
 		this.load_chunk(1, -8);
+		this.load_chunk(2, -7);
+		this.load_chunk(2, -8);
 	}
 
 	static rig() {
