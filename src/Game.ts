@@ -12,6 +12,7 @@ import Zxcvs from "./Zxcvs";
 
 export var game;
 
+// todo, aweful
 export namespace Areas {
 
 	export function Loop(area: Zxcv, callback: (p: Zx) => any) {
@@ -49,6 +50,7 @@ class Game {
 
 	pos: Zxc
 	scale: number
+	dpi: number
 
 	focal: Zxc
 	aabb: aabb3
@@ -71,7 +73,8 @@ class Game {
 		this.objs = [];
 
 		this.pos = [-1665, 3585, 0];
-		this.scale = 1 / window.devicePixelRatio;
+		this.dpi = window.devicePixelRatio;
+		this.scale = 1 / this.dpi;
 
 		this.aabb = new aabb3([0, 0, 0]);
 
@@ -94,7 +97,7 @@ class Game {
 		this.sels();
 
 		let speed = 5;
-		const factor = 1 / window.devicePixelRatio;
+		const factor = 1 / this.dpi;
 
 		let p = [...this.pos] as Zxc;
 
@@ -108,17 +111,22 @@ class Game {
 		this.pos = [...p] as Zxc;
 
 		if (App.wheel > 0) {
-			this.scale += factor;
-			if (this.scale > 5 / window.devicePixelRatio)
-				this.scale = 5 / window.devicePixelRatio;
+			if (this.scale < 1) {
+				this.scale = 1;
+			}
+			else {
+				this.scale += factor;
+			}
+			if (this.scale > 4 / this.dpi)
+				this.scale = 4 / this.dpi;
 
 			console.log('scale up', this.scale);
 		}
 
 		else if (App.wheel < 0) {
 			this.scale -= factor;
-			if (this.scale < .5)
-				this.scale = .5;
+			if (this.scale < .5 / this.dpi)
+				this.scale = .5 / this.dpi;
 
 			console.log('scale down', this.scale);
 		}
@@ -135,11 +143,11 @@ class Game {
 		let h = ThreeQuarter.target.height;
 
 		this.aabb = new aabb3(
-			[-p[0] - (w / 4 / this.scale), -p[1] - (h / 4 / this.scale), 0],
-			[-p[0] + (w / 4 / this.scale), -p[1] + (h / 4 / this.scale), 0]
+			[-p[0] - (w / this.dpi / 2 / this.scale), -p[1] - (h / this.dpi / 2 / this.scale), 0],
+			[-p[0] + (w / this.dpi / 2 / this.scale), -p[1] + (h / this.dpi / 2 / this.scale), 0]
 		);
 
-		this.rekt.mesh.scale.set(w / 2 / this.scale, h / 2 / this.scale, 1);
+		this.rekt.mesh.scale.set(w / this.dpi / this.scale, h / this.dpi / this.scale, 1);
 		this.rekt.stats.pos = this.focal;
 		this.rekt.set_pos();
 	}
