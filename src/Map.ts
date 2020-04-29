@@ -66,7 +66,7 @@ export class TileSwab {
 	wire: Rekt
 
 	constructor() {
-		this.initiated = false;
+		this.spawned = false;
 	}
 
 	make(y, oy, x, ox, cx, cy) {
@@ -97,24 +97,32 @@ export class TileSwab {
 		this.rekt.dontFang = true; // dont 2:1
 	}
 
-	initiated: boolean;
+	spawned: boolean;
 
-	initiate() {
-		if (this.initiated)
+	spawn() {
+		if (this.spawned)
 			return;
 
 		this.rekt.make();
 
 		this.frame();
 
-		this.initiated = true;
+		this.spawned = true;
 	}
 
-	deinitiate() {
+	despawn() {
+		if (!this.spawned)
+			return;
 
+		this.rekt.unmake();
+
+		this.spawned = false;
 	}
 
 	frame() {
+		if (this.wire)
+			return;
+
 		this.wire = new Rekt({
 			name: 'TileSwab Wire',
 			pos: this.rekt.stats.pos,
@@ -134,12 +142,12 @@ export class TileSwab {
 		let s = game.aabb.intersect(this.aabb);
 
 		if (s == INTERSECTION.INTERSECT || s == INTERSECTION.INSIDE) {
-			this.initiate();
+			this.spawn();
 			this.wire.material.color = new Color('blue');
 		}
 		else if (s == INTERSECTION.OUTSIDE) {
 			//this.wire.material.color = new Color('red');
-			this.deinitiate();
+			this.despawn();
 		}
 	}
 
