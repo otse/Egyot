@@ -6,6 +6,7 @@ import Rekt from "./Nieuw mapje/Rekt";
 import Obj from "./Nieuw mapje/Obj";
 
 import Selection from "./Nieuw mapje 5/Selection";
+import { Object3D } from "three";
 
 export var game;
 
@@ -123,7 +124,7 @@ class Game {
 		this.rekts = [];
 		this.objs = [];
 
-		this.pos = [0, 0, 0];
+		this.pos = [-1665, 3585, 0];
 		this.scale = 1 / window.devicePixelRatio;
 
 		this.scaleRange = [0.25, 4];
@@ -139,20 +140,24 @@ class Game {
 		let speed = 5;
 		const factor = 1 / window.devicePixelRatio;
 
+		let p = [...this.pos] as Zxc;
+
 		if (App.map['x'])
 			speed *= 10;
 
 		if (App.map['w'] || App.map['W'])
-			this.pos[1] -= speed;
+			p[1] -= speed;
 
 		if (App.map['s'] || App.map['S'])
-			this.pos[1] += speed;
+			p[1] += speed;
 
 		if (App.map['a'] || App.map['A'])
-			this.pos[0] += speed;
+			p[0] += speed;
 
 		if (App.map['d'] || App.map['D'])
-			this.pos[0] -= speed;
+			p[0] -= speed;
+
+		this.pos = p as Zxc;
 
 		let oldScale = this.scale;
 
@@ -165,12 +170,12 @@ class Game {
 
 		else if (App.wheel < 0) {
 			this.scale -= factor;
-			if (this.scale < .25)
-				this.scale = .25;
+			if (this.scale < .5)
+				this.scale = .5;
 		}
 		
 		if (oldScale != this.scale) {
-			//console.log('multiply coords to scale?');
+			console.log('multiply coords to scale?');
 			
 			//this.pos[0] *= this.scale;
 			//this.pos[1] *= this.scale;
@@ -180,7 +185,9 @@ class Game {
 
 		ThreeQuarter.scene.scale.set(this.scale, this.scale, 1);
 
-		ThreeQuarter.scene.position.set(this.pos[0], this.pos[1], this.pos[2]);
+		let p2 = Maths.MultpClone(p, this.scale);
+
+		ThreeQuarter.scene.position.set(p2[0], p2[1], 0);
 	}
 
 	sels() {
