@@ -19,11 +19,11 @@ export class Chump {
 
 		this.swabs = [];
 
-		let p = [a * 32 * 128, b * 32 * 128, 0] as Zxc;
-		let p2 = [a + 1 * 32 * 128, b + 1 * 32 * 128, 0] as Zxc;
-
-		this.aabb = new aabb3(p);
-		this.aabb.extend(p2);
+		this.aabb = new aabb3([
+			a * 32 * 128,
+			b * 32 * 128, 0], [
+			a + 1 * 32 * 128,
+			b + 1 * 32 * 128, 0]);
 	}
 
 	load() {
@@ -41,9 +41,7 @@ export class Chump {
 
 				this.swabs.push(swab);
 			}
-
 		}
-		///this.rekt.mesh.renderOrder = -500;
 	}
 
 	update() {
@@ -81,15 +79,18 @@ export class TileSwab {
 		let p2 = [y + 1 + (cx * 32), x + 1 + (cy * 32) + OY, 0] as Zxc;
 
 		//let p = [y+((cy+7)*32), x+(cx*32), 0] as Zxc;
-		let pos = Zxcvs.MultpClone(p, 128);
+		let p3 = Zxcvs.MultpClone(p, 128);
 
-		this.aabb = new aabb3(
-			[pos[0] - 64, pos[1] - 64, 0],
-			[pos[0] + 64, pos[1] + 64, 0]);
+		this.aabb = new aabb3([
+			p3[0] - 64,
+			p3[1] - 64, 0], [
+			p3[0] + 64,
+			p3[1] + 64, 0
+		]);
 
 		this.rekt = new Rekt({
 			name: 'TileSwab',
-			pos: pos as Zxc,
+			pos: p3 as Zxc,
 			dim: [128, 128],
 			asset: img
 		});
@@ -102,20 +103,15 @@ export class TileSwab {
 	spawn() {
 		if (this.spawned)
 			return;
-
-		this.rekt.make();
-
+		this.rekt.initiate();
 		this.frame();
-
 		this.spawned = true;
 	}
 
 	despawn() {
 		if (!this.spawned)
 			return;
-
-		this.rekt.unmake();
-
+		this.rekt.deinitiate();
 		this.spawned = false;
 	}
 
@@ -132,7 +128,7 @@ export class TileSwab {
 
 		this.wire.dontFang = true; // dont 2:1
 
-		this.wire.make();
+		this.wire.initiate();
 
 		this.wire.material.wireframe = true;
 	}
@@ -141,12 +137,10 @@ export class TileSwab {
 
 		let s = game.aabb.intersect(this.aabb);
 
-		if (s == INTERSECTION.INTERSECT || s == INTERSECTION.INSIDE) {
+		if (s != INTERSECTION.OUTSIDE) {
 			this.spawn();
-			this.wire.material.color = new Color('blue');
 		}
-		else if (s == INTERSECTION.OUTSIDE) {
-			//this.wire.material.color = new Color('red');
+		else {
 			this.despawn();
 		}
 	}

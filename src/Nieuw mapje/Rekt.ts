@@ -32,19 +32,9 @@ class Rekt {
 		this.posCalc = new Vector3;
 
 		if (this.stats.opacity == undefined) this.stats.opacity = 1;
-
-		//console.log('Rekt ' + ops.name);
 	}
 
-	Pos(): Zxc {
-		return this.stats.pos;
-	}
-
-	Dim(): Zx {
-		return this.stats.dim;
-	}
-
-	public make() {
+	public initiate() {
 
 		// At least 2, 1 segments or glitch
 		this.geometry = new PlaneBufferGeometry(
@@ -76,7 +66,7 @@ class Rekt {
 		ThreeQuarter.scene.add(this.mesh);
 	}
 
-	public unmake() {
+	public deinitiate() {
 		ThreeQuarter.scene.remove(this.mesh);
 
 		this.geometry.dispose();

@@ -76,15 +76,15 @@ class Game {
 		this.aabb = new aabb3([0, 0, 0]);
 
 		this.rekt = new Rekt({
-			name: 'A Turf',
+			name: 'Frustum',
 			pos: [0, 0, 0],
-			dim: [256, 256],
+			dim: [1, 1],
 			asset: 'egyt/128'
 		});
 
 		this.rekt.dontFang = true; // dont 2:1
 
-		this.rekt.make();
+		this.rekt.initiate();
 		this.rekt.mesh.renderOrder = 9999999;
 		this.rekt.material.wireframe = true;
 	}
@@ -131,14 +131,15 @@ class Game {
 
 		this.focal = [-p[0], -p[1], 0];
 
-		let w = window.innerWidth;
-		let h = window.innerHeight;
+		let w = ThreeQuarter.target.width;
+		let h = ThreeQuarter.target.height;
 
 		this.aabb = new aabb3(
-			[-p[0] - w / 2, -p[1] - h / 2, 0] as Zxc,
-			[-p[0] + w / 2, -p[1] + h / 2, 0] as Zxc
+			[-p[0] - (w / 4 / this.scale), -p[1] - (h / 4 / this.scale), 0],
+			[-p[0] + (w / 4 / this.scale), -p[1] + (h / 4 / this.scale), 0]
 		);
 
+		this.rekt.mesh.scale.set(w / 2 / this.scale, h / 2 / this.scale, 1);
 		this.rekt.stats.pos = this.focal;
 		this.rekt.set_pos();
 	}
