@@ -157,9 +157,7 @@ class Game {
 		if (App.map['d'] || App.map['D'])
 			p[0] -= speed;
 
-		this.pos = p as Zxc;
-
-		let oldScale = this.scale;
+		this.pos = [...p] as Zxc;
 
 		if (App.wheel > 0) {
 			this.scale += factor;
@@ -172,15 +170,6 @@ class Game {
 			this.scale -= factor;
 			if (this.scale < .5)
 				this.scale = .5;
-		}
-		
-		if (oldScale != this.scale) {
-			console.log('multiply coords to scale?');
-			
-			//this.pos[0] *= this.scale;
-			//this.pos[1] *= this.scale;
-			//ThreeQuarter.camera.zoom = this.scale;
-			//ThreeQuarter.camera.updateProjectionMatrix();
 		}
 
 		ThreeQuarter.scene.scale.set(this.scale, this.scale, 1);
