@@ -101,6 +101,7 @@ export namespace App {
 
 		ThreeQuarter.Update();
 		Game.update2();
+		Egyt.update();
 		
 		ThreeQuarter.Render();
 

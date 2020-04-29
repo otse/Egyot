@@ -6,11 +6,11 @@ import Rekt from "./Nieuw mapje/Rekt";
 import Obj from "./Nieuw mapje/Obj";
 
 import Selection from "./Nieuw mapje 5/Selection";
-import { Object3D } from "three";
+import { Object3D, Mesh, PlaneBufferGeometry, MeshBasicMaterial } from "three";
+import { aabb3 } from "./Bound";
+import Zxcvs from "./Zxcvs";
 
 export var game;
-
-export const Fiftytwo = 52
 
 export namespace Areas {
 
@@ -41,63 +41,6 @@ export namespace Areas {
 	}
 }
 
-export namespace Maths {
-
-	export function Multp(zx: Zx | Zxc, n: number, n2?: number) {
-		zx[0] *= n;
-		zx[1] *= n2 || n;
-		return zx;
-	}
-
-	export function MultpClone(zx: Zx | Zxc, n: number, n2?: number): number[] {
-		let wen = [...zx] as Zx;
-
-		Multp(wen, n, n2);
-
-		return wen;
-	}
-
-	export function Subtr(a: Zx | Zxc, b: Zx | Zxc) {
-		a[0] -= b[0];
-		a[1] -= b[1];
-		return a;
-	}
-
-	export function SubtrClone(a: Zx | Zxc, b: Zx | Zxc): number[] {
-		let wen = [...a] as Zx;
-
-		Subtr(wen, b);
-
-		return wen;
-	}
-
-	export function Divide(a: Zx | Zxc, n: number) {
-		a[0] /= n;
-		a[1] /= n;
-		return a;
-	}
-
-	export function DivideClone(a: Zx | Zxc, n: number) {
-		let wen = [...a] as Zx;
-
-		Divide(wen, n);
-
-		return wen;
-	}
-
-	export function Abs(p: Zx) {
-		p[0] = Math.abs(p[0]);
-		p[1] = Math.abs(p[1]);
-		return p;
-	}
-
-	export function Together(p: Zx) {
-		//Abs(p);
-		return p[0] + p[1];
-	}
-
-}
-
 class Game {
 	rekts: Rekt[]
 	objs: Obj[]
@@ -106,7 +49,10 @@ class Game {
 
 	pos: Zxc
 	scale: number
-	scaleRange: [number, number]
+
+	focal: Zxc
+	aabb: aabb3
+	rekt: Rekt
 
 	static init() {
 		game = new Game();
@@ -127,35 +73,37 @@ class Game {
 		this.pos = [-1665, 3585, 0];
 		this.scale = 1 / window.devicePixelRatio;
 
-		this.scaleRange = [0.25, 4];
+		this.aabb = new aabb3([0, 0, 0]);
+
+		this.rekt = new Rekt({
+			name: 'A Turf',
+			pos: [0, 0, 0],
+			dim: [256, 256],
+			asset: 'egyt/128'
+		});
+
+		this.rekt.dontFang = true; // dont 2:1
+
+		this.rekt.make();
+		this.rekt.mesh.renderOrder = 9999999;
+		this.rekt.material.wireframe = true;
 	}
 
 	update() {
 
 		this.sels();
 
-		//let pos = [...this.pos];
-		//let scale = this.scale;
-
 		let speed = 5;
 		const factor = 1 / window.devicePixelRatio;
 
 		let p = [...this.pos] as Zxc;
 
-		if (App.map['x'])
-			speed *= 10;
+		if (App.map['x']) speed *= 10;
 
-		if (App.map['w'] || App.map['W'])
-			p[1] -= speed;
-
-		if (App.map['s'] || App.map['S'])
-			p[1] += speed;
-
-		if (App.map['a'] || App.map['A'])
-			p[0] += speed;
-
-		if (App.map['d'] || App.map['D'])
-			p[0] -= speed;
+		if (App.map['w'] || App.map['W']) p[1] -= speed;
+		if (App.map['s'] || App.map['S']) p[1] += speed;
+		if (App.map['a'] || App.map['A']) p[0] += speed;
+		if (App.map['d'] || App.map['D']) p[0] -= speed;
 
 		this.pos = [...p] as Zxc;
 
@@ -163,20 +111,36 @@ class Game {
 			this.scale += factor;
 			if (this.scale > 5 / window.devicePixelRatio)
 				this.scale = 5 / window.devicePixelRatio;
-			console.log('scale is', this.scale);
+
+			console.log('scale up', this.scale);
 		}
 
 		else if (App.wheel < 0) {
 			this.scale -= factor;
 			if (this.scale < .5)
 				this.scale = .5;
+
+			console.log('scale down', this.scale);
 		}
 
 		ThreeQuarter.scene.scale.set(this.scale, this.scale, 1);
 
-		let p2 = Maths.MultpClone(p, this.scale);
+		let p2 = Zxcvs.MultpClone(p, this.scale);
 
 		ThreeQuarter.scene.position.set(p2[0], p2[1], 0);
+
+		this.focal = [-p[0], -p[1], 0];
+
+		let w = window.innerWidth;
+		let h = window.innerHeight;
+
+		this.aabb = new aabb3(
+			[-p[0] - w / 2, -p[1] - h / 2, 0] as Zxc,
+			[-p[0] + w / 2, -p[1] + h / 2, 0] as Zxc
+		);
+
+		this.rekt.stats.pos = this.focal;
+		this.rekt.set_pos();
 	}
 
 	sels() {

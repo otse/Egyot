@@ -33,7 +33,7 @@ function scalar3(a: Zxc, f: number) {
 	return [x, y, z];
 }
 
-enum INTERSECTION {
+export enum INTERSECTION {
 	OUTSIDE,
 	INSIDE,
 	INTERSECT,
@@ -43,9 +43,11 @@ export class aabb3 {
 	min: Zxc
 	max: Zxc
 
-	constructor(v: Zxc) {
-		this.min = v;
-		this.max = v;
+	constructor(a: Zxc, b: Zxc | undefined = undefined) {
+		this.min = this.max = a;
+		if (b) {
+			this.extend(b);
+		}
 	}
 
 	extend(v: Zxc) {
@@ -66,7 +68,7 @@ export class aabb3 {
 		addit3(this.max, v);
 	}
 
-	intersect(v) {
+	intersect(v: aabb3) {
 		if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
 			this.max[1] < v.min[1] || this.min[1] > v.max[1] ||
 			this.max[2] < v.min[2] || this.min[2] > v.max[2])

@@ -3,8 +3,9 @@ import Rekt from "../Nieuw mapje/Rekt";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 
-import { Maths, Fiftytwo, game } from "../Game";
+import { game } from "../Game";
 import { ThreeQuarter } from "../ThreeQuarter";
+import Zxcvs from "../Zxcvs";
 
 class Selection {
 
@@ -49,13 +50,13 @@ class Selection {
 		this.Sufficient(mouse);
 		this.Set(mouse);
 	}
-	
+
 	Sufficient(mouse: Zx) {
-		let rem = Maths.SubtrClone(
+		let rem = Zxcvs.SubtrClone(
 			this.end, this.start);
 
-		const px = Maths.Together(
-			Maths.Abs(rem as Zx));
+		const px = Zxcvs.Together(
+			Zxcvs.Abs(rem as Zx));
 
 		if (!this.enuf && px > 15) {
 			this.enuf = true;
@@ -65,18 +66,18 @@ class Selection {
 	}
 
 	View(mouse: Zx) {
-		Maths.Subtr(
+		Zxcvs.Subtr(
 			mouse, game.pos);
 
-		Maths.Subtr(
-			mouse, Maths.DivideClone(ThreeQuarter.ender, 2));
+		Zxcvs.Subtr(
+			mouse, Zxcvs.DivideClone(ThreeQuarter.ender, 2));
 
 		let scale = 1;
 
 		if (game.scale == 0.5)
 			scale = 2;
 
-		Maths.Multp(
+		Zxcvs.Multp(
 			mouse, scale);
 	}
 
@@ -91,11 +92,11 @@ class Selection {
 		if (!this.enuf)
 			return;
 
-		let size = Maths.SubtrClone(
+		let size = Zxcvs.SubtrClone(
 			this.end, this.start);
 
-		let pos = Maths.SubtrClone(
-			mouse, Maths.DivideClone(size as Zx, 2));
+		let pos = Zxcvs.SubtrClone(
+			mouse, Zxcvs.DivideClone(size as Zx, 2));
 
 		this.mesh.scale.set(size[0], size[1], 1);
 		this.mesh.position.set(pos[0], pos[1], 0);

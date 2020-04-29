@@ -1,7 +1,8 @@
-import { Maths, Fiftytwo } from "./Game";
-import { Points } from "three";
+import { Points, Color } from "three";
 import Rekt from "./Nieuw mapje/Rekt";
-import { aabb3 } from "./Bound";
+import { aabb3, INTERSECTION } from "./Bound";
+import Zxcvs from "./Zxcvs";
+import { game } from "./Game";
 
 export class Chump {
 
@@ -18,11 +19,11 @@ export class Chump {
 
 		this.swabs = [];
 
-		let p = [a * 32 * 128, b * 32 * 128, 0];
+		let p = [a * 32 * 128, b * 32 * 128, 0] as Zxc;
+		let p2 = [a + 1 * 32 * 128, b + 1 * 32 * 128, 0] as Zxc;
 
-		this.aabb = new aabb3(
-			[0, 0, 0]
-		);
+		this.aabb = new aabb3(p);
+		this.aabb.extend(p2);
 	}
 
 	load() {
@@ -47,7 +48,7 @@ export class Chump {
 	}
 
 	update() {
-		for(let swab of this.swabs) {
+		for (let swab of this.swabs) {
 			swab.update();
 		}
 	}
@@ -57,8 +58,13 @@ const OY = 7 * 32;
 
 export class TileSwab {
 
+	aabb: aabb3
+
 	x: number
 	y: number
+
+	rekt: Rekt
+	wire: Rekt
 
 	constructor() {
 
@@ -73,23 +79,54 @@ export class TileSwab {
 		//console.log(img);
 
 		let p = [y + (cx * 32), x + (cy * 32) + OY, 0] as Zxc;
-		//let p = [y+((cy+7)*32), x+(cx*32), 0] as Zxc;
-		let pos = Maths.MultpClone(p, 128);
+		let p2 = [y + 1 + (cx * 32), x + 1 + (cy * 32) + OY, 0] as Zxc;
 
-		let rekt = new Rekt({
-			name: 'A Turf',
+		//let p = [y+((cy+7)*32), x+(cx*32), 0] as Zxc;
+		let pos = Zxcvs.MultpClone(p, 128);
+
+		this.aabb = new aabb3(
+			[pos[0]-64, pos[1]-64, 0],
+			[pos[0]+64, pos[1]+64, 0]);
+
+		this.rekt = new Rekt({
+			name: 'TileSwab',
 			pos: pos as Zxc,
 			dim: [128, 128],
 			asset: img
 		});
 
-		rekt.dontFang = true; // dont 2:1
+		this.rekt.dontFang = true; // dont 2:1
 
-		rekt.make();
+		this.rekt.make();
+
+		this.frame();
+	}
+
+	frame() {
+		this.wire = new Rekt({
+			name: 'TileSwab Wire',
+			pos: this.rekt.stats.pos,
+			dim: [128, 128],
+			asset: 'egyt/128'
+		});
+
+		this.wire.dontFang = true; // dont 2:1
+
+		this.wire.make();
+
+		this.wire.material.wireframe = true;
 	}
 
 	update() {
+		
+		let s = game.aabb.intersect(this.aabb);
 
+		if (s == INTERSECTION.INTERSECT) {
+			this.wire.material.color = new Color('blue');
+		}
+		else if (s == INTERSECTION.OUTSIDE) {
+			this.wire.material.color = new Color('red');
+		}
 	}
 
 }
@@ -112,7 +149,7 @@ export class Map {
 	}
 
 	update() {
-		for(let chump of this.chumps) {
+		for (let chump of this.chumps) {
 			chump.update();
 		}
 	}

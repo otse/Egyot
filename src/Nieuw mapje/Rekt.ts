@@ -48,7 +48,7 @@ class Rekt {
 
 		// At least 2, 1 segments or glitch
 		this.geometry = new PlaneBufferGeometry(
-			this.stats.dim[0], this.stats.dim[1], 2, 2);
+			this.stats.dim[0], this.stats.dim[1], 1, 1);
 
 		let map;
 
@@ -63,7 +63,7 @@ class Rekt {
 		});
 
 		this.mesh = new Mesh(this.geometry, this.material);
-		this.mesh.frustumCulled = false;
+		this.mesh.frustumCulled = true;
 		this.mesh.scale.set(1, 1, 1);
 
 		if (this.stats.flip)
