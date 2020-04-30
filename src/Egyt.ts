@@ -1,9 +1,15 @@
-import { Map } from "./Map";
+import { Map } from "./Nieuw mapje 2/Map";
+import { World } from "./Nieuw mapje 2/World";
+import Obj from "./Nieuw mapje/Obj";
+import { NUI } from "./NUI";
+import Game from "./Game";
 
 export namespace Egyt {
 
+	export var game: Game;
 	export var map: Map;
-	export var ply: null;
+	export var world: World;
+	export var ply: Obj;
 
 	var started = false;
 
@@ -54,6 +60,8 @@ export namespace Egyt {
 
 		resourced('UNDEFINED_OR_INIT');
 
+		game = Game.rig();
+		world = World.rig();
 		map = Map.rig();
 
 		(window as any).Egypt = Egyt;
@@ -66,6 +74,9 @@ export namespace Egyt {
 
 		console.log('egyt starting');
 
+		NUI.init();
+		NUI.watch('a webgame about lumber? welcome. this area is for debug watch');
+
 		started = true;
 	}
 
@@ -74,6 +85,7 @@ export namespace Egyt {
 		if (!started)
 			return;
 
+		world.update();
 		map.update();
 	}
 

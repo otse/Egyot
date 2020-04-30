@@ -1,4 +1,6 @@
 class Obj {
+	order: number
+
 	readonly stats: {
         pos: Zxc
 	}
@@ -6,6 +8,8 @@ class Obj {
 	clickable: boolean
 
 	constructor(stats: Obj['stats']) {
+		this.order = 0;
+		
 		this.stats = stats;
 		
 		this.clickable = false;
@@ -17,6 +21,14 @@ class Obj {
 
 	Click(): boolean {
 		return false
+	}
+
+	update() {
+
+	}
+
+	produce() {
+		// override this
 	}
 
 }

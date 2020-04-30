@@ -6,7 +6,7 @@
         "start": "serve public"
     },
     "dependencies": {
-        "@types/jquery": "^3.3.31",
+        "@types/jquery": "^3.3.36",
         "@types/node": "^12.7.5",
         "@types/three": "^0.103.2",
         "easystarjs": "^0.4.3",

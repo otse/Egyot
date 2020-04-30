@@ -47,14 +47,14 @@ export namespace ThreeQuarter {
 	//export var ambientLight: AmbientLight
 	//export var directionalLight: DirectionalLight
 
-	export function Update() {
+	export function update() {
 
 		delta = clock.getDelta();
 
 		//filmic.composer.render();
 	}
 
-	export function Render() {
+	export function render() {
 
 		//if (!changes)
 			//return;
@@ -75,7 +75,7 @@ export namespace ThreeQuarter {
 
 	export var ender: Zx;
 
-	export function Init() {
+	export function init() {
 
 		console.log('Two Init');
 
@@ -134,12 +134,12 @@ export namespace ThreeQuarter {
 
 		window.addEventListener('resize', onWindowResize, false);
 
-		SomeMore();
+		someMore();
 
 		(window as any).Two_ = ThreeQuarter;
 	}
 
-	function SomeMore() {
+	function someMore() {
 		/*materialBg = new ShaderMaterial({
 			uniforms: { time: { value: 0.0 } },
 			vertexShader: vertexScreen,
@@ -175,7 +175,7 @@ export namespace ThreeQuarter {
 
 	let mem = [];
 
-	export function LoadTexture(file: string, salt?: string): Texture {
+	export function loadTexture(file: string, salt?: string): Texture {
 		if (mem[salt || file])
 			return mem[salt || file];
 

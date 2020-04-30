@@ -72,8 +72,8 @@ export namespace App {
 		document.onmouseup = onup;
 		document.onwheel = onwheel;
 
-		ThreeQuarter.Init();
-		Game.init();
+		ThreeQuarter.init();
+		
 		Egyt.init();
 
 		loo(0);
@@ -99,11 +99,11 @@ export namespace App {
 	const loo = (timestamp) => {
 		requestAnimationFrame(loo);
 
-		ThreeQuarter.Update();
-		Game.update2();
+		ThreeQuarter.update();
+		Egyt.game.update();
 		Egyt.update();
 		
-		ThreeQuarter.Render();
+		ThreeQuarter.render();
 
 		wheel = 0;
 

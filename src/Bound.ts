@@ -33,13 +33,8 @@ function scalar3(a: Zxc, f: number) {
 	return [x, y, z];
 }
 
-export enum INTERSECTION {
-	OUTSIDE,
-	INSIDE,
-	INTERSECT,
-}
+class aabb3 {
 
-export class aabb3 {
 	min: Zxc
 	max: Zxc
 
@@ -72,13 +67,25 @@ export class aabb3 {
 		if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
 			this.max[1] < v.min[1] || this.min[1] > v.max[1] ||
 			this.max[2] < v.min[2] || this.min[2] > v.max[2])
-			return INTERSECTION.OUTSIDE;
+			return aabb3.SEC.OUT;
 
 		if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
 			this.min[1] <= v.min[1] && this.max[1] >= v.max[1] &&
 			this.min[2] <= v.min[2] && this.max[2] >= v.max[2])
-			return INTERSECTION.INSIDE;
+			return aabb3.SEC.IN;
 
-		return INTERSECTION.INTERSECT;
+		return aabb3.SEC.CROSS;
 	}
 }
+
+namespace aabb3 {
+
+	export enum SEC {
+		OUT,
+		IN,
+		CROSS,
+	}
+
+}
+
+export { aabb3 };

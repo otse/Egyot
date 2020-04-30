@@ -1,10 +1,13 @@
 import { Points, Color } from "three";
-import Rekt from "./Nieuw mapje/Rekt";
-import { aabb3, INTERSECTION } from "./Bound";
-import Zxcvs from "./Zxcvs";
-import { game } from "./Game";
+import Rekt from "../Nieuw mapje/Rekt";
+import { aabb3 } from "../Bound";
+import Zxcvs from "../Zxcvs";
+import { NUI } from "../NUI";
+import App from "../App";
+import Egyt from "../Egyt";
+import { ThreeQuarter } from "../ThreeQuarter";
 
-export class Chump {
+class Chump {
 
 	aabb: aabb3
 
@@ -53,7 +56,7 @@ export class Chump {
 
 const OY = 7 * 32;
 
-export class TileSwab {
+class TileSwab {
 
 	aabb: aabb3
 
@@ -79,7 +82,7 @@ export class TileSwab {
 		let p2 = [y + 1 + (cx * 32), x + 1 + (cy * 32) + OY, 0] as Zxc;
 
 		//let p = [y+((cy+7)*32), x+(cx*32), 0] as Zxc;
-		let p3 = Zxcvs.MultpClone(p, 128);
+		let p3 = Zxcvs.multpClone(p, 128);
 
 		this.aabb = new aabb3([
 			p3[0] - 64,
@@ -116,6 +119,8 @@ export class TileSwab {
 	}
 
 	frame() {
+		return;
+
 		if (this.wire)
 			return;
 
@@ -135,9 +140,9 @@ export class TileSwab {
 
 	update() {
 
-		let s = game.aabb.intersect(this.aabb);
+		let s = Egyt.game.aabb.intersect(this.aabb);
 
-		if (s != INTERSECTION.OUTSIDE) {
+		if (s != aabb3.SEC.OUT) {
 			this.spawn();
 		}
 		else {
@@ -147,12 +152,66 @@ export class TileSwab {
 
 }
 
-export class Map {
+class RegularTile {
+
+
+}
+
+namespace Hovercraft {
+	var watch: NUI.Watch;
+	var icecube: Rekt;
+
+	export function init() {
+		watch = NUI.watch('');
+
+		icecube = new Rekt({
+			pos: [0, 0, 0],
+			dim: [22, 25],
+			asset: 'egyt/iceblock'
+		});
+
+		icecube.dontFang = true;
+		icecube.initiate();
+		icecube.mesh.renderOrder = 2;
+	}
+
+	export function what_tile_hover() {
+		/*let p = [...App.move] as Zx;
+		p[1] = -p[1];
+
+		let p2 = [...Egyt.game.pos] as Zx;
+		Zxcvs.inv(p2);
+
+		Zxcvs.addit(p, p2);
+
+		let p3 = Zxcvs.two_one(p);*/
+		let p = [Egyt.game.aabb.min[0], Egyt.game.aabb.max[1]] as Zx;
+		let m = [...App.move] as Zx;
+		m[1] = -m[1];
+		Zxcvs.div(m, Egyt.game.scale);
+		Zxcvs.add(p, m);
+
+		let p2 = [...p] as Zx;
+		//p2[0] /= 1;
+		//p2[1] /= 2;
+		
+		icecube.stats.pos = [...p2, 0] as Zxc;
+		icecube.set_pos();
+
+		let s = Zxcvs.string(p);
+
+		watch.set_text(`hovering ocean-level tile: ${s}`);
+	}
+}
+
+class Map {
 
 	chumps: Chump[]
 
 	constructor() {
 		this.chumps = [];
+
+		console.log('map');
 
 		this.load_chunk(-1, -7);
 		this.load_chunk(-1, -8);
@@ -162,25 +221,30 @@ export class Map {
 		this.load_chunk(1, -8);
 		this.load_chunk(2, -7);
 		this.load_chunk(2, -8);
-	}
 
+	}
+	
 	static rig() {
+		Hovercraft.init();
+
 		return new Map();
 	}
 
 	update() {
+		Hovercraft.what_tile_hover();
+
 		for (let chump of this.chumps) {
 			chump.update();
 		}
 	}
 
 	load_chunk(a: number, b: number) {
-
 		let chump = new Chump(a, b);
 		chump.load();
 
 		this.chumps.push(chump);
-
 	}
 
 }
+
+export { Chump, TileSwab, RegularTile, Map, Hovercraft }

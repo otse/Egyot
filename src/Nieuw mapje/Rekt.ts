@@ -1,7 +1,6 @@
 import { ThreeQuarter, THREE } from "../ThreeQuarter";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
-import { game } from "../Game";
 
 class Rekt {
 
@@ -43,7 +42,7 @@ class Rekt {
 		let map;
 
 		if (this.stats.asset)
-			map = ThreeQuarter.LoadTexture(`assets/${this.stats.asset}.png`);
+			map = ThreeQuarter.loadTexture(`assets/${this.stats.asset}.png`);
 
 		this.material = new MeshBasicMaterial({
 			map: map,

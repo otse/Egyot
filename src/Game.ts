@@ -10,8 +10,6 @@ import { Object3D, Mesh, PlaneBufferGeometry, MeshBasicMaterial } from "three";
 import { aabb3 } from "./Bound";
 import Zxcvs from "./Zxcvs";
 
-export var game;
-
 // todo, aweful
 export namespace Areas {
 
@@ -54,16 +52,10 @@ class Game {
 
 	focal: Zxc
 	aabb: aabb3
-	rekt: Rekt
+	frustumRekt: Rekt
 
-	static init() {
-		game = new Game();
-
-		(window as any).game_ = game;
-	}
-
-	static update2() {
-		game.update();
+	static rig() {
+		return new Game();
 	}
 
 	constructor() {
@@ -78,18 +70,19 @@ class Game {
 
 		this.aabb = new aabb3([0, 0, 0]);
 
-		this.rekt = new Rekt({
+		return;
+		this.frustumRekt = new Rekt({
 			name: 'Frustum',
 			pos: [0, 0, 0],
 			dim: [1, 1],
 			asset: 'egyt/128'
 		});
 
-		this.rekt.dontFang = true; // dont 2:1
+		this.frustumRekt.dontFang = true; // dont 2:1
 
-		this.rekt.initiate();
-		this.rekt.mesh.renderOrder = 9999999;
-		this.rekt.material.wireframe = true;
+		this.frustumRekt.initiate();
+		this.frustumRekt.mesh.renderOrder = 9999999;
+		this.frustumRekt.material.wireframe = true;
 	}
 
 	update() {
@@ -133,7 +126,7 @@ class Game {
 
 		ThreeQuarter.scene.scale.set(this.scale, this.scale, 1);
 
-		let p2 = Zxcvs.MultpClone(p, this.scale);
+		let p2 = Zxcvs.multpClone(p, this.scale);
 
 		ThreeQuarter.scene.position.set(p2[0], p2[1], 0);
 
@@ -142,14 +135,19 @@ class Game {
 		let w = ThreeQuarter.target.width;
 		let h = ThreeQuarter.target.height;
 
+		let w2 = w / this.dpi / this.scale;
+		let h2 = h / this.dpi / this.scale;
+
 		this.aabb = new aabb3(
-			[-p[0] - (w / this.dpi / 2 / this.scale), -p[1] - (h / this.dpi / 2 / this.scale), 0],
-			[-p[0] + (w / this.dpi / 2 / this.scale), -p[1] + (h / this.dpi / 2 / this.scale), 0]
+			[-p[0] - w2 / 2, -p[1] - h2 / 2, 0],
+			[-p[0] + w2 / 2, -p[1] + h2 / 2, 0]
 		);
 
-		this.rekt.mesh.scale.set(w / this.dpi / this.scale, h / this.dpi / this.scale, 1);
-		this.rekt.stats.pos = this.focal;
-		this.rekt.set_pos();
+		return;
+		
+		this.frustumRekt.mesh.scale.set(w2, h2, 1);
+		this.frustumRekt.stats.pos = this.focal;
+		this.frustumRekt.set_pos();
 	}
 
 	sels() {

@@ -1,6 +1,4 @@
-// messy functions predating even the 22 fork
-
-// rejacketed for 2.3
+// buh
 
 export namespace UV {
 
