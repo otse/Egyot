@@ -12,8 +12,8 @@ class Man extends Obj {
     produce() {
         this.rekt = new Rekt({
             pos: this.stats.pos,
-            dim: [29, 72],
-            asset: 'egyt/idle'
+            dim: [22, 25],
+            asset: 'egyt/pumpkin'
         })
 
         this.rekt.initiate();

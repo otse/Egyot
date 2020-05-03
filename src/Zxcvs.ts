@@ -10,9 +10,16 @@ namespace Zxcvs {
 		return [x, y] as Zx;
 	}
 	export function string(a: Zx | Zxc | Zxcv) {
-		const pr = (b) => b ? `, ${b}` : '';
+		const pr = (b) => b != undefined ? `, ${b}` : '';
 
 		return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
+	}
+
+	export function floo(a: Zx | Zxc) {
+		a[0] = Math.floor(a[0]);
+		a[1] = Math.floor(a[1]);
+		if (a[2] != undefined) a[2] = Math.floor(a[2]);
+		return a;
 	}
 
 	export function inv(a: Zx | Zxc) {
@@ -25,6 +32,12 @@ namespace Zxcvs {
 		zx[0] *= n;
 		zx[1] *= n2 || n;
 		return zx;
+	}
+
+	export function div(a: Zx | Zxc, n: number, n2?: number) {
+		a[0] /= n;
+		a[1] /= n2 || n;
+		return a;
 	}
 
 	export function clone(zx) {
@@ -58,13 +71,6 @@ namespace Zxcvs {
 		a[1] += b[1];
 		return a;
 	}
-
-	export function div(a: Zx | Zxc, n: number) {
-		a[0] /= n;
-		a[1] /= n;
-		return a;
-	}
-
 	export function divideClone(a: Zx | Zxc, n: number) {
 		let wen = [...a] as Zx;
 

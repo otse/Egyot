@@ -64,7 +64,7 @@ class Game {
 		this.rekts = [];
 		this.objs = [];
 
-		this.pos = [-1665, 3585, 0];
+		this.pos = [0, 0, 0]; //[-1665, 3585, 0];
 		this.dpi = window.devicePixelRatio;
 		this.scale = 1 / this.dpi;
 

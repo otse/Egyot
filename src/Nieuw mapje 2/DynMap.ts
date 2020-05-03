@@ -171,6 +171,7 @@ namespace Hovercraft {
 		});
 
 		icecube.dontFang = true;
+		//icecube.dontFung = true;
 		icecube.initiate();
 		icecube.mesh.renderOrder = 2;
 	}
@@ -192,11 +193,12 @@ namespace Hovercraft {
 		Zxcvs.add(p, m);
 
 		let p2 = [...p] as Zx;
-		//p2[0] /= 1;
-		//p2[1] /= 2;
+		Zxcvs.div(p2, 22, 11);
+		Zxcvs.floo(p2);
+		Zxcvs.multp(p2, 22, 11);
 		
 		icecube.stats.pos = [...p2, 0] as Zxc;
-		icecube.set_pos();
+		icecube.set_pos(0, 0);
 
 		let s = Zxcvs.string(p);
 
@@ -204,7 +206,7 @@ namespace Hovercraft {
 	}
 }
 
-class Map {
+class DynMap {
 
 	chumps: Chump[]
 
@@ -227,7 +229,7 @@ class Map {
 	static rig() {
 		Hovercraft.init();
 
-		return new Map();
+		return new DynMap();
 	}
 
 	update() {
@@ -247,4 +249,4 @@ class Map {
 
 }
 
-export { Chump, TileSwab, RegularTile, Map, Hovercraft }
+export { Chump, TileSwab, RegularTile, DynMap, Hovercraft }

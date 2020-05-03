@@ -1,5 +1,5 @@
-import { Map } from "./Nieuw mapje 2/Map";
 import { World } from "./Nieuw mapje 2/World";
+import { Map2 } from "./Nieuw mapje 2/Map2";
 import Obj from "./Nieuw mapje/Obj";
 import { NUI } from "./NUI";
 import Game from "./Game";
@@ -7,7 +7,7 @@ import Game from "./Game";
 export namespace Egyt {
 
 	export var game: Game;
-	export var map: Map;
+	export var map2: Map2;
 	export var world: World;
 	export var ply: Obj;
 
@@ -62,7 +62,7 @@ export namespace Egyt {
 
 		game = Game.rig();
 		world = World.rig();
-		map = Map.rig();
+		map2 = Map2.rig();
 
 		(window as any).Egypt = Egyt;
 	}
@@ -86,7 +86,7 @@ export namespace Egyt {
 			return;
 
 		world.update();
-		map.update();
+		map2.update();
 	}
 
 }

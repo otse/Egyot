@@ -5,6 +5,7 @@ import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 class Rekt {
 
 	dontFang = false // use normal coordinates
+	dontFung = false // dont center sprite
 
 	readonly stats: {
 		name?: string
@@ -72,7 +73,7 @@ class Rekt {
 		this.material.dispose();
 	}
 
-	set_pos() {
+	set_pos(ox?, oy?) {
 		const p = this.stats.pos;
 		const d = this.stats.dim;
 
@@ -81,18 +82,22 @@ class Rekt {
 		if (this.dontFang) {
 			x = p[0];
 			y = p[1];
+			if (ox) x += ox;
+			if (oy) y += oy;
 		}
 		else {
 			x = p[0] / 2 + p[1] / 2;
 			y = p[1] / 4 - p[0] / 4;
 
-			let w = d[0] / 2;
-			let h = d[1] / 2;
-
 			this.mesh.renderOrder = -y;
 
-			x += w;
-			y += h;
+			if (!this.dontFung) {
+				let w = d[0] / 2;
+				let h = d[1] / 2;
+
+				x += w;
+				y += h;
+			}
 		}
 
 		this.posCalc.set(x, y, 0);
