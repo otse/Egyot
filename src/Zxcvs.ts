@@ -22,6 +22,13 @@ namespace Zxcvs {
 		return a;
 	}
 
+	export function ceil(a: Zx | Zxc) {
+		a[0] = Math.ceil(a[0]);
+		a[1] = Math.ceil(a[1]);
+		if (a[2] != undefined) a[2] = Math.ceil(a[2]);
+		return a;
+	}
+
 	export function inv(a: Zx | Zxc) {
 		a[0] = -a[0];
 		a[1] = -a[1];

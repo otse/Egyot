@@ -6,6 +6,8 @@ import Game from "./Game";
 
 export namespace Egyt {
 
+	export const MAGIC_ED = 24; // evenly divisible n
+
 	export var game: Game;
 	export var map2: Map2;
 	export var world: World;
