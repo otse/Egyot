@@ -1,43 +1,45 @@
 nyan /* dont touch, its the parent of the Win.raw function */ {}
 
 .region {
-    display: block;
-    background: grey;
-    border: 1px solid lightgray;
-    padding: 4px;
+	display: block;
+	xbackground: grey;
+	xborder: 1px solid lightgray;
+	xpadding: 4px;
 }
 
 .small {
-    width: 300px;
+	width: 300px;
 }
 
+/* <a><p> collapser */
+
 a.foo {
-    display: block;
-    background: blue;
-    text-decoration: none;
-    cursor: pointer;
-    margin-bottom: 1px;
+	display: block;
+	margin-bottom: 1px;
+	xbackground: rgba(53, 53, 53, 0.5);
+	text-decoration: none;
+	cursor: pointer;
 }
 
 a.foo > span {
-    float: right;
-    margin-right: 0.5em;
+	float: right;
+	margin-right: 2em;
 }
 
 a.foo > span:after {
-    content: " ⇒";
-}
+	content: "⇒"; } /* ⇒ ⮩ */
+a.foo.toggle > span:after { /* ⇓ ⮯ */
+	content: "⇓";}
 
-a.foo.toggle > span:after {
-    content: " ⇓";
-}
 
 p.bar {
-    display: none;
-    margin: 0;
-    background: gray;
+	display: none;
+	margin: 0;
+	xbackground: gray;
 }
 
 p.bar.toggle {
-    display: block;
+	display: block;
 }
+
+/* woo */
