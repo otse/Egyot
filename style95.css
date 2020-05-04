@@ -1,16 +1,20 @@
-#bloobs {
+nyan /* dont touch, its the parent of the Win.raw function */ {}
+
+.region {
     display: block;
-    position: absolute;
-    top: 100;
-    left: 100;
-    color: white;
-    font-size: 1em;
+    background: grey;
+    border: 1px solid lightgray;
+    padding: 4px;
 }
 
-.bloob {
+a.foo {
     display: block;
+    background: blue;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-.section {
-    display: block;
+p.bar {
+    margin: 0;
+    background: gray;
 }

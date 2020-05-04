@@ -17,12 +17,8 @@ export namespace Egyt {
 
 	var started = false;
 
-	export function floor_random(n) {
-		return Math.floor(Math.random() * n)
-	}
-
 	export function sample(a) {
-		return a[floor_random(a.length)];
+		return a[Math.floor(Math.random() * a.length)];
 	}
 
 	export enum RESOURCES {
@@ -85,11 +81,21 @@ export namespace Egyt {
 
 		console.log('egyt starting');
 
+		//if (window.location.href.indexOf("#win95") != -1)
+		//	Win.load_sheet('style95.css');
+		//else
+		//	Win.load_sheet('style2.css');
+
+
 		Win.init();
 
 		Win.raw(`<div>a webgame about lumber? welcome.</div>`);
 
-		Win.raw(`<div class="section">controls</div>`);
+		Win.raw(`
+		<div class="box">
+			<a>Controls</a>
+			<p>Move the viewport with WASD</p>
+		</div>`);
 
 		started = true;
 	}
