@@ -4,6 +4,7 @@ import Obj from "./Nieuw mapje/Obj";
 import { NUI } from "./NUI";
 import Game from "./Game";
 import Forestation from "./Nieuw mapje 3/Forestation";
+import Tilization from "./Nieuw mapje 3/Tilization";
 
 export namespace Egyt {
 
@@ -18,6 +19,10 @@ export namespace Egyt {
 
 	export function floor_random(n) {
 		return Math.floor(Math.random() * n)
+	}
+
+	export function sample(a) {
+		return a[floor_random(a.length)];
 	}
 
 	export enum RESOURCES {
@@ -68,6 +73,7 @@ export namespace Egyt {
 		map2 = Map2.rig();
 
 		Forestation.init();
+		Tilization.init();
 
 		(window as any).Egypt = Egyt;
 	}
@@ -83,7 +89,11 @@ export namespace Egyt {
 		NUI.bloob('a webgame about lumber? welcome.');
 
 		NUI.bloob('---');
-		NUI.bloob('(forestation addon) press t to plop tree --> then click');
+		NUI.bloob('controls: scrollwheel, wasd');
+		NUI.bloob('---');
+		NUI.bloob('map editing:');
+		NUI.bloob('(forestation) press t to create tree --> click to plop');
+		NUI.bloob('(tilization) press y to create tile --> click to plop');
 		NUI.bloob('---');
 
 		started = true;
@@ -95,7 +105,8 @@ export namespace Egyt {
 			return;
 
 		Forestation.update();
-		
+		Tilization.update();
+
 		world.update();
 		map2.update();
 	}

@@ -27,10 +27,11 @@ class Map2 {
 		
 		this.mark.initiate();
 		this.mark.mesh.renderOrder = 999;
+		this.mark.dontOrder = true;
 		
 		let tinybarn = new Rekt({
 			pos: [0, 0, 0],
-			dim: [162, 137],
+			dim: [192, 156], // 8 x 7
 			asset: 'egyt/tinybarn'
 		});
 		

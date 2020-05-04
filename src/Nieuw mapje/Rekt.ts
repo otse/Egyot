@@ -5,7 +5,9 @@ import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 class Rekt {
 
 	dont21 = false // use normal coordinates
-	leftBottom = false // dont center sprite
+	leftBottom = false
+	bottomCenter = true
+	dontOrder = false
 
 	readonly struct: {
 		name?: string
@@ -89,9 +91,18 @@ class Rekt {
 			x = p[0] / 2 + p[1] / 2;
 			y = p[1] / 4 - p[0] / 4;
 
+			if (!this.dontOrder)
 			this.mesh.renderOrder = -y;
 
-			if (this.leftBottom) {
+			if (this.bottomCenter) {
+				let w = d[0] / 2;
+				let h = d[1] / 2;
+
+				//x += w;
+				y += h;
+			}
+
+			else if (this.leftBottom) {
 				let w = d[0] / 2;
 				let h = d[1] / 2;
 

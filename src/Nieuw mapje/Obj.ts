@@ -15,11 +15,11 @@ class Obj {
 		this.clickable = false;
 	}
 
-	Pos(): Zxc {
+	get_pos(): Zxc {
 		return this.struct.pos;
 	}
 
-	Click(): boolean {
+	press(): boolean {
 		return false
 	}
 

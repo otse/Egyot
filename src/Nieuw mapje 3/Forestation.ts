@@ -6,6 +6,13 @@ import App from "../App";
 
 namespace Forestation {
 
+	let plopping: TreePlop | null;
+
+	const trees = [
+		'egyt/oaktree1',
+		'egyt/oaktree2',
+	]
+
 	export class TreePlop extends Obj {
 
 		rekt: Rekt
@@ -14,39 +21,36 @@ namespace Forestation {
 
 			super(struct);
 
-			const trees = [
-				'egyt/oaktree1',
-				'egyt/oaktree2',
-			]
-	
-			let pick = trees[
-				Egyt.floor_random(trees.length)];
-	
 			this.rekt = new Rekt({
-				asset: pick,
+				asset: Egyt.sample(trees),
 				pos: this.struct.pos,
-				dim: [102, 114],
+				dim: [120, 120],
 			});
-	
+
 			this.rekt.initiate();
 		}
 
 		update() {
+			if (plopping != this)
+				return;
+
 			let p = Egyt.map2.mouse;
 
-			this.struct.pos = p;
-			this.rekt.struct.pos = p;
+			this.rekt.struct.pos = this.struct.pos = p;
+
 			this.rekt.set_pos();
+
+			if (App.left)
+				plopping = null;
 		}
 	}
 
 	export function init() {
 		console.log('forestation');
-		
+
 		(window as any).Forestation = Forestation;
 	}
 
-	let plopping: TreePlop;
 
 	export function update() {
 		if (!plopping && App.map['t'] == 1) {
@@ -55,7 +59,7 @@ namespace Forestation {
 	}
 
 	export function plop_tree() {
-		
+
 		let plop = new TreePlop({
 			pos: Egyt.map2.mouse
 		});

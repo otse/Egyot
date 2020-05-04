@@ -1,0 +1,12 @@
+#bloobs {
+    display: block;
+    position: absolute;
+    top: 100;
+    left: 100;
+    color: white;
+    font-size: 2em;
+}
+
+.bloob {
+    display: block;
+}
