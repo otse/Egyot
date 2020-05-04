@@ -4,10 +4,10 @@ import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 
 class Rekt {
 
-	dontFang = false // use normal coordinates
-	dontFung = false // dont center sprite
+	dont21 = false // use normal coordinates
+	leftBottom = false // dont center sprite
 
-	readonly stats: {
+	readonly struct: {
 		name?: string
 		pos: Zxc
 		dim: Zx
@@ -25,30 +25,30 @@ class Rekt {
 
 	posCalc: Vector3
 
-	constructor(ops: Rekt['stats']) {
+	constructor(struct: Rekt.Struct) {
 
-		this.stats = ops;
+		this.struct = struct;
 
 		this.posCalc = new Vector3;
 
-		if (this.stats.opacity == undefined) this.stats.opacity = 1;
+		if (this.struct.opacity == undefined) this.struct.opacity = 1;
 	}
 
 	public initiate() {
 
 		// At least 2, 1 segments or glitch
 		this.geometry = new PlaneBufferGeometry(
-			this.stats.dim[0], this.stats.dim[1], 1, 1);
+			this.struct.dim[0], this.struct.dim[1], 1, 1);
 
 		let map;
 
-		if (this.stats.asset)
-			map = ThreeQuarter.loadTexture(`assets/${this.stats.asset}.png`);
+		if (this.struct.asset)
+			map = ThreeQuarter.loadTexture(`assets/${this.struct.asset}.png`);
 
 		this.material = new MeshBasicMaterial({
 			map: map,
 			transparent: true,
-			opacity: this.stats.opacity,
+			opacity: this.struct.opacity,
 			//color: this.stats.color || 0xffffff
 		});
 
@@ -56,7 +56,7 @@ class Rekt {
 		this.mesh.frustumCulled = true;
 		this.mesh.scale.set(1, 1, 1);
 
-		if (this.stats.flip)
+		if (this.struct.flip)
 			this.mesh.scale.x = -this.mesh.scale.x;
 
 		//UV.FlipPlane(this.geometry, 0, true);
@@ -74,12 +74,12 @@ class Rekt {
 	}
 
 	set_pos(ox?, oy?) {
-		const p = this.stats.pos;
-		const d = this.stats.dim;
+		const p = this.struct.pos;
+		const d = this.struct.dim;
 
 		let x, y;
 
-		if (this.dontFang) {
+		if (this.dont21) {
 			x = p[0];
 			y = p[1];
 			if (ox) x += ox;
@@ -91,7 +91,7 @@ class Rekt {
 
 			this.mesh.renderOrder = -y;
 
-			if (!this.dontFung) {
+			if (this.leftBottom) {
 				let w = d[0] / 2;
 				let h = d[1] / 2;
 
@@ -106,6 +106,10 @@ class Rekt {
 
 		this.mesh.position.copy(this.posCalc);
 	}
+}
+
+namespace Rekt {
+	export type Struct = Rekt['struct']
 }
 
 export default Rekt;

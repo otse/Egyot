@@ -98,7 +98,7 @@ class TileSwab {
 			asset: img
 		});
 
-		this.rekt.dontFang = true; // dont 2:1
+		this.rekt.dont21 = true; // dont 2:1
 	}
 
 	spawned: boolean;
@@ -126,12 +126,12 @@ class TileSwab {
 
 		this.wire = new Rekt({
 			name: 'TileSwab Wire',
-			pos: this.rekt.stats.pos,
+			pos: this.rekt.struct.pos,
 			dim: [128, 128],
 			asset: 'egyt/128'
 		});
 
-		this.wire.dontFang = true; // dont 2:1
+		this.wire.dont21 = true; // dont 2:1
 
 		this.wire.initiate();
 
@@ -158,11 +158,11 @@ class RegularTile {
 }
 
 namespace Hovercraft {
-	var watch: NUI.Watch;
+	var watch: NUI.Bloob;
 	var icecube: Rekt;
 
 	export function init() {
-		watch = NUI.watch('');
+		watch = NUI.bloob('');
 
 		icecube = new Rekt({
 			pos: [0, 0, 0],
@@ -170,7 +170,7 @@ namespace Hovercraft {
 			asset: 'egyt/iceblock'
 		});
 
-		icecube.dontFang = true;
+		icecube.dont21 = true;
 		//icecube.dontFung = true;
 		icecube.initiate();
 		icecube.mesh.renderOrder = 2;
@@ -197,7 +197,7 @@ namespace Hovercraft {
 		Zxcvs.floo(p2);
 		Zxcvs.multp(p2, 22, 11);
 		
-		icecube.stats.pos = [...p2, 0] as Zxc;
+		icecube.struct.pos = [...p2, 0] as Zxc;
 		icecube.set_pos(0, 0);
 
 		let s = Zxcvs.string(p);

@@ -66,7 +66,7 @@ export namespace Egyt {
 		game = Game.rig();
 		world = World.rig();
 		map2 = Map2.rig();
-		
+
 		Forestation.init();
 
 		(window as any).Egypt = Egyt;
@@ -80,7 +80,11 @@ export namespace Egyt {
 		console.log('egyt starting');
 
 		NUI.init();
-		NUI.watch('a webgame about lumber? welcome. this area is for debug watch');
+		NUI.bloob('a webgame about lumber? welcome.');
+
+		NUI.bloob('---');
+		NUI.bloob('(forestation addon) press t to plop tree --> then click');
+		NUI.bloob('---');
 
 		started = true;
 	}
@@ -90,6 +94,8 @@ export namespace Egyt {
 		if (!started)
 			return;
 
+		Forestation.update();
+		
 		world.update();
 		map2.update();
 	}

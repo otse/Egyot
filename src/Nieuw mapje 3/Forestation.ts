@@ -2,6 +2,7 @@ import Rekt from "../Nieuw mapje/Rekt";
 import Egyt from "../Egyt";
 import { aabb3 } from "../Bound";
 import Obj from "../Nieuw mapje/Obj";
+import App from "../App";
 
 namespace Forestation {
 
@@ -31,8 +32,10 @@ namespace Forestation {
 		}
 
 		update() {
-			this.struct.pos = Egyt.map2.mouse;
-			this.rekt.stats.pos = this.struct.pos;
+			let p = Egyt.map2.mouse;
+
+			this.struct.pos = p;
+			this.rekt.struct.pos = p;
 			this.rekt.set_pos();
 		}
 	}
@@ -43,8 +46,12 @@ namespace Forestation {
 		(window as any).Forestation = Forestation;
 	}
 
-	export function sow_area(aabb: aabb3) {
+	let plopping: TreePlop;
 
+	export function update() {
+		if (!plopping && App.map['t'] == 1) {
+			plopping = plop_tree();
+		}
 	}
 
 	export function plop_tree() {
@@ -54,6 +61,8 @@ namespace Forestation {
 		});
 
 		Egyt.world.add(plop);
+
+		return plop;
 	}
 }
 

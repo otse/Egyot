@@ -78,7 +78,7 @@ class Game {
 			asset: 'egyt/128'
 		});
 
-		this.frustumRekt.dontFang = true; // dont 2:1
+		this.frustumRekt.dont21 = true; // dont 2:1
 
 		this.frustumRekt.initiate();
 		this.frustumRekt.mesh.renderOrder = 9999999;
@@ -146,7 +146,7 @@ class Game {
 		return;
 		
 		this.frustumRekt.mesh.scale.set(w2, h2, 1);
-		this.frustumRekt.stats.pos = this.focal;
+		this.frustumRekt.struct.pos = this.focal;
 		this.frustumRekt.set_pos();
 	}
 

@@ -5,16 +5,16 @@ namespace NUI {
 	export function init() {
 		body = $('body')
 
-		watches = $('<div id="watches">')
+		watches = $('<div id="bloobs">')
 
 		body.append(watches);
 	}
 
-	export class Watch {
+	export class Bloob {
 		el: JQuery
 
 		constructor(text) {
-			this.el = $('<div class="watch">')
+			this.el = $('<div class="bloob">')
 			this.set_text(text);
 
 			watches.append(this.el);
@@ -25,9 +25,9 @@ namespace NUI {
 		}
 	}
 
-	export function watch(text: string) {
+	export function bloob(text: string) {
 
-		return new Watch(text);
+		return new Bloob(text);
 		
 	}
 }
