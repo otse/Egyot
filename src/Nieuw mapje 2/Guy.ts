@@ -5,13 +5,13 @@ class Man extends Obj {
 
     rekt: Rekt
 
-    constructor(stats: Obj.Stats) {
+    constructor(stats: Obj.Struct) {
         super(stats);
     }
 
     produce() {
         this.rekt = new Rekt({
-            pos: this.stats.pos,
+            pos: this.struct.pos,
             dim: [22, 25],
             asset: 'egyt/pumpkin'
         })
@@ -32,7 +32,7 @@ class Man extends Obj {
 
 class Ply extends Man {
     
-    constructor(stats: Obj.Stats) {
+    constructor(stats: Obj.Struct) {
         super(stats);
 
         this.order = 9;

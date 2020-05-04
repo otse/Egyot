@@ -10,11 +10,13 @@ class Map2 {
 		return new Map2;
 	}
 
+	mouse: Zxc;
 	mark: Rekt
 	mark_tell: NUI.Watch
 
 	constructor() {
 
+		this.mouse = [0, 0, 0];
 		this.mark_tell = NUI.watch('');
 		
 		this.mark = new Rekt({
@@ -34,7 +36,7 @@ class Map2 {
 		
 		tinybarn.initiate();
 		
-		Forestation.place_tree(Zxcvs.multp([10, 0, 0], Egyt.MAGIC_ED) as Zxc);
+		//Forestation.place_tree(Zxcvs.multp([10, 0, 0], Egyt.MAGIC_ED) as Zxc);
 	}
 	
 	mark_mouse() {
@@ -51,10 +53,13 @@ class Map2 {
 		p[0] = m2[0] / 1 - m2[1] * 2;
 		p[1] = m2[1] * 2 + m2[0] / 1;
 
+		
 		let p2 = [...p] as Zx;
 		Zxcvs.div(p2, Egyt.MAGIC_ED);
 		Zxcvs.floo(p2);
 		Zxcvs.multp(p2, Egyt.MAGIC_ED);
+
+		this.mouse = [...p2, 0] as Zxc;
 		
 		this.mark.stats.pos = [...p2, 0] as Zxc;
 		this.mark.set_pos(0, 0);

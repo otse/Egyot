@@ -3,6 +3,7 @@ import { Map2 } from "./Nieuw mapje 2/Map2";
 import Obj from "./Nieuw mapje/Obj";
 import { NUI } from "./NUI";
 import Game from "./Game";
+import Forestation from "./Nieuw mapje 3/Forestation";
 
 export namespace Egyt {
 
@@ -65,6 +66,8 @@ export namespace Egyt {
 		game = Game.rig();
 		world = World.rig();
 		map2 = Map2.rig();
+		
+		Forestation.init();
 
 		(window as any).Egypt = Egyt;
 	}

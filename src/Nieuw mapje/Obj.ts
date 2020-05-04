@@ -1,22 +1,22 @@
 class Obj {
 	order: number
 
-	readonly stats: {
+	readonly struct: {
         pos: Zxc
 	}
 	
 	clickable: boolean
 
-	constructor(stats: Obj['stats']) {
+	constructor(struct: Obj['struct']) {
 		this.order = 0;
 		
-		this.stats = stats;
+		this.struct = struct;
 		
 		this.clickable = false;
 	}
 
 	Pos(): Zxc {
-		return this.stats.pos;
+		return this.struct.pos;
 	}
 
 	Click(): boolean {
@@ -34,7 +34,7 @@ class Obj {
 }
 
 namespace Obj {
-	export type Stats = Obj['stats']
+	export type Struct = Obj['struct']
 }
 
 export default Obj;
