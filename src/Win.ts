@@ -24,8 +24,8 @@ namespace Win {
 		*/
 
 		nyan.find('a').next('p').addClass('bar').prev().addClass('foo').click(function() {	
-			$(this).next('.bar').toggleClass('toggle');
-		});
+			$(this).toggleClass("toggle").next('.bar').toggleClass('toggle');
+		}).append('<span>');
 	}
 
 	export function init() {

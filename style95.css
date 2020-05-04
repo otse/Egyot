@@ -19,6 +19,19 @@ a.foo {
     margin-bottom: 1px;
 }
 
+a.foo > span {
+    float: right;
+    margin-right: 0.5em;
+}
+
+a.foo > span:after {
+    content: " ⇒";
+}
+
+a.foo.toggle > span:after {
+    content: " ⇓";
+}
+
 p.bar {
     display: none;
     margin: 0;
