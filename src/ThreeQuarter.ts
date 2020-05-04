@@ -31,7 +31,6 @@ export namespace ThreeQuarter {
 
 	export var changes = true;
 	export var delta = 0;
-	export var dpi = 1;
 
 	export var clock: Clock
 	export var scene: Scene
@@ -58,7 +57,7 @@ export namespace ThreeQuarter {
 	export function render() {
 
 		//if (!changes)
-		//return;
+			//return;
 
 		renderer.setRenderTarget(target);
 		renderer.clear();
@@ -82,18 +81,59 @@ export namespace ThreeQuarter {
 
 		clock = new Clock();
 
-		renderer = new WebGLRenderer({ antialias: false, alpha: true });
+		enderWidth = window.innerWidth;
+		enderHeight = window.innerHeight;
+
+		if (enderWidth % 2 != 0) {
+			enderWidth -= 1;
+		}
+		if (enderHeight % 2 != 0) {
+			enderHeight -= 1;
+		}
+
+		console.log('Ender Size ', enderWidth +', '+enderHeight);
+		
+		camera = new OrthographicCamera(
+			enderWidth / - 2,
+			enderWidth / 2,
+			enderHeight / 2,
+			enderHeight / - 2,
+			- 100, 100);
+		camera.position.set(0, 0, -100);
+
+		ender = [enderWidth, enderHeight];
+
+		scene = new Scene();
+		scene.background = new Color('#777');
+		scene2 = new Scene();
+
+		let width = enderWidth;
+		let height = enderHeight;
+		
+		let dpi = window.devicePixelRatio;
+
+		if (dpi == 2) {
+			console.warn('DPI > 1. Egyt will scale by whole factors.');
+			width *= dpi;
+			height *= dpi;
+		}
+
+		console.log('Two WebGLRenderTarget ' + width + ', ' + height);
+
+		target = new WebGLRenderTarget(
+			width, height,
+			{ minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat });
+
+		renderer = new WebGLRenderer({ antialias: false });
 		renderer.setPixelRatio(dpi);
 		renderer.setSize(
 			window.innerWidth, window.innerHeight);
 		renderer.autoClear = true;
-		renderer.setClearColor('red', 0);
+		renderer.setClearColor(0xffffff, 0);
 
 		document.body.appendChild(renderer.domElement);
 
 		window.addEventListener('resize', onWindowResize, false);
-
-		onWindowResize();
 
 		someMore();
 
@@ -127,53 +167,6 @@ export namespace ThreeQuarter {
 	}
 
 	function onWindowResize() {
-
-		enderWidth = window.innerWidth;
-		enderHeight = window.innerHeight;
-
-		if (enderWidth % 2 != 0) {
-			enderWidth -= 1;
-		}
-		if (enderHeight % 2 != 0) {
-			enderHeight -= 1;
-		}
-
-		console.log('Ender Size ', enderWidth + ', ' + enderHeight);
-
-		camera = new OrthographicCamera(
-			enderWidth / - 2,
-			enderWidth / 2,
-			enderHeight / 2,
-			enderHeight / - 2,
-			- 100, 100);
-		camera.position.set(0, 0, -100);
-
-		ender = [enderWidth, enderHeight];
-
-		scene = new Scene();
-		scene.background = new Color('#777');
-		scene2 = new Scene();
-
-		let width = enderWidth;
-		let height = enderHeight;
-
-		dpi = window.devicePixelRatio;
-
-		if (dpi == 2) {
-			console.warn('DPI > 1. Egyt will scale by whole factors.');
-			width *= dpi;
-			height *= dpi;
-		}
-
-		if (!target) {
-			target = new WebGLRenderTarget(
-				enderWidth, enderHeight,
-				{ minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat });
-		}
-		else {
-			target.setSize(enderWidth, enderHeight);
-		}
-		console.log('Two WebGLRenderTarget ' + width + ', ' + height);
 
 		camera.updateProjectionMatrix();
 

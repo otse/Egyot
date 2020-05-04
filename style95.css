@@ -1,0 +1,16 @@
+#bloobs {
+    display: block;
+    position: absolute;
+    top: 100;
+    left: 100;
+    color: white;
+    font-size: 1em;
+}
+
+.bloob {
+    display: block;
+}
+
+.section {
+    display: block;
+}

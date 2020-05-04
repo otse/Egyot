@@ -1,7 +1,7 @@
 import { World } from "./Nieuw mapje 2/World";
 import { Map2 } from "./Nieuw mapje 2/Map2";
 import Obj from "./Nieuw mapje/Obj";
-import { NUI } from "./NUI";
+import { Win } from "./Win";
 import Game from "./Game";
 import Forestation from "./Nieuw mapje 3/Forestation";
 import Tilization from "./Nieuw mapje 3/Tilization";
@@ -85,16 +85,11 @@ export namespace Egyt {
 
 		console.log('egyt starting');
 
-		NUI.init();
-		NUI.bloob('a webgame about lumber? welcome.');
+		Win.init();
 
-		NUI.bloob('---');
-		NUI.bloob('controls: scrollwheel, wasd');
-		NUI.bloob('---');
-		NUI.bloob('map editing:');
-		NUI.bloob('(forestation) press t to create tree --> click to plop');
-		NUI.bloob('(tilization) press y to create tile --> click to plop');
-		NUI.bloob('---');
+		Win.raw(`<div>a webgame about lumber? welcome.</div>`);
+
+		Win.raw(`<div class="section">controls</div>`);
 
 		started = true;
 	}

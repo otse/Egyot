@@ -2,7 +2,7 @@ import { Points, Color } from "three";
 import Rekt from "../Nieuw mapje/Rekt";
 import { aabb3 } from "../Bound";
 import Zxcvs from "../Zxcvs";
-import { NUI } from "../NUI";
+import { Win } from "../Win";
 import App from "../App";
 import Egyt from "../Egyt";
 import { ThreeQuarter } from "../ThreeQuarter";
@@ -158,11 +158,9 @@ class RegularTile {
 }
 
 namespace Hovercraft {
-	var watch: NUI.Bloob;
 	var icecube: Rekt;
 
 	export function init() {
-		watch = NUI.bloob('');
 
 		icecube = new Rekt({
 			pos: [0, 0, 0],
@@ -201,8 +199,6 @@ namespace Hovercraft {
 		icecube.set_pos(0, 0);
 
 		let s = Zxcvs.string(p);
-
-		watch.set_text(`hovering ocean-level tile: ${s}`);
 	}
 }
 

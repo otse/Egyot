@@ -20,7 +20,9 @@
     <script src="http://threejs.org/examples/js/postprocessing/ShaderPass.js"></script>
     <script src="http://threejs.org/examples/js/shaders/CopyShader.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- uncomment one -->
+    <link rel="stylesheet" type="text/css" href="style95.css">
+    <!-- <link rel="stylesheet" type="text/css" href="style2.css"> -->
 
     <!-- <script src="js/stackblur.min.js"></script> -->
 
@@ -43,21 +45,18 @@
             padding: 0;
         }
 
+        #win {
+            position: absolute;
+            display: block;
+            z-index: 9;
+            padding: 20px;
+            color: white;
+        }
+
         canvas
         {
             position: absolute;
             image-rendering: pixelated;
-        }
-
-        #overlay {
-            position: absolute;
-            z-index: 1;
-            top: 20%;
-            left: 20%;
-            color: white;
-            font-size: 20px;
-            font-family: sans-serif;
-            text-shadow: 0 0 4px black;
         }
 
     </style>
@@ -93,7 +92,7 @@
 			}
         </script>
         
-    <div id="overlay"></div>
+    <div id="win"></div>
     <!--<div id="sound_on">sound on</div>-->
 </body>
 

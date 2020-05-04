@@ -1,6 +1,6 @@
 import Rekt from "../Nieuw mapje/Rekt";
 import Forestation from "../Nieuw mapje 3/Forestation";
-import { NUI } from "../NUI";
+import { Win } from "../Win";
 import Egyt from "../Egyt";
 import App from "../App";
 import Zxcvs from "../Zxcvs";
@@ -12,12 +12,12 @@ class Map2 {
 
 	mouse: Zxc;
 	mark: Rekt
-	mark_tell: NUI.Bloob
+	tell: JQuery
 
 	constructor() {
 
 		this.mouse = [0, 0, 0];
-		this.mark_tell = NUI.bloob('');
+		this.tell = Win.raw('<div>');
 		
 		this.mark = new Rekt({
 			pos: [0, 0, 0],
@@ -49,13 +49,14 @@ class Map2 {
 
 		// 2:1 correction
 		let m2 = Zxcvs.clone(p) as Zx;
-		p[0] = m2[0] / 1 - m2[1] * 2;
-		p[1] = m2[1] * 2 + m2[0] / 1;
+		p[0] = m2[0] - m2[1] * 2;
+		p[1] = m2[1] * 2 + m2[0];
 
 		
 		let p2 = [...p] as Zx;
 		Zxcvs.div(p2, Egyt.MAGIC_ED);
 		Zxcvs.floo(p2);
+		let p3 = [...p2] as Zx;
 		Zxcvs.multp(p2, Egyt.MAGIC_ED);
 
 		this.mouse = [...p2, 0] as Zxc;
@@ -63,9 +64,7 @@ class Map2 {
 		this.mark.struct.pos = [...p2, 0] as Zxc;
 		this.mark.set_pos(0, 0);
 
-		let s = Zxcvs.string(p);
-
-		this.mark_tell.set_text(`mouse at world tile: ${s}`);
+		this.tell.text(`mouse at world tile: ${Zxcvs.string(p3)}`);
 
 	}
 
