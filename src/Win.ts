@@ -6,11 +6,11 @@ namespace Win {
 	var bloobs;
 
 	export function load_sheet(file: string) {
-		let link = document.createElement('link'); 
-        link.rel = 'stylesheet';  
-        link.type = 'text/css'; 
-        link.href = file;  
-        document.head.appendChild(link);  
+		let link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = file;
+		document.head.appendChild(link);
 	}
 
 	export function collapse() {
@@ -18,15 +18,14 @@ namespace Win {
 	}
 
 	export function rig_charges(nyan: JQuery) {
-		// todo, i know its p bad
 		/*
-			selector for
-			<div>
 			<a>collapsable</a>
 			<p>hidden content</p>
-			</div>
 		*/
-		nyan.find('a').addClass('foo').next('p').addClass('bar');
+
+		nyan.find('a').next('p').addClass('bar').prev().addClass('foo').click(function() {	
+			$(this).next('.bar').toggleClass('toggle');
+		});
 	}
 
 	export function init() {
@@ -43,7 +42,7 @@ namespace Win {
 
 		nyan.append(jay);
 		rig_charges(nyan);
-		
+
 		win.append(jay);
 
 		return nyan;

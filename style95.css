@@ -7,14 +7,24 @@ nyan /* dont touch, its the parent of the Win.raw function */ {}
     padding: 4px;
 }
 
+.small {
+    width: 300px;
+}
+
 a.foo {
     display: block;
     background: blue;
     text-decoration: none;
     cursor: pointer;
+    margin-bottom: 1px;
 }
 
 p.bar {
+    display: none;
     margin: 0;
     background: gray;
+}
+
+p.bar.toggle {
+    display: block;
 }

@@ -92,9 +92,12 @@ export namespace Egyt {
 		Win.raw(`<div>a webgame about lumber? welcome.</div>`);
 
 		Win.raw(`
-		<div class="box">
-			<a>Controls</a>
-			<p>Move the viewport with WASD</p>
+		<div class="region small">
+			<a>Tutorial</a>
+			<p>Pan the view with W,A,S,D. You can zoom using scrollwheel.</p>
+
+			<a>Collapse 2</a>
+			<p>Something here</p>
 		</div>`);
 
 		started = true;
