@@ -38,20 +38,18 @@ class Map2 {
 	}
 	
 	mark_mouse() {
-		/*let p = [...App.move] as Zx;
-		p[1] = -p[1];
-
-		let p2 = [...Egyt.game.pos] as Zx;
-		Zxcvs.inv(p2);
-
-		Zxcvs.addit(p, p2);
-
-		let p3 = Zxcvs.two_one(p);*/
-		let p = [Egyt.game.aabb.min[0], Egyt.game.aabb.max[1]] as Zx;
+		
 		let m = [...App.move] as Zx;
 		m[1] = -m[1];
 		Zxcvs.div(m, Egyt.game.scale);
+
+		let p = [Egyt.game.aabb.min[0], Egyt.game.aabb.max[1]] as Zx;
 		Zxcvs.add(p, m);
+
+		// 2:1 correction
+		let m2 = Zxcvs.clone(p) as Zx;
+		p[0] = m2[0] / 1 - m2[1] * 2;
+		p[1] = m2[1] * 2 + m2[0] / 1;
 
 		let p2 = [...p] as Zx;
 		Zxcvs.div(p2, Egyt.MAGIC_ED);
