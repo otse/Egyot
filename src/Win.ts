@@ -18,14 +18,21 @@ namespace Win {
 	}
 
 	export function rig_charges(nyan: JQuery) {
-		/*
-			<a>collapsable</a>
-			<p>hidden content</p>
-		*/
+		
+		// In Vsc
+		// View -> Toggle Word Wrap
 
-		nyan.find('a').next('p').addClass('bar').prev().addClass('foo').click(function() {	
+		/*
+			An hyperlink and a paragraph form a collapser
+		*/
+		nyan.find('a').next('div').addClass('bar').prev().addClass('foo').click(function() {	
 			$(this).toggleClass("toggle").next('.bar').toggleClass('toggle');
 		}).append('<span>');
+
+		/*
+			A div with two spans is an rpg item.
+		*/
+		nyan.find('div').children().find('span').next('span').parent().addClass('rpgitem');
 	}
 
 	export function init() {

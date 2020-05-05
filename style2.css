@@ -1,1 +1,8 @@
-/* this file *should* override everything from style95 */
+/* copy paste style95 in here to override it */
+
+key {
+    display: inline-block;
+    border: 2px solid white;
+    border-radius: 3px;
+	margin: -2px 0;
+}

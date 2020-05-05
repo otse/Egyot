@@ -4,9 +4,8 @@ import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 
 class Rekt {
 
-	dont21 = false // use normal coordinates
-	leftBottom = false
-	bottomCenter = true
+	noDimetricization = false
+	middleBottom = true
 	dontOrder = false
 
 	readonly struct: {
@@ -25,13 +24,15 @@ class Rekt {
 	material: MeshBasicMaterial
 	geometry: PlaneBufferGeometry
 
-	posCalc: Vector3
+	pos: Zxc
+	center: Zx
 
 	constructor(struct: Rekt.Struct) {
 
 		this.struct = struct;
 
-		this.posCalc = new Vector3;
+		this.pos = [0, 0, 0];
+		this.center = [0, 0];
 
 		if (this.struct.opacity == undefined) this.struct.opacity = 1;
 	}
@@ -81,7 +82,7 @@ class Rekt {
 
 		let x, y;
 
-		if (this.dont21) {
+		if (this.noDimetricization) {
 			x = p[0];
 			y = p[1];
 			if (ox) x += ox;
@@ -91,31 +92,23 @@ class Rekt {
 			x = p[0] / 2 + p[1] / 2;
 			y = p[1] / 4 - p[0] / 4;
 
+			this.center = [x, y];
+
+			if (this.middleBottom) {
+				let w = d[0] / 2;
+				let h = d[1] / 2;
+				
+				y += h;
+			}
+
 			if (!this.dontOrder)
-			this.mesh.renderOrder = -y;
+				this.mesh.renderOrder = -p[1] + p[0];
 
-			if (this.bottomCenter) {
-				let w = d[0] / 2;
-				let h = d[1] / 2;
-
-				//x += w;
-				y += h;
-			}
-
-			else if (this.leftBottom) {
-				let w = d[0] / 2;
-				let h = d[1] / 2;
-
-				x += w;
-				y += h;
-			}
 		}
 
-		this.posCalc.set(x, y, 0);
+		this.pos = [x, y, 0];
 
-		//console.log('posCalc '+this.posCalc.x+' '+this.posCalc.y);
-
-		this.mesh.position.copy(this.posCalc);
+		this.mesh.position.fromArray(this.pos);
 	}
 }
 

@@ -78,7 +78,7 @@ class Game {
 			asset: 'egyt/128'
 		});
 
-		this.frustumRekt.dont21 = true; // dont 2:1
+		this.frustumRekt.noDimetricization = true; // dont 2:1
 
 		this.frustumRekt.initiate();
 		this.frustumRekt.mesh.renderOrder = 9999999;

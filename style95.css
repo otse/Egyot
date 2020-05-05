@@ -1,45 +1,78 @@
-nyan /* dont touch, its the parent of the Win.raw function */ {}
+nyan /* a workaround. the parent of the Win.raw function. may break some browsers */ {}
 
 .region {
 	display: block;
-	xbackground: grey;
-	xborder: 1px solid lightgray;
-	xpadding: 4px;
+}
+
+.marked {
+	color: red;
 }
 
 .small {
 	width: 300px;
 }
 
-/* <a><p> collapser */
+key {
+    display: inline-block;
+    border: 2px solid white;
+    /* color: black; */
+    border-radius: 3px;
+	margin: -2px 0;
+}
+
+/* begin of <a><div> */
 
 a.foo {
 	display: block;
 	margin-bottom: 1px;
-	xbackground: rgba(53, 53, 53, 0.5);
 	text-decoration: none;
 	cursor: pointer;
 }
 
-a.foo > span {
-	float: right;
-	margin-right: 2em;
-}
-
-a.foo > span:after {
-	content: "⇒"; } /* ⇒ ⮩ */
-a.foo.toggle > span:after { /* ⇓ ⮯ */
-	content: "⇓";}
-
-
-p.bar {
+div.bar {
 	display: none;
 	margin: 0;
-	xbackground: gray;
+	margin-left: 1em;
 }
 
-p.bar.toggle {
+a.foo > span {
+	float: right; }
+
+a.foo > span:after {
+	content: "+"; } /* \2192 */
+
+a.foo.toggle > span:after {
+	content: "-";} /* \2193 */
+
+div.bar.toggle {
 	display: block;
 }
 
-/* woo */
+/* end of <a><div> */
+
+/* begin of <div><span><span> */
+
+/* https://www.springhole.net/writing_roleplaying_randomators/magicitemgenerator2.htm */
+
+div.rpgitem {
+	display: inline-block;
+	border: 1px solid white;
+}
+
+div.rpgitem > span:first-child {
+	display: block;
+	color: purple;
+	background-color: palegoldenrod;
+	font-style: italic;
+}
+
+div.rpgitem > span:nth-child(2) {
+	display: block;
+	background: white;
+	color: black;
+	padding: 1px 3px;
+	font-size: 1em;
+}
+
+/* end of <div><span><span> */
+

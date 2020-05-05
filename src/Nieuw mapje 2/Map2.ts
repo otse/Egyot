@@ -12,12 +12,10 @@ class Map2 {
 
 	mouse: Zxc;
 	mark: Rekt
-	tell: JQuery
 
 	constructor() {
 
 		this.mouse = [0, 0, 0];
-		this.tell = Win.raw('<div>');
 		
 		this.mark = new Rekt({
 			pos: [0, 0, 0],
@@ -51,7 +49,6 @@ class Map2 {
 		let m2 = Zxcvs.clone(p) as Zx;
 		p[0] = m2[0] - m2[1] * 2;
 		p[1] = m2[1] * 2 + m2[0];
-
 		
 		let p2 = [...p] as Zx;
 		Zxcvs.div(p2, Egyt.MAGIC_ED);
@@ -64,7 +61,7 @@ class Map2 {
 		this.mark.struct.pos = [...p2, 0] as Zxc;
 		this.mark.set_pos(0, 0);
 
-		this.tell.text(`mouse at world tile: ${Zxcvs.string(p3)}`);
+		Win.win.find('#mouseTile').text(`World square: ${Zxcvs.string(p3)}`);
 
 	}
 

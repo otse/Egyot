@@ -89,15 +89,53 @@ export namespace Egyt {
 
 		Win.init();
 
-		Win.raw(`<div>A webgame about lumber, or?</div><br />`);
-
 		Win.raw(`
+		<div>A webgame about lumber, or?</div>
+		<br />
 		<div class="region small">
-			<a>Tutorial</a>
-			<p>Pan the view with W,A,S,D. You can zoom using scrollwheel.</p>
+			<a>Tutorial
+			</a>
+			<div>
+				Move the view with <key>W</key> <key>A</key> <key>S</key> <key>D</key>.
+				Scroll to zoom.
+			</div>
 
-			<a>World editing</a>
-			<p>You can plop stuff with some shortcuts. Press T to make a tree, or Y for a test tile. Click to confirm.</p>
+			<a>World editing
+			</a>
+			<div>
+				You can plop objects with these shortcuts.
+				<br/><br/>
+				<key>T</key> tree<br/>
+				<key>Y</key> tile<br/>
+				<br />
+				<key>X</key> delete<br/>
+				<key>Esc</key> cancel<br/>
+			</div>
+
+			<a>Stats
+			</a>
+			<div>
+				<span id="mouseTile"></span>
+			</div>
+
+			<a>Items Corner
+			</a>
+			<div>
+				<div>
+					<span>Coral Orb
+					</span>
+					<span>It used to belong to an elemental spirit. It has the ability to summon rainstorms and it comes from another world.
+					</span>
+				</div>
+
+				<!--<br/><br/>
+				<div>
+					<span>Pocketwatch
+					</span>
+					<span>It's a pocketwatch made of adamantium.  It has the names of its previous owners written upon it and looks poorly made.
+					</span>
+				</div>-->
+			</div>
 		</div>`);
 
 		started = true;

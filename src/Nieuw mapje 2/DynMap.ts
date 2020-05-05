@@ -98,7 +98,7 @@ class TileSwab {
 			asset: img
 		});
 
-		this.rekt.dont21 = true; // dont 2:1
+		this.rekt.noDimetricization = true; // dont 2:1
 	}
 
 	spawned: boolean;
@@ -131,7 +131,7 @@ class TileSwab {
 			asset: 'egyt/128'
 		});
 
-		this.wire.dont21 = true; // dont 2:1
+		this.wire.noDimetricization = true; // dont 2:1
 
 		this.wire.initiate();
 
@@ -168,7 +168,7 @@ namespace Hovercraft {
 			asset: 'egyt/iceblock'
 		});
 
-		icecube.dont21 = true;
+		icecube.noDimetricization = true;
 		//icecube.dontFung = true;
 		icecube.initiate();
 		icecube.mesh.renderOrder = 2;
