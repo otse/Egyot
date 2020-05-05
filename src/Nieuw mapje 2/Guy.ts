@@ -10,6 +10,7 @@ class Man extends Obj {
     }
 
     produce() {
+        return;
         this.rekt = new Rekt({
             pos: this.struct.pos,
             dim: [22, 25],

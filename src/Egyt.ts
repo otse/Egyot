@@ -118,23 +118,15 @@ export namespace Egyt {
 				<span id="mouseTile"></span>
 			</div>
 
-			<a>Items Corner
+			<a>Items Demo
 			</a>
 			<div>
 				<div>
 					<span>Coral Orb
 					</span>
-					<span>It used to belong to an elemental spirit. It has the ability to summon rainstorms and it comes from another world.
+					<span>It used to belong to an elemental spirit. It has the ability to summon rainstorms.
 					</span>
 				</div>
-
-				<!--<br/><br/>
-				<div>
-					<span>Pocketwatch
-					</span>
-					<span>It's a pocketwatch made of adamantium.  It has the names of its previous owners written upon it and looks poorly made.
-					</span>
-				</div>-->
 			</div>
 		</div>`);
 

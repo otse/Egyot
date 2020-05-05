@@ -61,7 +61,7 @@ div.bar.toggle {
 /* https://www.springhole.net/writing_roleplaying_randomators/magicitemgenerator2.htm */
 
 div.rpgitem {
-	border: 1px solid white;
+	/* border: 1px solid white; */
 }
 
 div.rpgitem > span:first-child {
@@ -74,7 +74,6 @@ div.rpgitem > span:first-child {
 div.rpgitem > span:nth-child(2) {
 	background: white;
 	color: black;
-	padding: 1px 3px;
 	font-size: 1em;
 }
 

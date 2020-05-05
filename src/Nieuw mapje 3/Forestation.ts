@@ -9,8 +9,11 @@ namespace Forestation {
 	let plopping: TreePlop | null;
 
 	const trees = [
-		'egyt/oaktree1',
-		'egyt/oaktree2',
+		'egyt/oaktree3',
+		'egyt/oaktree4',
+		//'egyt/birchtree1',
+		//'egyt/birchtree2',
+		//'egyt/birchtree3',
 	]
 
 	export class TreePlop extends Obj {
@@ -24,7 +27,7 @@ namespace Forestation {
 			this.rekt = new Rekt({
 				asset: Egyt.sample(trees),
 				pos: this.struct.pos,
-				dim: [120, 120],
+				dim: [120, 132],
 			});
 
 			this.rekt.initiate();
