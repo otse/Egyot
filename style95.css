@@ -1,11 +1,15 @@
+/*
+style95.css has only essential rules; use style2.css for styling
+*/
+
 nyan /* a workaround. the parent of the Win.raw function. may break some browsers */ {}
+
 
 .region {
 	display: block;
 }
 
 .marked {
-	color: red;
 }
 
 .small {
@@ -14,25 +18,16 @@ nyan /* a workaround. the parent of the Win.raw function. may break some browser
 
 key {
     display: inline-block;
-    border: 2px solid white;
-    /* color: black; */
-    border-radius: 3px;
-	margin: -2px 0;
 }
 
 /* begin of <a><div> */
 
 a.foo {
 	display: block;
-	margin-bottom: 1px;
-	text-decoration: none;
-	cursor: pointer;
 }
 
 div.bar {
 	display: none;
-	margin: 0;
-	margin-left: 1em;
 }
 
 a.foo > span {
@@ -56,22 +51,14 @@ div.bar.toggle {
 
 div.rpgitem {
 	display: inline-block;
-	border: 1px solid white;
 }
 
 div.rpgitem > span:first-child {
 	display: block;
-	color: purple;
-	background-color: palegoldenrod;
-	font-style: italic;
 }
 
 div.rpgitem > span:nth-child(2) {
 	display: block;
-	background: white;
-	color: black;
-	padding: 1px 3px;
-	font-size: 1em;
 }
 
 /* end of <div><span><span> */

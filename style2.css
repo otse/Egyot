@@ -1,8 +1,82 @@
-/* copy paste style95 in here to override it */
+/*
+this file should mirror style95.css
+
+when you add new css selectors, please add a css comment, something like this
+/--- style2-only ---/
+block:selector {
+
+}
+*/
+
+.region {
+    
+}
+
+.marked {
+	color: red;
+}
+
+.small {
+	width: 300px;
+}
 
 key {
-    display: inline-block;
     border: 2px solid white;
+    /* color: black; */
     border-radius: 3px;
 	margin: -2px 0;
 }
+
+/* begin of <a><div> */
+
+a.foo {
+	margin-bottom: 1px;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+div.bar {
+	margin: 0;
+	margin-left: 1em;
+}
+
+a.foo > span {
+    
+}
+
+a.foo > span:after {
+	content: "+"; }
+
+a.foo.toggle > span:after {
+	content: "-";} /* \2193 */
+
+div.bar.toggle {
+    
+}
+
+/* end of <a><div> */
+
+/* begin of <div><span><span> */
+
+/* https://www.springhole.net/writing_roleplaying_randomators/magicitemgenerator2.htm */
+
+div.rpgitem {
+	border: 1px solid white;
+}
+
+div.rpgitem > span:first-child {
+	color: purple;
+	background-color: palegoldenrod;
+	text-shadow: 0px 0px 2px grey;
+	/* font-style: italic; */
+}
+
+div.rpgitem > span:nth-child(2) {
+	background: white;
+	color: black;
+	padding: 1px 3px;
+	font-size: 1em;
+}
+
+/* end of <div><span><span> */
+
