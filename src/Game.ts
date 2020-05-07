@@ -13,6 +13,9 @@ import Zxcvs from "./Zxcvs";
 // todo, aweful
 export namespace Areas {
 
+	// deprecated, port these to Zxcvs please
+	// use Zxcvs.area_every
+
 	export function Loop(area: Zxcv, callback: (p: Zx) => any) {
 		for (let x = area[0]; x < area[2] + area[0]; x++)
 			for (let y = area[1]; y < area[3] + area[1]; y++)

@@ -4,6 +4,8 @@ import { Win } from "../Win";
 import Egyt from "../Egyt";
 import App from "../App";
 import Zxcvs from "../Zxcvs";
+import Agriculture from "../Nieuw mapje 3/Agriculture";
+import { aabb3 } from "../Bound";
 
 class Map2 {
 	static rig() {
@@ -32,6 +34,10 @@ class Map2 {
 			dim: [192, 156], // 8 x 7
 			asset: 'egyt/tinybarn'
 		});
+
+		Agriculture.plop_wheat_area(1, new aabb3([-9, -3, 0], [2, -5, 0]))
+
+		Agriculture.plop_wheat_area(2, new aabb3([-9, -8, 0], [2, -12, 0]))
 		
 		tinybarn.initiate();
 	}

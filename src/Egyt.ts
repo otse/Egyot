@@ -4,7 +4,8 @@ import Obj from "./Nieuw mapje/Obj";
 import { Win } from "./Win";
 import Game from "./Game";
 import Forestation from "./Nieuw mapje 3/Forestation";
-import Tilization from "./Nieuw mapje 3/Tilization";
+import Tilization from "./Nieuw mapje 3/Grid";
+import Agriculture from "./Nieuw mapje 3/Agriculture";
 
 export namespace Egyt {
 
@@ -107,7 +108,6 @@ export namespace Egyt {
 				<br/><br/>
 				<key>T</key> tree<br/>
 				<key>Y</key> tile<br/>
-				<br />
 				<key>X</key> delete<br/>
 				<key>Esc</key> cancel<br/>
 			</div>
@@ -140,6 +140,7 @@ export namespace Egyt {
 
 		Forestation.update();
 		Tilization.update();
+		Agriculture.update();
 
 		world.update();
 		map2.update();

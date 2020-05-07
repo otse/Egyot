@@ -104,7 +104,7 @@ export namespace ThreeQuarter {
 		ender = [enderWidth, enderHeight];
 
 		scene = new Scene();
-		scene.background = new Color('#777');
+		scene.background = new Color('#444');
 		scene2 = new Scene();
 
 		let width = enderWidth;

@@ -9,8 +9,8 @@ namespace Forestation {
 	let plopping: TreePlop | null;
 
 	const trees = [
-		'egyt/oaktree3',
-		'egyt/oaktree4',
+		'egyt/tree/oaktree3',
+		'egyt/tree/oaktree4',
 		//'egyt/birchtree1',
 		//'egyt/birchtree2',
 		//'egyt/birchtree3',

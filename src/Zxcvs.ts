@@ -1,4 +1,16 @@
+import { aabb3 } from "./Bound";
+
 namespace Zxcvs {
+
+	export function area_every(aabb: aabb3, callback: (pos: Zx) => any) {
+		let y = aabb.min[1];
+		for (; y <= aabb.max[1]; y++) {
+			let x = aabb.max[0];
+			for (; x >= aabb.min[0]; x--) {
+				callback([x, y]);
+			}
+		}
+	}
 
 	export function two_one(p: Zx | Zxc) {
 		let x = p[0] / 2 + p[1] / 2;
@@ -63,7 +75,7 @@ namespace Zxcvs {
 		a[0] -= b[0];
 		a[1] -= b[1];
 		return a;
-    }
+	}
 
 	export function subtrClone(a: Zx | Zxc, b: Zx | Zxc): number[] {
 		let wen = [...a] as Zx;
@@ -71,9 +83,9 @@ namespace Zxcvs {
 		subtr(wen, b);
 
 		return wen;
-    }
-    
-    export function add(a: Zx | Zxc, b: Zx | Zxc) {
+	}
+
+	export function add(a: Zx | Zxc, b: Zx | Zxc) {
 		a[0] += b[0];
 		a[1] += b[1];
 		return a;
