@@ -1,4 +1,5 @@
 class Obj {
+
 	order: number
 
 	readonly struct: {
@@ -8,6 +9,8 @@ class Obj {
 	clickable: boolean
 
 	constructor(struct: Obj['struct']) {
+		Obj.num++;
+
 		this.order = 0;
 		
 		this.struct = struct;
@@ -34,6 +37,8 @@ class Obj {
 }
 
 namespace Obj {
+	export var num = 0;
+
 	export type Struct = Obj['struct']
 }
 

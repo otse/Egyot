@@ -32,14 +32,23 @@ class Map2 {
 		let tinybarn = new Rekt({
 			pos: [0, 0, 0],
 			dim: [192, 156], // 8 x 7
-			asset: 'egyt/tinybarn'
+			asset: 'egyt/building/tinybarn'
+		});
+
+		let tobaccoshop = new Rekt({
+			pos: Zxcvs.multp([-16, -8, 0], Egyt.MAGIC_ED) as Zxc,
+			dim: [144, 144],
+			asset: 'egyt/building/redstore'
 		});
 
 		Agriculture.plop_wheat_area(1, new aabb3([-9, -3, 0], [2, -5, 0]))
-
-		Agriculture.plop_wheat_area(2, new aabb3([-9, -8, 0], [2, -12, 0]))
+		Agriculture.plop_wheat_area(2, new aabb3([-9, -8, 0], [2, -10	, 0]))
+		Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]))
+		Agriculture.plop_wheat_area(3, new aabb3([-9, -16, 0], [2, -50, 0]))
+		Agriculture.plop_wheat_area(3, new aabb3([-9, -52, 0], [2, -300, 0]))
 		
 		tinybarn.initiate();
+		tobaccoshop.initiate();
 	}
 	
 	mark_mouse() {

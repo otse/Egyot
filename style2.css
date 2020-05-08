@@ -66,15 +66,11 @@ div.rpgitem {
 
 div.rpgitem > span:first-child {
 	color: purple;
-	background-color: palegoldenrod;
-	text-shadow: 0px 0px 2px grey;
 	/* font-style: italic; */
 }
 
 div.rpgitem > span:nth-child(2) {
-	background: white;
 	color: black;
-	font-size: 1em;
 }
 
 /* end of <div><span><span> */

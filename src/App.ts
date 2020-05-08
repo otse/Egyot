@@ -19,6 +19,7 @@ type Char = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k'
 
 export namespace App {
 
+	export var version = '0.05';
 	export var map = {};
 	export var wheel = 0;
 
@@ -64,7 +65,9 @@ export namespace App {
 			left = false;
 	}
 
-	export function Boot() {
+	export function Boot(version: string) {
+
+		App.version = version;
 
 		document.onkeydown = document.onkeyup = onkeys;
 		document.onmousemove = onmove;

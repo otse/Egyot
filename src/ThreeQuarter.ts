@@ -1,4 +1,5 @@
 import { default as THREE, OrthographicCamera, Clock, Scene, WebGLRenderer, Texture, TextureLoader, WebGLRenderTarget, ShaderMaterial, Mesh, PlaneBufferGeometry, Color } from 'three';
+import App from './App';
 
 export { THREE };
 
@@ -182,7 +183,7 @@ export namespace ThreeQuarter {
 
 		//console.log('LoadTexture ' + salt || file);
 
-		let texture = new TextureLoader().load(file);
+		let texture = new TextureLoader().load(file + `?v=${App.version}`);
 
 		texture.magFilter = THREE.NearestFilter;
 		texture.minFilter = THREE.NearestFilter;

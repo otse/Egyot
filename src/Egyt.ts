@@ -91,10 +91,10 @@ export namespace Egyt {
 		Win.init();
 
 		Win.raw(`
-		<div>A webgame about lumber, or?</div>
+		<div>Hi</div>
 		<br />
 		<div class="region small">
-			<a>Tutorial
+			<a collapse>Tutorial
 			</a>
 			<div>
 				Move the view with <key>W</key> <key>A</key> <key>S</key> <key>D</key>.
@@ -112,10 +112,18 @@ export namespace Egyt {
 				<key>Esc</key> cancel<br/>
 			</div>
 
-			<a>Stats
+			<a>Settings
 			</a>
 			<div>
-				<span id="mouseTile"></span>
+				Doododoo
+			</div>
+
+			<a collapse>Stats
+			</a>
+			<div>
+				<span id="mouseTile"></span><br/>
+				<span id="numRekts"></span><br/>
+				<span id="numObjs"></span><br/>
 			</div>
 
 			<a>Items Demo
@@ -144,6 +152,8 @@ export namespace Egyt {
 
 		world.update();
 		map2.update();
+
+		Win.update();
 	}
 
 }

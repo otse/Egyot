@@ -29,6 +29,8 @@ class Rekt {
 
 	constructor(struct: Rekt.Struct) {
 
+		Rekt.num++;
+		
 		this.struct = struct;
 
 		this.pos = [0, 0, 0];
@@ -113,6 +115,8 @@ class Rekt {
 }
 
 namespace Rekt {
+	export let num = 0;
+
 	export type Struct = Rekt['struct']
 }
 

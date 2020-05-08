@@ -1,3 +1,6 @@
+import Rekt from "./Nieuw mapje/Rekt";
+import Obj from "./Nieuw mapje/Obj";
+
 namespace Win {
 	export var win;
 
@@ -29,6 +32,13 @@ namespace Win {
 			$(this).toggleClass("toggle").next('.bar').toggleClass('toggle');
 		}).append('<span>');
 
+		nyan.find('a.foo').each((i, e) => {
+			let jay = $(e);
+			(window as any).afoo = jay;
+			if (jay.attr('collapse') == "") {				
+				jay.addClass('toggle').next().addClass('toggle');
+			} 
+		});
 		/*
 			A div with two spans is an rpg item.
 		*/
@@ -40,6 +50,11 @@ namespace Win {
 
 		body = $('body');
 		win = $('#win');
+	}
+
+	export function update() {
+		$('#numRekts').html('num rekts: '+Rekt.num);
+		$('#numObjs').html('num objs: '+Obj.num);
 	}
 
 	export function raw(html: string) {

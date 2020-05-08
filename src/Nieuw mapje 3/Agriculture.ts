@@ -35,7 +35,7 @@ namespace Agriculture {
             super(struct);
 
             this.rekt = new Rekt({
-                asset: growth == 1 ? Egyt.sample(tillering) : Egyt.sample(ripening),
+                asset: growth == 1 ? Egyt.sample(tillering) : growth == 2 ? Egyt.sample(ripening) : growth == 3 ? 'egyt/farm/wheat_ilili' : '',
                 pos: this.struct.pos,
                 dim: [Egyt.MAGIC_ED, Egyt.MAGIC_ED],
             });
