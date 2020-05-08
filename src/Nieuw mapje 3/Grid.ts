@@ -25,7 +25,7 @@ namespace Tilization {
             this.rekt = new Rekt({
                 asset: Egyt.sample(colors),
                 pos: this.struct.pos,
-                dim: [Egyt.MAGIC_ED, Egyt.MAGIC_ED / 2],
+                dim: [24, 12],
             });
 
             this.rekt.initiate();

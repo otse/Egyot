@@ -31,7 +31,7 @@ namespace Win {
 		nyan.find('a').next('div').addClass('bar').prev().addClass('foo').click(function() {	
 			$(this).toggleClass("toggle").next('.bar').toggleClass('toggle');
 		}).append('<span>');
-
+ 
 		nyan.find('a.foo').each((i, e) => {
 			let jay = $(e);
 			(window as any).afoo = jay;
@@ -53,8 +53,8 @@ namespace Win {
 	}
 
 	export function update() {
-		$('#numRekts').html('num rekts: '+Rekt.num);
-		$('#numObjs').html('num objs: '+Obj.num);
+		$('#numRekts').html('Num rekts: '+Rekt.num);
+		$('#numObjs').html('Num objs: '+Obj.num);
 	}
 
 	export function raw(html: string) {

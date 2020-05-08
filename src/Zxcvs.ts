@@ -47,7 +47,7 @@ namespace Zxcvs {
 		return a;
 	}
 
-	export function multp(zx: Zx | Zxc, n: number, n2?: number) {
+	export function multp(zx, n: number, n2?: number) {
 		zx[0] *= n;
 		zx[1] *= n2 || n;
 		return zx;

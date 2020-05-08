@@ -9,7 +9,7 @@ import Agriculture from "./Nieuw mapje 3/Agriculture";
 
 export namespace Egyt {
 
-	export const MAGIC_ED = 24; // evenly divisible n
+	export const YUM = 24; // evenly divisible n
 
 	export var game: Game;
 	export var map2: Map2;

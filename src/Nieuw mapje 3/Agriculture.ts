@@ -7,92 +7,80 @@ import Zxcvs from "../Zxcvs";
 
 namespace Agriculture {
 
-    let plopping: WheatPlop | null;
+	const tillering = [
+		'egyt/farm/wheat_i',
+		'egyt/farm/wheat_i',
+		'egyt/farm/wheat_il',
+		'egyt/farm/wheat_il',
+		'egyt/farm/wheat_il',
+		'egyt/farm/wheat_ili',
+	]
 
-    const tillering = [
-        'egyt/farm/wheat_i',
-        'egyt/farm/wheat_i',
-        'egyt/farm/wheat_il',
-        'egyt/farm/wheat_il',
-        'egyt/farm/wheat_il',
-        'egyt/farm/wheat_ili',
-    ]
+	const ripening = [
+		'egyt/farm/wheat_il',
+		'egyt/farm/wheat_ili',
+		'egyt/farm/wheat_ili',
+		'egyt/farm/wheat_ilil',
+		'egyt/farm/wheat_ilil',
+	]
 
-    const ripening = [
-        'egyt/farm/wheat_il',
-        'egyt/farm/wheat_ili',
-        'egyt/farm/wheat_ili',
-        'egyt/farm/wheat_ilil',
-        'egyt/farm/wheat_ilil',
-    ]    
+	export class Crop extends Obj {
+		growth: number
 
-    export class WheatPlop extends Obj {
+		constructor(growth: number, struct: Obj.Struct) {
+			super(struct);
 
-        rekt: Rekt
+			this.growth = growth;
+		}
+	}
 
-        constructor(growth: number, struct: Obj.Struct) {
+	export class Wheat extends Crop {
+		rekt: Rekt
 
-            super(struct);
+		constructor(growth: number, struct: Obj.Struct) {
+			super(growth, struct);
 
-            this.rekt = new Rekt({
-                asset: growth == 1 ? Egyt.sample(tillering) : growth == 2 ? Egyt.sample(ripening) : growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-                pos: this.struct.pos,
-                dim: [Egyt.MAGIC_ED, Egyt.MAGIC_ED],
-            });
+			this.rekt = new Rekt({
+				asset:
+					this.growth == 1 ? Egyt.sample(tillering) :
+					this.growth == 2 ? Egyt.sample(ripening) :
+					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
+				pos: this.struct.pos,
+				dim: [24, 24],
+			});
 
-            this.rekt.initiate();
-        }
+			this.rekt.initiate();
+		}
+	}
 
-        update() {
-            if (plopping != this)
-                return;
+	export function init() {
+		console.log('agriculture');
 
-            let p = Egyt.map2.mouse;
+		(window as any).Agriculture = Agriculture;
+	}
 
-            this.rekt.struct.pos = this.struct.pos = p;
+	export function update() {
+		
+	}
 
-            this.rekt.set_pos();
+	export function wheat(growth, pos: Zx) {
+		
+		const p = Zxcvs.multp([...pos, 0], 24);
 
-            if (App.left)
-                plopping = null;
-        }
-    }
+		let plop = new Wheat(growth, {
+			pos: p
+		});
 
-    export function init() {
-        console.log('agriculture');
+		Egyt.world.add(plop);
 
-        (window as any).Agriculture = Agriculture;
-    }
+		return plop;
+	}
 
-    export function update() {
-        if (!plopping && App.map['y'] == 1) {
-            plopping = plop_wheat();
-        }
-    }
+	export function plop_wheat_area(growth: number, aabb: aabb3) {
+		const every = (pos: Zx) => wheat(growth, pos);
 
-    export function plop_wheat() {
-
-        let plop = new WheatPlop(1, {
-            pos: Egyt.map2.mouse
-        });
-
-        Egyt.world.add(plop);
-
-        return plop;
-    }
-
-    export function plop_wheat_area(growth: number, aabb: aabb3) {
-
-        const every = (pos: Zx) => {
-            let plop = new WheatPlop(growth, {
-                pos: Zxcvs.multp([...pos, 0] as Zxc, Egyt.MAGIC_ED) as Zxc
-		    });
-
-            Egyt.world.add(plop);
-        }
-
-        Zxcvs.area_every(aabb, every);
-    }
+		Zxcvs.area_every(aabb, every);
+	}
 }
 
 export default Agriculture;
