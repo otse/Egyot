@@ -1,0 +1,11 @@
+Skills and their ranks:
+    Tailoring:
+        Knitter --> Clothier
+
+    Artisanry:
+
+    Farming: 
+        Knave --> Peasant --> Farmer
+
+Den of evil
+A mine with ore, monsters and rewards

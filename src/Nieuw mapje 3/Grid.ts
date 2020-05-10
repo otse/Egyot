@@ -8,30 +8,30 @@ namespace Tilization {
 
 	let plopping: TilePlop | null;
 
-    const colors = [
-        //'egyt/tilered',
-        //'egyt/tilepink',
-        'egyt/tileorange',
-    ]
+	const colors = [
+		//'egyt/tilered',
+		//'egyt/tilepink',
+		'egyt/tileorange',
+	]
 
-    export class TilePlop extends Obj {
+	export class TilePlop extends Obj {
 
-        rekt: Rekt
+		rekt: Rekt
 
-        constructor(struct: Obj.Struct) {
+		constructor(struct: Obj.Struct) {
 
-            super(struct);
+			super(struct);
 
-            this.rekt = new Rekt({
-                asset: Egyt.sample(colors),
-                pos: this.struct.pos,
-                dim: [24, 12],
-            });
+			this.rekt = new Rekt({
+				asset: Egyt.sample(colors),
+				pos: this.struct.pos,
+				dim: [24, 12],
+			});
 
-            this.rekt.initiate();
-        }
+			this.rekt.initiate();
+		}
 
-        update() {
+		update() {
 			if (plopping != this)
 				return;
 
@@ -44,13 +44,13 @@ namespace Tilization {
 			if (App.left)
 				plopping = null;
 		}
-    }
+	}
 
-    export function init() {
-        console.log('tilization');
+	export function init() {
+		console.log('tilization');
 
-        (window as any).Tilization = Tilization;
-    }
+		(window as any).Tilization = Tilization;
+	}
 
 	export function update() {
 		if (!plopping && App.map['y'] == 1) {

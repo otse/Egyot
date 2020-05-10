@@ -15,20 +15,33 @@ class Chunk {
 
 // for unmoving things like grass
 class schunk {
-	zx: zx
+	p: zx
 	bound: aabb3
 	array: Obj[][][]
-	grid: Rekt
+	rekt: Rekt
 
 	constructor(x, y) {
-		this.zx = [x, y];
+		this.p = [x, y];
 		this.bound = new aabb3(
-			[
-				x * schunk.span,
-				y * schunk.span, 0],
-			[
-				x + 1 * schunk.span,
-				y + 1 * schunk.span, 0]);
+			[x * schunk.span,
+			y * schunk.span, 0],
+			[(x + 1) * schunk.span,
+			(y + 1) * schunk.span, 0]);
+
+		//Agriculture.plop_wheat_area(3, this.bound);
+
+		console.log('schunk', x, y);
+
+		this.rekt = new Rekt({
+			pos: points.multp([x, y, 0], schunk.span * 24),
+			dim: [240, 120],
+			asset: 'egyt/tenbyten'
+		})
+
+		this.rekt.initiate();
+
+		this.rekt.mesh.renderOrder = 1;
+
 	}
 
 	add(any: any) {
@@ -39,39 +52,45 @@ class schunk {
 		//
 	}
 
-	dimension(p: zx): zx {
-		let big = schunk.big(p);
-
-		return big;
+	static fill(x, y) {
+		if (!schunk._[y])
+			schunk._[y] = [];
+		if (!schunk._[y][x])
+			schunk._[y][x] = null;
 	}
 
-	static big(p: zx | zxc): zx {
-		let p2 = points.floor(points.divide(
-			[...p] as zx, schunk.span)) as zx;
+	static big(tile: zx | zxc): zx {
+		return <zx>points.floor(points.divide(<zx>[...tile], schunk.span));
+	}
 
-		return p2;
+	static get2(x, y): schunk | null {
+		schunk.fill(x, y);
+		return schunk._[y][x];
+	}
+
+	static make2(x, y): schunk {
+		return schunk._[y][x] = new schunk(x, y);
 	}
 
 	static whichnullable(p: zx): schunk | null {
-		let b = schunk.big(p);
-		let c = this.all[
-			b[1]][b[0]] || null;
-		return c;
+		//let c = this.get(schunk.big(p));
+		return null;
 	}
 
-	static which(p: zx): schunk {
-		let b = schunk.big(p);
-		let c = this.all[
-			b[1]][b[0]] || null;
-		return c;
+	static which(tile: zx): schunk {
+		let b, c, x, y;
+		b = schunk.big(tile);
+		x = b[0];
+		y = b[1];
+		return schunk.get2(x, y) || schunk.make2(x, y);
 	}
 
 }
 
 namespace schunk {
-	export const span = 100
+	export const span = 10
 
-	export var all: schunk[][]
+	export var _: schunk | null[][] = []
 }
 
 class Map2 {
@@ -84,6 +103,8 @@ class Map2 {
 	mark: Rekt;
 
 	constructor() {
+
+		(window as any).schunk = schunk;
 
 		this.mouse = [0, 0, 0];
 
@@ -117,6 +138,12 @@ class Map2 {
 
 		tinybarn.initiate();
 		tobaccoshop.initiate();
+
+		schunk.which([0, 0]);
+		schunk.which([1, 1]);
+		schunk.which([1, 2]);
+		schunk.which([2, 3]);
+		schunk.which([2, 12]);
 	}
 
 	mark_mouse() {
@@ -145,6 +172,7 @@ class Map2 {
 		this.mark.set_pos(0, 0);
 
 		Win.win.find('#mouseTile').text(`World square: ${points.string(p3)}`);
+		Win.win.find('#worldSquareChunk').text(`World square chunk: ${points.string(schunk.big(p3))}`);
 
 	}
 

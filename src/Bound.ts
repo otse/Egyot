@@ -38,6 +38,11 @@ class aabb3 {
 	min: Zxc
 	max: Zxc
 
+	static dupe(a: aabb3){
+		let b = new aabb3(a.min, a.max);
+		return b;
+	}
+
 	constructor(a: Zxc, b: Zxc | undefined = undefined) {
 		this.min = this.max = a;
 		if (b) {
@@ -56,6 +61,15 @@ class aabb3 {
 
 	center(): Zxc {
 		return addit3(this.min, scalar3(this.diagonal(), 0.5) as Zxc) as Zxc;
+	}
+
+	exponent(n: number) {
+		this.min[0] *= n;
+		this.min[1] *= n;
+		this.min[2] *= n;
+		this.max[0] *= n;
+		this.max[1] *= n;
+		this.max[2] *= n;
 	}
 
 	translate(v: Zxc) {
