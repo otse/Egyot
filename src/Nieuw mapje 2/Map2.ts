@@ -45,44 +45,35 @@ class schunk {
 	}
 
 	add(any: any) {
-		this.array
+
 	}
 
 	remove(any: any) {
 		//
 	}
 
-	static fill(x, y) {
-		if (!schunk._[y])
-			schunk._[y] = [];
-		if (!schunk._[y][x])
-			schunk._[y][x] = null;
+	//static alloc(x, y) {
+	//	if (!this.arrays[y]) this.arrays[y] = [];
+	//}
+
+	static big(t: zx | zxc): zx {
+		return <zx>points.floor(points.divide(<zx>[...t], this.span));
 	}
 
-	static big(tile: zx | zxc): zx {
-		return <zx>points.floor(points.divide(<zx>[...tile], schunk.span));
+	static at(x, y): schunk | null {
+		if (this.arrays[y] == undefined)
+			this.arrays[y] = [];
+		return this.arrays[y][x];
 	}
 
-	static get2(x, y): schunk | null {
-		schunk.fill(x, y);
-		return schunk._[y][x];
+	static put(x, y): schunk {
+		this.at(x, y);
+		return this.arrays[y][x] = new schunk(x, y);
 	}
 
-	static make2(x, y): schunk {
-		return schunk._[y][x] = new schunk(x, y);
-	}
-
-	static whichnullable(p: zx): schunk | null {
-		//let c = this.get(schunk.big(p));
-		return null;
-	}
-
-	static which(tile: zx): schunk {
-		let b, c, x, y;
-		b = schunk.big(tile);
-		x = b[0];
-		y = b[1];
-		return schunk.get2(x, y) || schunk.make2(x, y);
+	static which(t: zx): schunk {
+		let b = this.big(t);
+		return this.at(b[0], b[1]) || this.put(b[0], b[1]);
 	}
 
 }
@@ -90,7 +81,7 @@ class schunk {
 namespace schunk {
 	export const span = 10
 
-	export var _: schunk | null[][] = []
+	export var arrays: schunk | null[][] = []
 }
 
 class Map2 {
