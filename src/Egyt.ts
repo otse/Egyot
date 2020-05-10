@@ -124,6 +124,8 @@ export namespace Egyt {
 				<span id="mouseTile"></span><br/>
 				<span id="numRekts"></span><br/>
 				<span id="numObjs"></span><br/>
+				<span id="gamePos"></span><br/>
+				<span id="chunk"></span><br/>
 			</div>
 
 			<a>Items Demo

@@ -27,7 +27,7 @@ namespace Zxcvs {
 		return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
 	}
 
-	export function floo(a: Zx | Zxc) {
+	export function floor(a: Zx | Zxc) {
 		a[0] = Math.floor(a[0]);
 		a[1] = Math.floor(a[1]);
 		if (a[2] != undefined) a[2] = Math.floor(a[2]);
@@ -53,7 +53,7 @@ namespace Zxcvs {
 		return zx;
 	}
 
-	export function div(a: Zx | Zxc, n: number, n2?: number) {
+	export function divide(a: Zx | Zxc, n: number, n2?: number) {
 		a[0] /= n;
 		a[1] /= n2 || n;
 		return a;
@@ -71,7 +71,7 @@ namespace Zxcvs {
 		return wen;
 	}
 
-	export function subtr(a: Zx | Zxc, b: Zx | Zxc) {
+	export function subtract(a: Zx | Zxc, b: Zx | Zxc) {
 		a[0] -= b[0];
 		a[1] -= b[1];
 		return a;
@@ -80,7 +80,7 @@ namespace Zxcvs {
 	export function subtrClone(a: Zx | Zxc, b: Zx | Zxc): number[] {
 		let wen = [...a] as Zx;
 
-		subtr(wen, b);
+		subtract(wen, b);
 
 		return wen;
 	}
@@ -93,7 +93,7 @@ namespace Zxcvs {
 	export function divideClone(a: Zx | Zxc, n: number) {
 		let wen = [...a] as Zx;
 
-		div(wen, n);
+		divide(wen, n);
 
 		return wen;
 	}

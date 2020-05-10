@@ -66,10 +66,10 @@ class Selection {
 	}
 
 	View(mouse: Zx) {
-		Zxcvs.subtr(
+		Zxcvs.subtract(
 			mouse, Egyt.game.pos);
 
-		Zxcvs.subtr(
+		Zxcvs.subtract(
 			mouse, Zxcvs.divideClone(ThreeQuarter.ender, 2));
 
 		let scale = 1;

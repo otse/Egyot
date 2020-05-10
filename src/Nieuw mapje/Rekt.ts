@@ -24,16 +24,16 @@ class Rekt {
 	material: MeshBasicMaterial
 	geometry: PlaneBufferGeometry
 
-	pos: Zxc
+	actualpos: Zxc
 	center: Zx
 
 	constructor(struct: Rekt.Struct) {
 
 		Rekt.num++;
-		
+
 		this.struct = struct;
 
-		this.pos = [0, 0, 0];
+		this.actualpos = [0, 0, 0];
 		this.center = [0, 0];
 
 		if (this.struct.opacity == undefined) this.struct.opacity = 1;
@@ -108,9 +108,9 @@ class Rekt {
 
 		}
 
-		this.pos = [x, y, 0];
+		this.actualpos = [x, y, 0];
 
-		this.mesh.position.fromArray(this.pos);
+		this.mesh.position.fromArray(this.actualpos);
 	}
 }
 

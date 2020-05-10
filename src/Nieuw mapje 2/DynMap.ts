@@ -187,12 +187,12 @@ namespace Hovercraft {
 		let p = [Egyt.game.aabb.min[0], Egyt.game.aabb.max[1]] as Zx;
 		let m = [...App.move] as Zx;
 		m[1] = -m[1];
-		Zxcvs.div(m, Egyt.game.scale);
+		Zxcvs.divide(m, Egyt.game.scale);
 		Zxcvs.add(p, m);
 
 		let p2 = [...p] as Zx;
-		Zxcvs.div(p2, 22, 11);
-		Zxcvs.floo(p2);
+		Zxcvs.divide(p2, 22, 11);
+		Zxcvs.floor(p2);
 		Zxcvs.multp(p2, 22, 11);
 		
 		icecube.struct.pos = [...p2, 0] as Zxc;
