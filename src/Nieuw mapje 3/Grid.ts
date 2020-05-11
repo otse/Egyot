@@ -35,11 +35,11 @@ namespace Tilization {
 			if (plopping != this)
 				return;
 
-			let p = Egyt.map2.mouse;
+			let p = <zxc>[...Egyt.map2.mouse_tile, 0];
 
 			this.rekt.struct.pos = this.struct.pos = p;
 
-			this.rekt.set_pos();
+			this.rekt.now_update_pos();
 
 			if (App.left)
 				plopping = null;
@@ -61,7 +61,7 @@ namespace Tilization {
 	export function plop_tile() {
 
 		let plop = new TilePlop({
-			pos: Egyt.map2.mouse
+			pos: <zxc>[...Egyt.map2.mouse_tile, 0]
 		});
 
 		Egyt.world.add(plop);

@@ -4,7 +4,7 @@ import Rekt from "../Nieuw mapje/Rekt";
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 
 import { ThreeQuarter } from "../ThreeQuarter";
-import Zxcvs from "../Zxcvs";
+import Points from "../Zxcvs";
 import Egyt from "../Egyt";
 
 class Selection {
@@ -52,11 +52,11 @@ class Selection {
 	}
 
 	Sufficient(mouse: Zx) {
-		let rem = Zxcvs.subtrClone(
+		let rem = Points.subtrClone(
 			this.end, this.start);
 
-		const px = Zxcvs.together(
-			Zxcvs.abs(rem as Zx));
+		const px = Points.together(
+			Points.abs(rem as Zx));
 
 		if (!this.enuf && px > 15) {
 			this.enuf = true;
@@ -66,18 +66,18 @@ class Selection {
 	}
 
 	View(mouse: Zx) {
-		Zxcvs.subtract(
+		Points.subtract(
 			mouse, Egyt.game.pos);
 
-		Zxcvs.subtract(
-			mouse, Zxcvs.divideClone(ThreeQuarter.ender, 2));
+		Points.subtract(
+			mouse, Points.divideClone(ThreeQuarter.wh, 2));
 
 		let scale = 1;
 
 		if (Egyt.game.scale == 0.5)
 			scale = 2;
 
-		Zxcvs.multp(
+		Points.multp(
 			mouse, scale);
 	}
 
@@ -92,11 +92,11 @@ class Selection {
 		if (!this.enuf)
 			return;
 
-		let size = Zxcvs.subtrClone(
+		let size = Points.subtrClone(
 			this.end, this.start);
 
-		let pos = Zxcvs.subtrClone(
-			mouse, Zxcvs.divideClone(size as Zx, 2));
+		let pos = Points.subtrClone(
+			mouse, Points.divideClone(size as Zx, 2));
 
 		this.mesh.scale.set(size[0], size[1], 1);
 		this.mesh.position.set(pos[0], pos[1], 0);

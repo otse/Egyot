@@ -1,4 +1,4 @@
-import { Points, Color } from "three";
+import { Color } from "three";
 import Rekt from "../Nieuw mapje/Rekt";
 import { aabb3 } from "../Bound";
 import Zxcvs from "../Zxcvs";
@@ -196,7 +196,7 @@ namespace Hovercraft {
 		Zxcvs.multp(p2, 22, 11);
 		
 		icecube.struct.pos = [...p2, 0] as Zxc;
-		icecube.set_pos(0, 0);
+		icecube.now_update_pos();
 
 		let s = Zxcvs.string(p);
 	}

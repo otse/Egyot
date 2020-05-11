@@ -146,6 +146,8 @@ class Game {
 			[-p[0] - w2 / 2, -p[1] - h2 / 2, 0],
 			[-p[0] + w2 / 2, -p[1] + h2 / 2, 0]
 		);
+		Zxcvs.floor(this.view.min);
+		Zxcvs.floor(this.view.max);
 
 		Win.win.find('#gameAabb').text(`Gamex aabb x: ${this.view.min[0]}, ${this.view.min[1]} x ${this.view.max[0]}, ${this.view.max[1]} `);
 
@@ -153,7 +155,7 @@ class Game {
 		
 		this.frustumRekt.mesh.scale.set(w2, h2, 1);
 		this.frustumRekt.struct.pos = this.focal;
-		this.frustumRekt.set_pos();
+		this.frustumRekt.now_update_pos();
 	}
 
 	sels() {

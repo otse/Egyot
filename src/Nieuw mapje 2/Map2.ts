@@ -153,7 +153,7 @@ class Map2 {
 	dynmaster: chunk_master<dynchunk>
 
 	statchunk: statchunk
-	mouse: zxc
+	mouse_tile: zx
 	mark: Rekt
 
 	constructor() {
@@ -170,7 +170,7 @@ class Map2 {
 		this.statmaster.which([2, 3]);
 		this.statmaster.which([2, 21]);
 
-		this.mouse = [0, 0, 0];
+		this.mouse_tile = [0, 0];
 
 		this.mark = new Rekt({
 			pos: [0, 0, 0],
@@ -204,51 +204,44 @@ class Map2 {
 		tobaccoshop.initiate();
 	}
 
-	world_pixels_to_tile(query: zx): zx {
+	query_world_pixel(query: zx): { tile: zx, mult: zx } {
 
 		let p = query;
 
-		// 2:1 correction
-		let m2 = points.clone(p) as zx;
+		// difficult 2:1 portion
+		let m2 = <zx>points.clone(p);
 		p[0] = m2[0] - m2[1] * 2;
 		p[1] = m2[1] * 2 + m2[0];
 
-		let p2 = [...p] as zx;
+		let p2 = <zx>[...p];
 		points.divide(p2, 24);
 		points.floor(p2);
-		let p3 = [...p2] as zx;
-		points.multp(p2, 24);
+		p2[0] += 1; // necessary
 
-		return p3;
+		let p3 = <zx>[...p2];
+		points.multp(p3, 24);
+
+		return { tile: p2, mult: p3 };
 	}
 
 	mark_mouse() {
 
-		let m = [...App.move] as zx;
+		let m = <zx>[...App.move];
 		m[1] = -m[1];
 		points.divide(m, Egyt.game.scale);
 
 		let p = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
 		points.add(p, m);
 
-		// 2:1 correction
-		let m2 = points.clone(p) as zx;
-		p[0] = m2[0] - m2[1] * 2;
-		p[1] = m2[1] * 2 + m2[0];
+		const mouse = this.query_world_pixel(p);
 
-		let p2 = [...p] as zx;
-		points.divide(p2, 24);
-		points.floor(p2);
-		let p3 = [...p2] as zx;
-		points.multp(p2, 24);
+		this.mouse_tile = mouse.tile;
 
-		this.mouse = [...p2, 0] as zxc;
+		this.mark.struct.pos = <zxc>[...mouse.mult, 0];
+		this.mark.now_update_pos();
 
-		this.mark.struct.pos = [...p2, 0] as zxc;
-		this.mark.set_pos(0, 0);
-
-		Win.win.find('#mouseTile').text(`World square: ${points.string(p3)}`);
-		Win.win.find('#worldSquareChunk').text(`World square chunk: ${points.string(this.statmaster.big(p3))}`);
+		Win.win.find('#mouseTile').text(`World square: ${points.string(mouse.tile)}`);
+		Win.win.find('#worldSquareChunk').text(`World square chunk: ${points.string(this.statmaster.big(mouse.tile))}`);
 
 	}
 
@@ -263,11 +256,11 @@ class Map2 {
 		let worldPixelsLeftUpperCorner = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
 		let worldPixelsRightLowerCorner = [Egyt.game.view.max[0], Egyt.game.view.min[1]] as zx;
 
-		const x = this.world_pixels_to_tile(worldPixelsLeftUpperCorner);
-		const y = this.world_pixels_to_tile(worldPixelsRightLowerCorner);
+		const x = this.query_world_pixel(worldPixelsLeftUpperCorner).tile;
+		const y = this.query_world_pixel(worldPixelsRightLowerCorner).tile;
 		
-		Win.win.find('#leftUpperCornerTile').text(`Left upper corner tile: ${x[0]}, ${x[1]}`);
-		Win.win.find('#rightLowerCornerTile').text(`Right lower corner tile: ${y[0]}, ${y[1]}`);
+		Win.win.find('#leftUpperCornerTile').text(`Left upper corner tile: ${points.string(x)}`);
+		Win.win.find('#rightLowerCornerTile').text(`Right lower corner tile: ${points.string(y)}`);
 
 	}
 }

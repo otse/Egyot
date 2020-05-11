@@ -37,11 +37,11 @@ namespace Forestation {
 			if (plopping != this)
 				return;
 
-			let p = Egyt.map2.mouse;
+			let p = <zxc>[...Egyt.map2.mouse_tile, 0];
 
 			this.rekt.struct.pos = this.struct.pos = p;
 
-			this.rekt.set_pos();
+			this.rekt.now_update_pos();
 
 			if (App.left)
 				plopping = null;
@@ -64,7 +64,7 @@ namespace Forestation {
 	export function plop_tree() {
 
 		let plop = new TreePlop({
-			pos: Egyt.map2.mouse
+			pos: <zxc>[...Egyt.map2.mouse_tile, 0]
 		});
 
 		Egyt.world.add(plop);

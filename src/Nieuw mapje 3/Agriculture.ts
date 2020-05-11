@@ -3,7 +3,7 @@ import Egyt from "../Egyt";
 import { aabb3 } from "../Bound";
 import Obj from "../Nieuw mapje/Obj";
 import App from "../App";
-import Zxcvs from "../Zxcvs";
+import Points from "../Zxcvs";
 
 namespace Agriculture {
 
@@ -63,23 +63,23 @@ namespace Agriculture {
 		
 	}
 
-	export function wheat(growth, pos: Zx) {
+	export function place_wheat(growth, pos: Zx) {
 		
-		const p = Zxcvs.multp([...pos, 0], 24);
+		const p = Points.multp([...pos, 0], 24);
 
-		let plop = new Wheat(growth, {
+		let wheat = new Wheat(growth, {
 			pos: p
 		});
 
-		Egyt.world.add(plop);
+		Egyt.world.add(wheat);
 
-		return plop;
+		return wheat;
 	}
 
 	export function plop_wheat_area(growth: number, aabb: aabb3) {
-		const every = (pos: Zx) => wheat(growth, pos);
+		const every = (pos: Zx) => place_wheat(growth, pos);
 
-		Zxcvs.area_every(aabb, every);
+		Points.area_every(aabb, every);
 	}
 }
 

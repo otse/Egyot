@@ -66,7 +66,7 @@ class Rekt {
 
 		//UV.FlipPlane(this.geometry, 0, true);
 
-		this.set_pos();
+		this.now_update_pos();
 
 		ThreeQuarter.scene.add(this.mesh);
 	}
@@ -78,7 +78,7 @@ class Rekt {
 		this.material.dispose();
 	}
 
-	set_pos(ox?, oy?) {
+	now_update_pos() {
 		const p = this.struct.pos;
 		const d = this.struct.dim;
 
@@ -87,8 +87,6 @@ class Rekt {
 		if (this.noDimetricization) {
 			x = p[0];
 			y = p[1];
-			if (ox) x += ox;
-			if (oy) y += oy;
 		}
 		else {
 			x = p[0] / 2 + p[1] / 2;

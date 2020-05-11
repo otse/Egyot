@@ -31,6 +31,7 @@ void main() {
 export namespace ThreeQuarter {
 
 	export var changes = true;
+	export var dpi;
 	export var delta = 0;
 
 	export var clock: Clock
@@ -58,7 +59,7 @@ export namespace ThreeQuarter {
 	export function render() {
 
 		//if (!changes)
-			//return;
+		//return;
 
 		renderer.setRenderTarget(target);
 		renderer.clear();
@@ -71,10 +72,10 @@ export namespace ThreeQuarter {
 		//changes = false;
 	}
 
-	export var enderWidth;
-	export var enderHeight;
-
-	export var ender: Zx;
+	export var w;
+	export var h;
+	export var wh: zx;
+	export var plane;
 
 	export function init() {
 
@@ -82,48 +83,23 @@ export namespace ThreeQuarter {
 
 		clock = new Clock();
 
-		enderWidth = window.innerWidth;
-		enderHeight = window.innerHeight;
-
-		if (enderWidth % 2 != 0) {
-			enderWidth -= 1;
-		}
-		if (enderHeight % 2 != 0) {
-			enderHeight -= 1;
-		}
-
-		console.log('Ender Size ', enderWidth +', '+enderHeight);
-		
-		camera = new OrthographicCamera(
-			enderWidth / - 2,
-			enderWidth / 2,
-			enderHeight / 2,
-			enderHeight / - 2,
-			- 100, 100);
-		camera.position.set(0, 0, -100);
-
-		ender = [enderWidth, enderHeight];
-
 		scene = new Scene();
 		scene.background = new Color('#444');
 		scene2 = new Scene();
 
-		let width = enderWidth;
-		let height = enderHeight;
-		
-		let dpi = window.devicePixelRatio;
+		dpi = window.devicePixelRatio;
 
 		if (dpi == 2) {
 			console.warn('DPI > 1. Egyt will scale by whole factors.');
-			width *= dpi;
-			height *= dpi;
 		}
 
-		console.log('Two WebGLRenderTarget ' + width + ', ' + height);
-
 		target = new WebGLRenderTarget(
-			width, height,
-			{ minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat });
+			window.innerWidth, window.innerHeight,
+			{
+				minFilter: THREE.LinearFilter,
+				magFilter: THREE.NearestFilter,
+				format: THREE.RGBFormat
+			});
 
 		renderer = new WebGLRenderer({ antialias: false });
 		renderer.setPixelRatio(dpi);
@@ -132,11 +108,13 @@ export namespace ThreeQuarter {
 		renderer.autoClear = true;
 		renderer.setClearColor(0xffffff, 0);
 
+		
 		document.body.appendChild(renderer.domElement);
-
+		
 		window.addEventListener('resize', onWindowResize, false);
-
+		
 		someMore();
+		onWindowResize();
 
 		(window as any).Two_ = ThreeQuarter;
 	}
@@ -155,7 +133,7 @@ export namespace ThreeQuarter {
 			depthWrite: false
 		});
 
-		let plane = new PlaneBufferGeometry(
+		plane = new PlaneBufferGeometry(
 			window.innerWidth, window.innerHeight);
 
 		/*let quad = new Mesh(plane, materialBg);
@@ -169,10 +147,43 @@ export namespace ThreeQuarter {
 
 	function onWindowResize() {
 
+		w = window.innerWidth;
+		h = window.innerHeight;
+
+		if (w % 2 != 0) {
+			w -= 1;
+		}
+		if (h % 2 != 0) {
+			h -= 1;
+		}
+
+		let targetwidth = w;
+		let targetheight = h;
+
+		if (dpi == 2) {
+			targetwidth *= dpi;
+			targetheight *= dpi;
+		}
+
+		plane = new PlaneBufferGeometry(
+			window.innerWidth, window.innerHeight);
+		quadPost.geometry = plane;
+
+		target.setSize(targetwidth, targetheight);
+
+		camera = new OrthographicCamera(
+			w / - 2,
+			w / 2,
+			h / 2,
+			h / - 2,
+			- 100, 100);
+		camera.position.set(0, 0, -100);
+
 		camera.updateProjectionMatrix();
 
 		renderer.setSize(
 			window.innerWidth, window.innerHeight);
+
 	}
 
 	let mem = [];

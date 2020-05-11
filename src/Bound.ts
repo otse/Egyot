@@ -35,15 +35,15 @@ function scalar3(a: Zxc, f: number) {
 
 class aabb3 {
 
-	min: Zxc
-	max: Zxc
+	min: zxc
+	max: zxc
 
 	static dupe(a: aabb3){
 		let b = new aabb3(a.min, a.max);
 		return b;
 	}
 
-	constructor(a: Zxc, b: Zxc | undefined = undefined) {
+	constructor(a: zxc, b: zxc | undefined = undefined) {
 		this.min = this.max = a;
 		if (b) {
 			this.extend(b);
@@ -51,16 +51,16 @@ class aabb3 {
 	}
 
 	extend(v: Zxc) {
-		this.min = min3(this.min, v) as Zxc;
-		this.max = max3(this.max, v) as Zxc;
+		this.min = min3(this.min, v) as zxc;
+		this.max = max3(this.max, v) as zxc;
 	}
 
 	diagonal(): Zxc {
-		return subtr3(this.max, this.min) as Zxc;
+		return subtr3(this.max, this.min) as zxc;
 	}
 
 	center(): Zxc {
-		return addit3(this.min, scalar3(this.diagonal(), 0.5) as Zxc) as Zxc;
+		return addit3(this.min, scalar3(this.diagonal(), 0.5)) as zxc;
 	}
 
 	exponent(n: number) {
