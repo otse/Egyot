@@ -7,6 +7,8 @@ import Forestation from "../Nieuw mapje 3/Forestation";
 import Agriculture from "../Nieuw mapje 3/Agriculture";
 import { aabb3 } from "../Bound";
 import Obj from "../Nieuw mapje/Obj";
+import Zxcvs from "../Zxcvs";
+import { Color } from "three";
 
 
 declare class sobj {
@@ -19,6 +21,7 @@ class chunk {
 	boundscreen: aabb3
 	array: Obj[][][]
 	rekt: Rekt
+	wire: Rekt
 
 	constructor(x, y, master) {
 		this.p = [x, y];
@@ -33,9 +36,25 @@ class chunk {
 				(x + 1) * master.span,
 				(y + 1) * master.span, 0]);
 
+
+		let real = [...points.twoone(<zxc>[...pos]), 0] as zxc;
+		points.subtract(real, [0, -master.span * 6]);
+
 		this.boundscreen = new aabb3(
-			pos, <zxc>points.add(<zxc>[...pos], [master.span * 24, master.span * 12])
+			<zxc>points.add(<zxc>[...real], [-master.span * 12, -master.span * 6, 0]),
+			<zxc>points.add(<zxc>[...real], [master.span * 12, master.span * 6, 0])
 		)
+
+		this.wire = new Rekt({
+			name: 'TileSwab Wire',
+			pos: real,
+			dim: [master.span * 24, master.span * 12],
+			asset: 'egyt/128'
+		});
+
+		this.wire.noDimetricization = true;
+		this.wire.initiate();
+		this.wire.material.wireframe = true;
 
 		//Agriculture.plop_wheat_area(3, this.bound);
 
@@ -64,8 +83,17 @@ class chunk {
 		//
 	}
 
-	vis(view: aabb3) {
-		return this.boundscreen.intersect(view) != aabb3.SEC.OUT;
+	vis() {
+		const view = Egyt.game.view;
+
+		let sec = this.boundscreen.intersect(view) != aabb3.SEC.OUT;
+
+		console.log('vis',sec,'for',Zxcvs.string(this.p));
+		
+		this.rekt.material.color = new Color(sec ? 'green' : 'red');
+		this.rekt.material.needsUpdate = true;
+
+		return sec;
 	}
 
 }
@@ -119,7 +147,7 @@ class chunk_master<T extends chunk> {
 	}
 
 	static probe<T>() {
-		
+
 	}
 
 }
@@ -131,15 +159,24 @@ class chunk_fitter<T extends chunk> {
 
 	constructor(master) {
 		this.master = master;
-		
-		let c = this.master.which([2, 21]);
+
+		let c = this.master.which([5, 0]);
+		let d = this.master.which([5, 21]);
+		let e = this.master.which([-1, 0]);
 		this.queued.push(c);
+		this.queued.push(d);
+		this.queued.push(e);
 	}
 
 	update() {
 		const view = Egyt.game.view;
 
-		let topleft = view.min;
+		let topleft = [view.min[0], view.max[1]] as zx;
+
+		for (let c of this.queued) {
+			c.vis();
+		}
+
 	}
 
 }
@@ -164,11 +201,11 @@ class Map2 {
 
 		this.dynmaster = new chunk_master<dynchunk>(dynchunk, 20);
 
-		this.statmaster.which([0, 0]);
+		/*this.statmaster.which([0, 0]);
 		this.statmaster.which([1, 1]);
 		this.statmaster.which([1, 2]);
 		this.statmaster.which([2, 3]);
-		this.statmaster.which([2, 21]);
+		this.statmaster.which([2, 21]);*/
 
 		this.mouse_tile = [0, 0];
 
@@ -208,12 +245,11 @@ class Map2 {
 
 		let p = query;
 
-		// difficult 2:1 portion
-		let m2 = <zx>points.clone(p);
-		p[0] = m2[0] - m2[1] * 2;
-		p[1] = m2[1] * 2 + m2[0];
+		let p1 = <zx>points.clone(p);
+		p1[0] = p[0] - p[1] * 2;
+		p1[1] = p[1] * 2 + p[0];
 
-		let p2 = <zx>[...p];
+		let p2 = <zx>[...p1];
 		points.divide(p2, 24);
 		points.floor(p2);
 		p2[0] += 1; // necessary
@@ -258,7 +294,7 @@ class Map2 {
 
 		const x = this.query_world_pixel(worldPixelsLeftUpperCorner).tile;
 		const y = this.query_world_pixel(worldPixelsRightLowerCorner).tile;
-		
+
 		Win.win.find('#leftUpperCornerTile').text(`Left upper corner tile: ${points.string(x)}`);
 		Win.win.find('#rightLowerCornerTile').text(`Right lower corner tile: ${points.string(y)}`);
 

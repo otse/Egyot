@@ -2,7 +2,7 @@ import { aabb3 } from "./Bound";
 
 namespace Zxcvs {
 
-	export function area_every(aabb: aabb3, callback: (pos: Zx) => any) {
+	export function area_every(aabb: aabb3, callback: (pos: zx) => any) {
 		let y = aabb.min[1];
 		for (; y <= aabb.max[1]; y++) {
 			let x = aabb.max[0];
@@ -12,36 +12,39 @@ namespace Zxcvs {
 		}
 	}
 
-	export function two_one(p: Zx | Zxc) {
+	export function twoone(p: zx | zxc): zx {
 		let x = p[0] / 2 + p[1] / 2;
 		let y = p[1] / 4 - p[0] / 4;
-
-		//let w = d[0] / 2;
-		//let h = d[1] / 2;
-
-		return [x, y] as Zx;
+		return [x, y];
 	}
-	export function string(a: Zx | Zxc | Zxcv) {
+
+	export function untwoone(p: zx | zxc): zx {
+		let x = p[0] - p[1] * 2;
+		let y = p[1] * 2 + p[0];
+		return [x, y];
+	}
+
+	export function string(a: zx | zxc | Zxcv) {
 		const pr = (b) => b != undefined ? `, ${b}` : '';
 
 		return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
 	}
 
-	export function floor(a: Zx | Zxc) {
+	export function floor(a: zx | zxc) {
 		a[0] = Math.floor(a[0]);
 		a[1] = Math.floor(a[1]);
 		if (a[2] != undefined) a[2] = Math.floor(a[2]);
 		return a;
 	}
 
-	export function ceil(a: Zx | Zxc) {
+	export function ceil(a: zx | zxc) {
 		a[0] = Math.ceil(a[0]);
 		a[1] = Math.ceil(a[1]);
 		if (a[2] != undefined) a[2] = Math.ceil(a[2]);
 		return a;
 	}
 
-	export function inv(a: Zx | Zxc) {
+	export function inv(a: zx | zxc) {
 		a[0] = -a[0];
 		a[1] = -a[1];
 		return a;
@@ -53,7 +56,7 @@ namespace Zxcvs {
 		return zx;
 	}
 
-	export function divide(a: Zx | Zxc, n: number, n2?: number) {
+	export function divide(a: zx | zxc, n: number, n2?: number) {
 		a[0] /= n;
 		a[1] /= n2 || n;
 		return a;
@@ -63,49 +66,33 @@ namespace Zxcvs {
 		return [...zx];
 	}
 
-	export function multpClone(zx: Zx | Zxc, n: number, n2?: number): number[] {
-		let wen = [...zx] as Zx;
+	export function multpClone(zx: zx | zxc, n: number, n2?: number): number[] {
+		let wen = [...zx] as zx;
 
 		multp(wen, n, n2);
 
 		return wen;
 	}
 
-	export function subtract(a: Zx | Zxc, b: Zx | Zxc) {
+	export function subtract(a: zx | zxc, b: zx | zxc) {
 		a[0] -= b[0];
 		a[1] -= b[1];
 		return a;
 	}
 
-	export function subtrClone(a: Zx | Zxc, b: Zx | Zxc): number[] {
-		let wen = [...a] as Zx;
-
-		subtract(wen, b);
-
-		return wen;
-	}
-
-	export function add(a: Zx | Zxc, b: Zx | Zxc) {
+	export function add(a: zx | zxc, b: zx | zxc) {
 		a[0] += b[0];
 		a[1] += b[1];
 		return a;
 	}
 	
-	export function divideClone(a: Zx | Zxc, n: number) {
-		let wen = [...a] as Zx;
-
-		divide(wen, n);
-
-		return wen;
-	}
-
-	export function abs(p: Zx) {
+	export function abs(p: zx) {
 		p[0] = Math.abs(p[0]);
 		p[1] = Math.abs(p[1]);
 		return p;
 	}
 
-	export function together(p: Zx) {
+	export function together(p: zx) {
 		//Abs(p);
 		return p[0] + p[1];
 	}

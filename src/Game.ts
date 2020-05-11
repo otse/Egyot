@@ -74,7 +74,6 @@ class Game {
 
 		this.view = new aabb3([0, 0, 0]);
 
-		return;
 		this.frustumRekt = new Rekt({
 			name: 'Frustum',
 			pos: [0, 0, 0],
