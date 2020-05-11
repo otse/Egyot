@@ -121,6 +121,9 @@ export namespace Egyt {
 			<a collapse>Stats
 			</a>
 			<div>
+				<span id="leftUpperCornerTile"></span><br/>
+				<span id="rightLowerCornerTile"></span><br/>
+				<span id="gameAabb"></span><br/>
 				<span id="mouseTile"></span><br/>
 				<span id="numRekts"></span><br/>
 				<span id="numObjs"></span><br/>

@@ -2,7 +2,7 @@
 style95.css has only essential rules; use style2.css for styling
 */
 
-nyan /* a workaround. the parent of the Win.raw function. may break some browsers */ {}
+nyan /* a workaround. the parent of the Win.raw function. expected to break some browsers */ {}
 
 
 .region {

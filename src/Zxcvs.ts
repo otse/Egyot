@@ -90,6 +90,7 @@ namespace Zxcvs {
 		a[1] += b[1];
 		return a;
 	}
+	
 	export function divideClone(a: Zx | Zxc, n: number) {
 		let wen = [...a] as Zx;
 

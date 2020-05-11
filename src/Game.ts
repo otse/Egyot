@@ -9,6 +9,7 @@ import Selection from "./Nieuw mapje 5/Selection";
 import { Object3D, Mesh, PlaneBufferGeometry, MeshBasicMaterial } from "three";
 import { aabb3 } from "./Bound";
 import Zxcvs from "./Zxcvs";
+import { Win } from "./Win";
 
 // todo, aweful
 export namespace Areas {
@@ -54,7 +55,7 @@ class Game {
 	dpi: number
 
 	focal: Zxc
-	aabb: aabb3
+	view: aabb3
 	frustumRekt: Rekt
 
 	static rig() {
@@ -71,7 +72,7 @@ class Game {
 		this.dpi = window.devicePixelRatio;
 		this.scale = 1 / this.dpi;
 
-		this.aabb = new aabb3([0, 0, 0]);
+		this.view = new aabb3([0, 0, 0]);
 
 		return;
 		this.frustumRekt = new Rekt({
@@ -141,10 +142,12 @@ class Game {
 		let w2 = w / this.dpi / this.scale;
 		let h2 = h / this.dpi / this.scale;
 
-		this.aabb = new aabb3(
+		this.view = new aabb3(
 			[-p[0] - w2 / 2, -p[1] - h2 / 2, 0],
 			[-p[0] + w2 / 2, -p[1] + h2 / 2, 0]
 		);
+
+		Win.win.find('#gameAabb').text(`Gamex aabb x: ${this.view.min[0]}, ${this.view.min[1]} x ${this.view.max[0]}, ${this.view.max[1]} `);
 
 		return;
 		

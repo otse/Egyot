@@ -27,7 +27,7 @@ key {
 	margin: -2px 0;
 }
 
-/* begin of <a><div> */
+/* begin of <a><div> (collapse +-) */
 
 a.foo {
 	margin-bottom: 1px;
@@ -56,7 +56,7 @@ div.bar.toggle {
 
 /* end of <a><div> */
 
-/* begin of <div><span><span> */
+/* begin of <div><span><span> (rpgitem) */
 
 /* https://www.springhole.net/writing_roleplaying_randomators/magicitemgenerator2.htm */
 

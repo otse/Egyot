@@ -140,7 +140,7 @@ class TileSwab {
 
 	update() {
 
-		let s = Egyt.game.aabb.intersect(this.aabb);
+		let s = Egyt.game.view.intersect(this.aabb);
 
 		if (s != aabb3.SEC.OUT) {
 			this.spawn();
@@ -184,7 +184,7 @@ namespace Hovercraft {
 		Zxcvs.addit(p, p2);
 
 		let p3 = Zxcvs.two_one(p);*/
-		let p = [Egyt.game.aabb.min[0], Egyt.game.aabb.max[1]] as Zx;
+		let p = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as Zx;
 		let m = [...App.move] as Zx;
 		m[1] = -m[1];
 		Zxcvs.divide(m, Egyt.game.scale);
