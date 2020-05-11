@@ -8,32 +8,43 @@ import Agriculture from "../Nieuw mapje 3/Agriculture";
 import { aabb3 } from "../Bound";
 import Obj from "../Nieuw mapje/Obj";
 
-class Chunk {
-	//array: Obj[][][]
+
+declare class sobj {
 
 }
 
-// for unmoving things like grass
-class schunk {
+class chunk {
 	p: zx
 	bound: aabb3
+	boundscreen: aabb3
 	array: Obj[][][]
 	rekt: Rekt
 
-	constructor(x, y) {
+	constructor(x, y, master) {
 		this.p = [x, y];
+
 		this.bound = new aabb3(
-			[x * schunk.span,
-			y * schunk.span, 0],
-			[(x + 1) * schunk.span,
-			(y + 1) * schunk.span, 0]);
+			[
+				x * master.span,
+				y * master.span, 0],
+			[
+				(x + 1) * master.span,
+				(y + 1) * master.span, 0]);
+
+		this.boundscreen = new aabb3(
+			[
+				x * master.span,
+				y * master.span, 0],
+			[
+				(x + 1) * master.span,
+				(y + 1) * master.span, 0]);
 
 		//Agriculture.plop_wheat_area(3, this.bound);
 
 		console.log('schunk', x, y);
 
 		this.rekt = new Rekt({
-			pos: points.multp([x, y, 0], schunk.span * 24),
+			pos: points.multp([x, y, 0], master.span * 24),
 			dim: [240, 120],
 			asset: 'egyt/tenbyten'
 		})
@@ -52,36 +63,59 @@ class schunk {
 		//
 	}
 
-	//static alloc(x, y) {
-	//	if (!this.arrays[y]) this.arrays[y] = [];
-	//}
+	vis(view: aabb3) {
+		return this.boundscreen.intersect(view) != aabb3.SEC.OUT;
+	}
 
-	static big(t: zx | zxc): zx {
+}
+
+class schunk extends chunk {
+	//constructor(x, y, master) {
+	//	super(x, y, master);
+	//}
+}
+
+class dchunk extends chunk {
+	//constructor(x, y, master) {
+	//	super(x, y, master);
+	//}
+}
+
+class chunk_master<T extends chunk> {
+	readonly span: number
+
+	arrays: T | null[][] = []
+
+	constructor(span: number, private testType: new (x, y, m) => T) {
+		this.span = span;
+	}
+
+	big(t: zx | zxc): zx {
 		return <zx>points.floor(points.divide(<zx>[...t], this.span));
 	}
 
-	static at(x, y): schunk | null {
+	at(x, y): T | null {
 		if (this.arrays[y] == undefined)
 			this.arrays[y] = [];
 		return this.arrays[y][x];
 	}
 
-	static put(x, y): schunk {
+	make(x, y): T {
 		this.at(x, y);
-		return this.arrays[y][x] = new schunk(x, y);
+		return this.arrays[y][x] = new this.testType(x, y, this);
 	}
 
-	static which(t: zx): schunk {
+	which(t: zx): T {
 		let b = this.big(t);
-		return this.at(b[0], b[1]) || this.put(b[0], b[1]);
+		return this.at(b[0], b[1]) || this.make(b[0], b[1]);
 	}
 
 }
 
-namespace schunk {
-	export const span = 10
+namespace chunk {
+	//export const span = 10
 
-	export var arrays: schunk | null[][] = []
+	//export var arrays: chunk | null[][] = []
 }
 
 class Map2 {
@@ -89,13 +123,19 @@ class Map2 {
 		return new Map2;
 	}
 
+	schunks: chunk_master<schunk>
+	dchunks: chunk_master<dchunk>
+
 	schunk: schunk
 	mouse: zxc;
 	mark: Rekt;
 
 	constructor() {
 
-		(window as any).schunk = schunk;
+		(window as any).schunk = chunk;
+
+		this.schunks = new chunk_master<schunk>(10, schunk);
+		this.dchunks = new chunk_master<dchunk>(20, dchunk);
 
 		this.mouse = [0, 0, 0];
 
@@ -130,11 +170,11 @@ class Map2 {
 		tinybarn.initiate();
 		tobaccoshop.initiate();
 
-		schunk.which([0, 0]);
-		schunk.which([1, 1]);
-		schunk.which([1, 2]);
-		schunk.which([2, 3]);
-		schunk.which([2, 12]);
+		this.schunks.which([0, 0]);
+		this.schunks.which([1, 1]);
+		this.schunks.which([1, 2]);
+		this.schunks.which([2, 3]);
+		this.schunks.which([2, 12]);
 	}
 
 	mark_mouse() {
@@ -163,14 +203,14 @@ class Map2 {
 		this.mark.set_pos(0, 0);
 
 		Win.win.find('#mouseTile').text(`World square: ${points.string(p3)}`);
-		Win.win.find('#worldSquareChunk').text(`World square chunk: ${points.string(schunk.big(p3))}`);
+		Win.win.find('#worldSquareChunk').text(`World square chunk: ${points.string(this.schunks.big(p3))}`);
 
 	}
 
 	update() {
 		this.mark_mouse();
 
-		Win.win.find('#chunk').text(`Chunk: ${points.string(schunk.big(Egyt.game.pos))}`);
+		Win.win.find('#chunk').text(`Chunk: ${points.string(this.schunks.big(Egyt.game.pos))}`);
 		Win.win.find('#gamePos').text(`Game pos: ${points.string(Egyt.game.pos)}`);
 
 	}

@@ -72,7 +72,7 @@ export namespace Egyt {
 		Forestation.init();
 		Tilization.init();
 
-		(window as any).Egypt = Egyt;
+		(window as any).Egyt = Egyt;
 	}
 
 	export function start() {
