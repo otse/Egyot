@@ -26,7 +26,8 @@ class chunk {
 	constructor(x, y, master) {
 		this.p = [x, y];
 
-		let pos = points.multp([x, y, 0], master.span * 24);
+		let pos = points.multp([x + 1, y, 0], master.span * 24);
+		points.subtract(pos, [24, 0]);
 
 		this.bound = new aabb3(
 			[
@@ -88,8 +89,8 @@ class chunk {
 
 		let sec = this.boundscreen.intersect(view) != aabb3.SEC.OUT;
 
-		console.log('vis',sec,'for',Zxcvs.string(this.p));
-		
+		console.log('vis', sec, 'for', Zxcvs.string(this.p));
+
 		this.rekt.material.color = new Color(sec ? 'green' : 'red');
 		this.rekt.material.needsUpdate = true;
 
@@ -174,7 +175,7 @@ class chunk_fitter<T extends chunk> {
 		let topleft = [view.min[0], view.max[1]] as zx;
 
 		for (let c of this.queued) {
-			c.vis();
+			//c.vis();
 		}
 
 	}
