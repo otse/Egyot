@@ -116,7 +116,7 @@ export namespace Egyt {
 			<a>Settings
 			</a>
 			<div>
-				Doododoo
+				Nothing here yet
 			</div>
 
 			<a collapse>Stats
@@ -125,9 +125,11 @@ export namespace Egyt {
 				<span id="gameAabb"></span><br/>
 				<span id="numRekts"></span><br/>
 				<span id="numObjs"></span><br/>
+				<span id="numObjsActive"></span><br/>
 				<span id="gamePos"></span><br/>
 				<span id="mouseTile"></span><br/>
 				<span id="worldSquareChunk"></span><br/>
+				<span id="chunksShown"></span><br/>
 			</div>
 
 			<a>Items Demo

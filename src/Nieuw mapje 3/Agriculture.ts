@@ -47,16 +47,14 @@ namespace Agriculture {
 		comes() {
 			super.comes();
 			
-			this.produce();
+			this.grow();
 		}
-
 		goes() {
-			this.release();
+			super.goes();
+			
+			this.rekt.deinitiate();
 		}
-
-		produce() {
-			console.log('produce wheat');
-
+		grow() {
 			this.rekt = new Rekt({
 				asset:
 					this.growth == 1 ? Egyt.sample(tillering) :
@@ -67,10 +65,6 @@ namespace Agriculture {
 			});
 
 			this.rekt.initiate();
-		}
-
-		release() {
-			this.rekt.deinitiate();
 		}
 	}
 

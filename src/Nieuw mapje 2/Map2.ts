@@ -72,9 +72,12 @@ class chunk {
 	make_it() {
 		if (this.made)
 			return;
+
 		this.made = true;
 		let x = this.p[0];
 		let y = this.p[1];
+
+		return;
 
 		this.outline = new Rekt({
 			xy: <zxc>[...this.real, 0],
@@ -88,6 +91,7 @@ class chunk {
 		this.outline.initiate();
 		this.outline.mesh.renderOrder = -999;
 		this.outline.material.wireframe = true;
+
 
 		this.rekt = new Rekt({
 			xy: <zxc>[...this.mult, 0],
@@ -109,16 +113,13 @@ class chunk {
 		return this.objs.many() > 0;
 	}
 	comes() {
-		if (this.on)
-			return;
 		this.on = true;
-		this.objs.comes();
-		if (this.notempty())
+		if (this.notempty()) {
+			this.objs.comes();
 			this.make_it();
+		}
 	}
 	goes() {
-		if (!this.on)
-			return;
 		this.on = false;
 		this.objs.goes();
 	}
@@ -285,12 +286,11 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 			}
 			let c = this.master.guarantee(x, y);
 			if (c) {
-
 				if (s > 2 && c.sec() == aabb3.SEC.OUT) {
 					if (stage == 0) stage = 1;
 					if (stage == 2) stage = 3;
 				}
-				if (c.see()) {
+				if (!c.on && c.see()) {
 					c.comes();
 					if (c.notempty())
 						this.shown.push(c);
@@ -406,6 +406,7 @@ class Map2 {
 
 		Win.win.find('#mouseTile').text(`World square: ${points.string(mouse.tile)}`);
 		Win.win.find('#worldSquareChunk').text(`World square chunk: ${points.string(this.statmaster.big(mouse.tile))}`);
+		Win.win.find('#chunksShown').text(`Chunks shown: ${Egyt.map2.statmaster.fitter.shown.length}`);
 
 	}
 

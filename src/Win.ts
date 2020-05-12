@@ -55,6 +55,7 @@ namespace Win {
 	export function update() {
 		$('#numRekts').html('Num rekts: '+Rekt.num);
 		$('#numObjs').html('Num objs: '+Obj.num);
+		$('#numObjsActive').html('Num objs active: '+Obj.ons);
 	}
 
 	export function raw(html: string) {

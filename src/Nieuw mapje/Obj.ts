@@ -1,7 +1,9 @@
 class Obj {
-	order: number = 0
-	on: boolean = false
-	clickable: boolean = false
+	static ons = 0;
+	order = 0
+	on = false
+	clickable = false
+
 	readonly struct: {
 		tile: zx
 		//pos: zxc
@@ -16,9 +18,11 @@ class Obj {
 	}
 	comes() {
 		this.on = true;
+		Obj.ons++;
 	}
 	goes() {
 		this.on = false;
+		Obj.ons--;
 	}
 }
 
