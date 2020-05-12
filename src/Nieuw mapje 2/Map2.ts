@@ -22,6 +22,9 @@ class chunk {
 
 	objs: chunk_objs
 	p: zx
+	tile: zx
+	mult: zx
+	real: zx
 	bound: aabb3
 	boundscreen: aabb3
 
@@ -35,18 +38,18 @@ class chunk {
 		this.visible = false;
 		this.color = 'white';
 		this.p = [x, y];
+
+		this.set_bounds();
 	}
 
-	made = false
-	make_it() {
-		if (this.made)
-			return;
-		this.made = true;
+	set_bounds() {
 		let x = this.p[0];
 		let y = this.p[1];
 
-		let pos = points.multp([x + 1, y, 0], this.master.span * 24);
-		points.subtract(pos, [24, 0]);
+		let p1 = points.multp([x + 1, y, 0], this.master.span * 24);
+		this.tile = <zx>[...p1];
+		points.subtract(p1, [24, 0]);
+		this.mult = p1;
 
 		this.bound = new aabb3(
 			[
@@ -57,16 +60,26 @@ class chunk {
 				(y + 1) * this.master.span, 0]);
 
 
-		let real = [...points.twoone(<zxc>[...pos]), 0] as zxc;
-		points.subtract(real, [0, -this.master.span * 6]);
+		let real = [...points.twoone(<zxc>[...p1]), 0] as zxc;
+		points.subtract(real, [0, -this.master.height / 2]);
+		this.real = <zx>[...real];
 
 		this.boundscreen = new aabb3(
 			<zxc>points.add(<zxc>[...real], [-this.master.width / 2, -this.master.height / 2, 0]),
 			<zxc>points.add(<zxc>[...real], [this.master.width / 2, this.master.height / 2, 0])
 		)
+	}
 
+	made = false
+	make_it() {
+		if (this.made)
+			return;
+		this.made = true;
+		let x = this.p[0];
+		let y = this.p[1];
+		
 		this.outline = new Rekt({
-			xy: real,
+			xy: <zxc>[...this.real, 0],
 			wh: [this.master.width, this.master.height],
 			asset: 'egyt/128',
 			color: this.color
@@ -83,7 +96,7 @@ class chunk {
 		console.log('schunk', x, y);
 
 		this.rekt = new Rekt({
-			xy: pos,
+			xy: <zxc>[...this.mult, 0],
 			wh: [this.master.width, this.master.height],
 			asset: 'egyt/tenbyten',
 			color: this.color
@@ -239,7 +252,7 @@ class chunk_master<T extends chunk> {
 
 }
 
-class chunk_fitter<T extends chunk> {
+class chunk_fitter<T extends chunk> { // chunk-snake
 
 	master: chunk_master<T>
 	queued: T[] = []
@@ -284,10 +297,7 @@ class chunk_fitter<T extends chunk> {
 					stage = 0;
 					break;
 			}
-			let be;
-			if (!this.master.at(x, y))
-				be = 1;
-			let c = this.master.at(x, y); // paints chunks with the screen
+			let c = this.master.guarantee(x, y);
 			if (c) {
 				c.comes();
 				if (c.made)
