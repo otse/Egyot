@@ -50,12 +50,8 @@ class chunk {
 		this.mult = p1;
 
 		this.bound = new aabb3(
-			[
-				x * this.master.span,
-				y * this.master.span, 0],
-			[
-				(x + 1) * this.master.span,
-				(y + 1) * this.master.span, 0]);
+			[x * this.master.span, y * this.master.span, 0],
+			[(x + 1) * this.master.span, (y + 1) * this.master.span, 0]);
 
 
 		let real = [...points.twoone(<zxc>[...p1]), 0] as zxc;
@@ -68,56 +64,13 @@ class chunk {
 		)
 	}
 
-	made = false
-	make_it() {
-		if (this.made)
-			return;
-
-		this.made = true;
-		let x = this.p[0];
-		let y = this.p[1];
-
-		return;
-
-		this.outline = new Rekt({
-			xy: <zxc>[...this.real, 0],
-			wh: [this.master.width, this.master.height],
-			asset: 'egyt/128',
-			color: this.color
-
-		});
-
-		this.outline.noDimetricization = true;
-		this.outline.initiate();
-		this.outline.mesh.renderOrder = -999;
-		this.outline.material.wireframe = true;
-
-
-		this.rekt = new Rekt({
-			xy: <zxc>[...this.mult, 0],
-			wh: [this.master.width, this.master.height],
-			asset: 'egyt/tenbyten',
-			color: this.color
-		})
-
-		this.rekt.initiate();
-
-		//const colors = ['pink', 'red', 'magenta', 'orange'];
-		const colors = ['springgreen', 'peachpuff', 'coral', 'salmon', 'thistle'];
-
-		this.rekt.mesh.renderOrder = -1000;
-		this.rekt.material.color.set(Egyt.sample(colors));
-	}
-
 	notempty() {
 		return this.objs.many() > 0;
 	}
 	comes() {
 		this.on = true;
-		if (this.notempty()) {
+		if (this.notempty())
 			this.objs.comes();
-			this.make_it();
-		}
 	}
 	goes() {
 		this.on = false;
@@ -130,10 +83,8 @@ class chunk {
 		return this.sec() != aabb3.SEC.OUT;
 	}
 	update() {
-
 		return;
 	}
-
 }
 
 class chunk_objs {
@@ -150,16 +101,11 @@ class chunk_objs {
 	add(obj: Obj) {
 		if (-1 == this.indexOf(obj))
 			this.objs.push(obj);
-		else
-			console.warn('add');
-
 	}
 	remove(obj: Obj) {
 		let i = this.indexOf(obj);
 		if (i > -1)
 			this.objs.splice(i, 1);
-		else
-			console.warn('remove');
 	}
 	comes() {
 		for (let obj of this.objs)
@@ -192,7 +138,6 @@ class chunk_master<T extends chunk> {
 		this.span = span;
 		this.width = span * 24;
 		this.height = span * 12;
-
 		this.fitter = new chunk_fitter<T>(this);
 	}
 	update() {
@@ -234,7 +179,6 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 	shown: T[] = []
 
 	constructor(private master: chunk_master<T>) {
-		this.master = master;
 	}
 
 	update() {
@@ -248,6 +192,7 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 		let i = this.shown.length;
 		while (i--) {
 			let c = this.shown[i];
+			c.update();
 			if (!c.see()) {
 				c.goes();
 				this.shown.splice(i, 1);
@@ -259,7 +204,6 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 		let x = b[0], y = b[1];
 		let stage = 0;
 		let s = 0;
-
 		while (true) {
 			i++;
 			switch (stage) {
@@ -323,12 +267,6 @@ class Map2 {
 
 		this.dynmaster = new chunk_master<dynchunk>(dynchunk, 20);
 
-		/*this.statmaster.which([0, 0]);
-		this.statmaster.which([1, 1]);
-		this.statmaster.which([1, 2]);
-		this.statmaster.which([2, 3]);
-		this.statmaster.which([2, 21]);*/
-
 		this.mouse_tile = [0, 0];
 
 		this.mark = new Rekt({
@@ -359,7 +297,9 @@ class Map2 {
 		Agriculture.plop_wheat_area(2, new aabb3([-9, -8, 0], [2, -10, 0]));
 		Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
 		Agriculture.plop_wheat_area(3, new aabb3([-9, -16, 0], [2, -50, 0]));
-		Agriculture.plop_wheat_area(3, new aabb3([-9, -52, 0], [2, -300, 0]));
+		Agriculture.plop_wheat_area(2, new aabb3([-25, 14, 0], [5, 50, 0]));
+		//Agriculture.plop_wheat_area(3, new aabb3([-9, -52, 0], [2, -300, 0]));
+		//Agriculture.plop_wheat_area(3, new aabb3([-20, -302, 0], [11, -600, 0]));
 
 		tinybarn.initiate();
 		tobaccoshop.initiate();
