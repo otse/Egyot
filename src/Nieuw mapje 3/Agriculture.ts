@@ -4,6 +4,7 @@ import { aabb3 } from "../Bound";
 import Obj from "../Nieuw mapje/Obj";
 import App from "../App";
 import Points from "../Zxcvs";
+import Zxcvs from "../Zxcvs";
 
 namespace Agriculture {
 
@@ -45,7 +46,7 @@ namespace Agriculture {
 					this.growth == 1 ? Egyt.sample(tillering) :
 					this.growth == 2 ? Egyt.sample(ripening) :
 					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-				pos: this.struct.pos,
+				pos: Zxcvs.multp([...this.struct.tile, 0], 24),
 				dim: [24, 24],
 			});
 
@@ -60,7 +61,7 @@ namespace Agriculture {
 					this.growth == 1 ? Egyt.sample(tillering) :
 					this.growth == 2 ? Egyt.sample(ripening) :
 					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-				pos: this.struct.pos,
+				pos: <zxc>[...this.struct.tile, 0],
 				dim: [24, 24],
 			});
 
@@ -78,7 +79,7 @@ namespace Agriculture {
 
 	}
 
-	export function place_wheat(growth, pos: Zx) {
+	export function place_wheat(growth, pos: zx) {
 
 		if (Math.random() > .99)
 			return;
@@ -86,7 +87,7 @@ namespace Agriculture {
 		const p = Points.multp([...pos, 0], 24);
 
 		let wheat = new Wheat(growth, {
-			pos: p
+			tile: pos
 		});
 
 		Egyt.world.add(wheat);

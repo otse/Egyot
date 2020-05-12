@@ -3,6 +3,7 @@ import Egyt from "../Egyt";
 import { aabb3 } from "../Bound";
 import Obj from "../Nieuw mapje/Obj";
 import App from "../App";
+import Zxcvs from "../Zxcvs";
 
 namespace Forestation {
 
@@ -26,7 +27,7 @@ namespace Forestation {
 
 			this.rekt = new Rekt({
 				asset: Egyt.sample(trees),
-				pos: this.struct.pos,
+				pos: Zxcvs.multp([...this.struct.tile, 0], 24),
 				dim: [120, 132],
 			});
 
@@ -37,9 +38,10 @@ namespace Forestation {
 			if (plopping != this)
 				return;
 
-			let p = <zxc>[...Egyt.map2.mouse_tile, 0];
+			let p = <zx>[...Egyt.map2.mouse_tile];
 
-			this.rekt.struct.pos = this.struct.pos = p;
+			this.struct.tile = <zx>p;
+			this.rekt.struct.pos = <zxc>[...p, 0];
 
 			this.rekt.now_update_pos();
 
@@ -64,7 +66,7 @@ namespace Forestation {
 	export function plop_tree() {
 
 		let plop = new TreePlop({
-			pos: <zxc>[...Egyt.map2.mouse_tile, 0]
+			tile: <zx>[...Egyt.map2.mouse_tile]
 		});
 
 		Egyt.world.add(plop);

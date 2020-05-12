@@ -3,7 +3,8 @@ class Obj {
 	order: number
 
 	readonly struct: {
-        pos: zxc
+        tile: zx
+        //pos: zxc
 	}
 	
 	clickable: boolean

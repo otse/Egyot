@@ -3,6 +3,7 @@ import Egyt from "../Egyt";
 import { aabb3 } from "../Bound";
 import Obj from "../Nieuw mapje/Obj";
 import App from "../App";
+import Zxcvs from "../Zxcvs";
 
 namespace Tilization {
 
@@ -24,7 +25,7 @@ namespace Tilization {
 
 			this.rekt = new Rekt({
 				asset: Egyt.sample(colors),
-				pos: this.struct.pos,
+				pos: Zxcvs.multp([...this.struct.tile, 0], 24),
 				dim: [24, 12],
 			});
 
@@ -35,9 +36,10 @@ namespace Tilization {
 			if (plopping != this)
 				return;
 
-			let p = <zxc>[...Egyt.map2.mouse_tile, 0];
+			let p = <zx>[...Egyt.map2.mouse_tile];
 
-			this.rekt.struct.pos = this.struct.pos = p;
+			this.struct.tile = <zx>p;
+			this.rekt.struct.pos = <zxc>[...p, 0];
 
 			this.rekt.now_update_pos();
 
@@ -61,7 +63,7 @@ namespace Tilization {
 	export function plop_tile() {
 
 		let plop = new TilePlop({
-			pos: <zxc>[...Egyt.map2.mouse_tile, 0]
+			tile: <zx>[...Egyt.map2.mouse_tile]
 		});
 
 		Egyt.world.add(plop);
