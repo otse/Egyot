@@ -29,7 +29,7 @@ class chunk {
 	rekt: Rekt
 	outline: Rekt
 
-	constructor(x, y, master) {
+	constructor(x, y, private master: chunk_master<chunk>) {
 		this.objs = new chunk_objs(this);
 		this.visible = false;
 		this.color = 'white';
@@ -184,13 +184,17 @@ class chunk_master<T extends chunk> {
 
 	which(t: zx): T {
 		let b = this.big(t);
-		let c = this.at(b[0], b[1]) || this.make(b[0], b[1]);
+		let c = this.guarantee(b[0], b[1]);
 		return c;
 	}
 
-	static probe<T>() {
-
+	guarantee(x, y): T {
+		return this.at(x, y) || this.make(x, y);
 	}
+
+	//static probe<T>() {
+
+	//}
 
 }
 
@@ -224,7 +228,7 @@ class chunk_fitter<T extends chunk> {
 		// this.statmaster.big(mouse.tile);
 		const view = Egyt.game.view;
 
-		let middle = Egyt.map2.query_world_pixel([...view.center()] as zx).tile;
+		let middle = Egyt.map2.query_world_pixel(<zx>[...view.center()]).tile;
 		let lefttop = Egyt.map2.query_world_pixel([Egyt.game.view.min[0], Egyt.game.view.max[1]]).tile;
 
 		let b = this.master.big(middle);
@@ -333,8 +337,10 @@ class Map2 {
 
 		this.mark.initiate();
 		this.mark.mesh.renderOrder = 999;
-		this.mark.dontOrder = true;
+		this.mark.dontOrder = true;		
+	}
 
+	init() {
 		let tinybarn = new Rekt({
 			pos: points.multp([0, -1, 0], 24),
 			dim: [192, 156],
@@ -355,6 +361,10 @@ class Map2 {
 
 		tinybarn.initiate();
 		tobaccoshop.initiate();
+	}
+
+	get_chunk_tile(t: zx | zxc) {
+		return this.statmaster.which(<zx>t);
 	}
 
 	query_world_pixel(query: zx): { tile: zx, mult: zx } {

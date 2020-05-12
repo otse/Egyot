@@ -68,6 +68,7 @@ export namespace Egyt {
 		game = Game.rig();
 		world = World.rig();
 		map2 = Map2.rig();
+		map2.init();
 
 		Forestation.init();
 		Tilization.init();

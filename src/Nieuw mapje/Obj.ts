@@ -3,7 +3,7 @@ class Obj {
 	order: number
 
 	readonly struct: {
-        pos: Zxc
+        pos: zxc
 	}
 	
 	clickable: boolean
@@ -18,13 +18,13 @@ class Obj {
 		this.clickable = false;
 	}
 
-	get_pos(): Zxc {
-		return this.struct.pos;
-	}
+	//get_pos(): Zxc {
+	//	return this.struct.pos;
+	//}
 
-	press(): boolean {
-		return false
-	}
+	//press(): boolean {
+	//	return false
+	//}
 
 	update() {
 

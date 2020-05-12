@@ -51,6 +51,21 @@ namespace Agriculture {
 
 			this.rekt.initiate();
 		}
+
+		produce() {
+			console.log('produce wheat');
+
+			this.rekt = new Rekt({
+				asset:
+					this.growth == 1 ? Egyt.sample(tillering) :
+					this.growth == 2 ? Egyt.sample(ripening) :
+					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
+				pos: this.struct.pos,
+				dim: [24, 24],
+			});
+
+			this.rekt.initiate();
+		}
 	}
 
 	export function init() {
@@ -60,14 +75,14 @@ namespace Agriculture {
 	}
 
 	export function update() {
-		
+
 	}
 
 	export function place_wheat(growth, pos: Zx) {
-		
-		if (Math.random()>.99)
+
+		if (Math.random() > .99)
 			return;
-			
+
 		const p = Points.multp([...pos, 0], 24);
 
 		let wheat = new Wheat(growth, {
