@@ -77,7 +77,7 @@ class chunk {
 		this.made = true;
 		let x = this.p[0];
 		let y = this.p[1];
-		
+
 		this.outline = new Rekt({
 			xy: <zxc>[...this.real, 0],
 			wh: [this.master.width, this.master.height],
@@ -90,10 +90,6 @@ class chunk {
 		this.outline.initiate();
 		this.outline.mesh.renderOrder = -999;
 		this.outline.material.wireframe = true;
-
-		//Agriculture.plop_wheat_area(3, this.bound);
-
-		console.log('schunk', x, y);
 
 		this.rekt = new Rekt({
 			xy: <zxc>[...this.mult, 0],
@@ -111,20 +107,15 @@ class chunk {
 		this.rekt.material.color.set(Egyt.sample(colors));
 	}
 
-	static screenaabb(pos, master) {
-		//let real = [...points.twoone(<zxc>[...pos]), 0] as zxc;
-		//points.subtract(real, [0, -master.span * 6]);
-		//return new aabb3(
-		//	<zxc>points.add(<zxc>[...real], [-master.width / 2, -master.height / 2, 0]),
-		//	<zxc>points.add(<zxc>[...real], [master.width / 2, master.height / 2, 0])
-		//)
+	notempty() {
+		return this.objs.many() > 0;
 	}
 	comes() {
 		if (this.on)
 			return;
 		this.on = true;
 		this.objs.comes();
-		if (this.objs.many() > 0)
+		if (this.notempty())
 			this.make_it();
 	}
 	goes() {
@@ -158,7 +149,6 @@ class chunk {
 }
 
 class chunk_objs {
-	active = false
 	objs: Obj[] = []
 	constructor(private chunk: chunk) {
 
@@ -172,23 +162,22 @@ class chunk_objs {
 	add(obj: Obj) {
 		if (-1 == this.indexOf(obj))
 			this.objs.push(obj);
+		else
+			console.warn('add');
+
 	}
 	remove(obj: Obj) {
 		let i = this.indexOf(obj);
 		if (i > -1)
 			this.objs.splice(i, 1);
+		else
+			console.warn('remove');
 	}
 	comes() {
-		if (this.active)
-			return;
-		this.active = true;
 		for (let obj of this.objs)
 			obj.comes();
 	}
 	goes() {
-		if (!this.active)
-			return;
-		this.active = false;
 		for (let obj of this.objs)
 			obj.goes();
 	}
@@ -225,9 +214,10 @@ class chunk_master<T extends chunk> {
 		return <zx>points.floor(points.divide(<zx>[...t], this.span));
 	}
 	at(x, y): T | null {
+		let c;
 		if (this.arrays[y] == undefined)
 			this.arrays[y] = [];
-		let c = this.arrays[y][x];
+		c = this.arrays[y][x];
 		return c;
 	}
 	make(x, y): T {
@@ -249,15 +239,13 @@ class chunk_master<T extends chunk> {
 	//static probe<T>() {
 
 	//}
-
 }
 
 class chunk_fitter<T extends chunk> { // chunk-snake
 
-	master: chunk_master<T>
 	queued: T[] = []
 
-	constructor(master) {
+	constructor(private master: chunk_master<T>) {
 		this.master = master;
 	}
 
@@ -266,16 +254,18 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 
 		let b = this.master.big(middle);
 
-		this.snake(b, 1, -1);
-		this.snake(b, -1, 1);
+		this.snake(b, 1, 1);
+		this.snake(b, -1, -1);
 
 		for (let c of this.queued) {
 			c.vis();
 		}
 	}
 	snake(b: zx, n: number = 1, m: number = -1) {
-		let i = 0, j = 0, x = b[0], y = b[1];
+		let i = 0;
+		let x = b[0], y = b[1];
 		let stage = 0;
+		let s = 0;
 
 		while (true) {
 			i++;
@@ -283,29 +273,35 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 				case 0:
 					x += n;
 					y += n;
+					s++;
 					break;
 				case 1:
-					y += m;
+					y -= m;
 					stage = 2;
+					s = 0;
 					break;
 				case 2:
-					x += m;
-					y += m;
+					x -= m;
+					y -= m;
+					s++;
 					break;
 				case 3:
-					y += m;
+					y -= m;
 					stage = 0;
+					s = 0;
 					break;
 			}
 			let c = this.master.guarantee(x, y);
 			if (c) {
-				c.comes();
-				if (c.made)
-					this.queued.push(c);
-				if (j + 2 < i && c.sec() == aabb3.SEC.OUT) {
-					j = i;
+
+				if (s > 2 && c.sec() == aabb3.SEC.OUT) {
 					if (stage == 0) stage = 1;
 					if (stage == 2) stage = 3;
+				}
+				if (c.sec() != aabb3.SEC.OUT) {
+					c.comes();
+					if (c.notempty())
+						this.queued.push(c);
 				}
 			}
 			if (i >= 200)

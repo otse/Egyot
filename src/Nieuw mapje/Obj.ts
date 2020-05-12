@@ -1,32 +1,25 @@
 class Obj {
-
 	order: number = 0
-	invented: boolean = false
+	on: boolean = false
 	clickable: boolean = false
-
 	readonly struct: {
 		tile: zx
 		//pos: zxc
 	}
-
 	constructor(struct: Obj['struct']) {
 		Obj.num++;
 
 		this.struct = struct;
 
 	}
-
 	update() {
 	}
-	
 	comes() {
-		this.invented = true;
+		this.on = true;
 	}
-
 	goes() {
-		this.invented = false;
+		this.on = false;
 	}
-
 }
 
 namespace Obj {
