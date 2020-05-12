@@ -18,6 +18,7 @@ declare class sobj {
 class chunk {
 	visible
 	color
+	on = false
 
 	objs: chunk_objs
 	p: zx
@@ -34,30 +35,39 @@ class chunk {
 		this.visible = false;
 		this.color = 'white';
 		this.p = [x, y];
+	}
 
-		let pos = points.multp([x + 1, y, 0], master.span * 24);
+	made = false
+	make_it() {
+		if (this.made)
+			return;
+		this.made = true;
+		let x = this.p[0];
+		let y = this.p[1];
+
+		let pos = points.multp([x + 1, y, 0], this.master.span * 24);
 		points.subtract(pos, [24, 0]);
 
 		this.bound = new aabb3(
 			[
-				x * master.span,
-				y * master.span, 0],
+				x * this.master.span,
+				y * this.master.span, 0],
 			[
-				(x + 1) * master.span,
-				(y + 1) * master.span, 0]);
+				(x + 1) * this.master.span,
+				(y + 1) * this.master.span, 0]);
 
 
 		let real = [...points.twoone(<zxc>[...pos]), 0] as zxc;
-		points.subtract(real, [0, -master.span * 6]);
+		points.subtract(real, [0, -this.master.span * 6]);
 
 		this.boundscreen = new aabb3(
-			<zxc>points.add(<zxc>[...real], [-master.width / 2, -master.height / 2, 0]),
-			<zxc>points.add(<zxc>[...real], [master.width / 2, master.height / 2, 0])
+			<zxc>points.add(<zxc>[...real], [-this.master.width / 2, -this.master.height / 2, 0]),
+			<zxc>points.add(<zxc>[...real], [this.master.width / 2, this.master.height / 2, 0])
 		)
 
 		this.outline = new Rekt({
 			xy: real,
-			wh: [master.width, master.height],
+			wh: [this.master.width, this.master.height],
 			asset: 'egyt/128',
 			color: this.color
 
@@ -74,7 +84,7 @@ class chunk {
 
 		this.rekt = new Rekt({
 			xy: pos,
-			wh: [master.width, master.height],
+			wh: [this.master.width, this.master.height],
 			asset: 'egyt/tenbyten',
 			color: this.color
 		})
@@ -86,21 +96,33 @@ class chunk {
 
 		this.rekt.mesh.renderOrder = -1000;
 		this.rekt.material.color.set(Egyt.sample(colors));
-
 	}
 
+	static screenaabb(pos, master) {
+		//let real = [...points.twoone(<zxc>[...pos]), 0] as zxc;
+		//points.subtract(real, [0, -master.span * 6]);
+		//return new aabb3(
+		//	<zxc>points.add(<zxc>[...real], [-master.width / 2, -master.height / 2, 0]),
+		//	<zxc>points.add(<zxc>[...real], [master.width / 2, master.height / 2, 0])
+		//)
+	}
 	comes() {
+		if (this.on)
+			return;
+		this.on = true;
 		this.objs.comes();
+		if (this.objs.many() > 0)
+			this.make_it();
 	}
-
 	goes() {
+		if (!this.on)
+			return;
+		this.on = false;
 		this.objs.goes();
 	}
-
 	sec() {
 		return Egyt.game.view.intersect(this.boundscreen);
 	}
-
 	vis() {
 		let sec = Egyt.game.view.intersect(this.boundscreen) != aabb3.SEC.OUT;
 
@@ -128,6 +150,9 @@ class chunk_objs {
 	constructor(private chunk: chunk) {
 
 	}
+	many() {
+		return this.objs.length;
+	}
 	indexOf(obj: Obj) {
 		return this.objs.indexOf(obj);
 	}
@@ -135,7 +160,6 @@ class chunk_objs {
 		if (-1 == this.indexOf(obj))
 			this.objs.push(obj);
 	}
-
 	remove(obj: Obj) {
 		let i = this.indexOf(obj);
 		if (i > -1)
@@ -181,22 +205,18 @@ class chunk_master<T extends chunk> {
 
 		this.fitter = new chunk_fitter<T>(this);
 	}
-
 	update() {
 		this.fitter.update();
 	}
-
 	big(t: zx | zxc): zx {
 		return <zx>points.floor(points.divide(<zx>[...t], this.span));
 	}
-
 	at(x, y): T | null {
 		if (this.arrays[y] == undefined)
 			this.arrays[y] = [];
 		let c = this.arrays[y][x];
 		return c;
 	}
-
 	make(x, y): T {
 		let c;
 		c = this.at(x, y);
@@ -205,17 +225,14 @@ class chunk_master<T extends chunk> {
 		c = this.arrays[y][x] = new this.testType(x, y, this);
 		return c;
 	}
-
 	which(t: zx): T {
 		let b = this.big(t);
 		let c = this.guarantee(b[0], b[1]);
 		return c;
 	}
-
 	guarantee(x, y): T {
 		return this.at(x, y) || this.make(x, y);
 	}
-
 	//static probe<T>() {
 
 	//}
@@ -232,46 +249,19 @@ class chunk_fitter<T extends chunk> {
 	}
 
 	update() {
-		// this.statmaster.big(mouse.tile);
-		const view = Egyt.game.view;
-
-		let middle = Egyt.map2.query_world_pixel(<zx>[...view.center()]).tile;
+		let middle = Egyt.map2.query_world_pixel(<zx>[...Egyt.game.view.center()]).tile;
 
 		let b = this.master.big(middle);
 
 		this.snake(b, 1, -1);
 		this.snake(b, -1, 1);
 
-		//Win.win.find('#chunkFitter').text(`Chunk fitter: ${points.string(b)}`);
-
 		for (let c of this.queued) {
 			c.vis();
 		}
-
 	}
-
-	chunks: chunk[] = []
-
-	indexOf(c: chunk) {
-		return this.chunks.indexOf(c);
-	}
-
-	add(c: chunk) {
-		if (-1 == this.indexOf(c))
-			this.chunks.push(c);
-	}
-
-	remove(c: chunk) {
-		let i = this.indexOf(c);
-		if (i > -1)
-			this.chunks.splice(i, 1);
-	}
-
 	snake(b: zx, n: number = 1, m: number = -1) {
-		let i = 0;
-		let j = 0;
-		let x = b[0];
-		let y = b[1];
+		let i = 0, j = 0, x = b[0], y = b[1];
 		let stage = 0;
 
 		while (true) {
@@ -300,7 +290,8 @@ class chunk_fitter<T extends chunk> {
 			let c = this.master.at(x, y); // paints chunks with the screen
 			if (c) {
 				c.comes();
-				this.add(c);
+				if (c.made)
+					this.queued.push(c);
 				if (j + 2 < i && c.sec() == aabb3.SEC.OUT) {
 					j = i;
 					if (stage == 0) stage = 1;
