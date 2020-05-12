@@ -56,9 +56,8 @@ class chunk {
 		)
 
 		this.outline = new Rekt({
-			name: 'TileSwab Wire',
-			pos: real,
-			dim: [master.span * 24, master.span * 12],
+			xy: real,
+			wh: [master.width, master.height],
 			asset: 'egyt/128',
 			color: this.color
 
@@ -74,8 +73,8 @@ class chunk {
 		console.log('schunk', x, y);
 
 		this.rekt = new Rekt({
-			pos: pos,
-			dim: [master.span * 24, master.span * 12],
+			xy: pos,
+			wh: [master.width, master.height],
 			asset: 'egyt/tenbyten',
 			color: this.color
 		})
@@ -139,7 +138,8 @@ class chunk_objs {
 			this.objs.splice(i, 1);
 	}
 	create() {
-		
+		for (let obj of this.objs)
+			obj.create();
 	}
 }
 
@@ -318,8 +318,8 @@ class Map2 {
 		this.mouse_tile = [0, 0];
 
 		this.mark = new Rekt({
-			pos: [0, 0, 0],
-			dim: [22, 25],
+			xy: [0, 0, 0],
+			wh: [22, 25],
 			asset: 'egyt/iceblock'
 		});
 
@@ -330,14 +330,14 @@ class Map2 {
 
 	init() {
 		let tinybarn = new Rekt({
-			pos: points.multp([0, -1, 0], 24),
-			dim: [192, 156],
+			xy: points.multp([0, -1, 0], 24),
+			wh: [192, 156],
 			asset: 'egyt/building/tinybarn'
 		});
 
 		let tobaccoshop = new Rekt({
-			pos: points.multp([-14, -10, 0], 24),
-			dim: [144, 144],
+			xy: points.multp([-14, -10, 0], 24),
+			wh: [144, 144],
 			asset: 'egyt/building/redstore'
 		});
 
@@ -387,7 +387,7 @@ class Map2 {
 
 		this.mouse_tile = mouse.tile;
 
-		this.mark.struct.pos = <zxc>[...mouse.mult, 0];
+		this.mark.struct.xy = <zxc>[...mouse.mult, 0];
 		this.mark.now_update_pos();
 
 		Win.win.find('#mouseTile').text(`World square: ${points.string(mouse.tile)}`);

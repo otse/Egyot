@@ -31,8 +31,8 @@ class Obj {
 
 	}
 
-	produce() {
-		// override this
+	create() {
+		// commonly overrided
 	}
 
 }

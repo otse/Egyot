@@ -27,8 +27,8 @@ namespace Forestation {
 
 			this.rekt = new Rekt({
 				asset: Egyt.sample(trees),
-				pos: Zxcvs.multp([...this.struct.tile, 0], 24),
-				dim: [120, 132],
+				xy: Zxcvs.multp([...this.struct.tile, 0], 24),
+				wh: [120, 132],
 			});
 
 			this.rekt.initiate();
@@ -41,7 +41,7 @@ namespace Forestation {
 			let p = <zx>[...Egyt.map2.mouse_tile];
 
 			this.struct.tile = <zx>p;
-			this.rekt.struct.pos = <zxc>[...p, 0];
+			this.rekt.struct.xy = <zxc>[...p, 0];
 
 			this.rekt.now_update_pos();
 

@@ -52,8 +52,8 @@ namespace Agriculture {
 					this.growth == 1 ? Egyt.sample(tillering) :
 					this.growth == 2 ? Egyt.sample(ripening) :
 					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-				pos: <zxc>[...this.struct.tile, 0],
-				dim: [24, 24],
+				xy: <zxc>[...this.struct.tile, 0],
+				wh: [24, 24],
 			});
 
 			this.rekt.initiate();

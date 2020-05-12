@@ -25,8 +25,8 @@ namespace Tilization {
 
 			this.rekt = new Rekt({
 				asset: Egyt.sample(colors),
-				pos: Zxcvs.multp([...this.struct.tile, 0], 24),
-				dim: [24, 12],
+				xy: Zxcvs.multp([...this.struct.tile, 0], 24),
+				wh: [24, 12],
 			});
 
 			this.rekt.initiate();
@@ -39,7 +39,7 @@ namespace Tilization {
 			let p = <zx>[...Egyt.map2.mouse_tile];
 
 			this.struct.tile = <zx>p;
-			this.rekt.struct.pos = <zxc>[...p, 0];
+			this.rekt.struct.xy = <zxc>[...p, 0];
 
 			this.rekt.now_update_pos();
 

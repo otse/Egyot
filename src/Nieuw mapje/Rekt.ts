@@ -10,8 +10,8 @@ class Rekt {
 
 	readonly struct: {
 		name?: string
-		pos: Zxc
-		dim: Zx
+		xy: Zxc
+		wh: Zx
 		asset?: string
 		flip?: boolean
 		opacity?: number,
@@ -43,7 +43,7 @@ class Rekt {
 
 		// At least 2, 1 segments or glitch
 		this.geometry = new PlaneBufferGeometry(
-			this.struct.dim[0], this.struct.dim[1], 1, 1);
+			this.struct.wh[0], this.struct.wh[1], 1, 1);
 
 		let map;
 
@@ -79,8 +79,8 @@ class Rekt {
 	}
 
 	now_update_pos() {
-		const p = this.struct.pos;
-		const d = this.struct.dim;
+		const p = this.struct.xy;
+		const d = this.struct.wh;
 
 		let x, y;
 
