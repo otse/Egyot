@@ -44,6 +44,12 @@ namespace Agriculture {
 			
 		}
 
+		comes() {
+			super.comes();
+			
+			this.produce();
+		}
+
 		produce() {
 			console.log('produce wheat');
 
@@ -52,7 +58,7 @@ namespace Agriculture {
 					this.growth == 1 ? Egyt.sample(tillering) :
 					this.growth == 2 ? Egyt.sample(ripening) :
 					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-				xy: <zxc>[...this.struct.tile, 0],
+				xy: Zxcvs.multp([...this.struct.tile, 0], 24),
 				wh: [24, 24],
 			});
 
@@ -70,15 +76,15 @@ namespace Agriculture {
 
 	}
 
-	export function place_wheat(growth, pos: zx) {
+	export function place_wheat(growth, tile: zx) {
 
 		if (Math.random() > .99)
 			return;
 
-		const p = Points.multp([...pos, 0], 24);
+		//const mult = Points.multp([...tile, 0], 24);
 
 		let wheat = new Wheat(growth, {
-			tile: pos
+			tile: tile
 		});
 
 		Egyt.world.add(wheat);

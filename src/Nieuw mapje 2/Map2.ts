@@ -51,8 +51,8 @@ class chunk {
 		points.subtract(real, [0, -master.span * 6]);
 
 		this.boundscreen = new aabb3(
-			<zxc>points.add(<zxc>[...real], [-master.span * 12, -master.span * 6, 0]),
-			<zxc>points.add(<zxc>[...real], [master.span * 12, master.span * 6, 0])
+			<zxc>points.add(<zxc>[...real], [-master.width / 2, -master.height / 2, 0]),
+			<zxc>points.add(<zxc>[...real], [master.width / 2, master.height / 2, 0])
 		)
 
 		this.outline = new Rekt({
@@ -89,9 +89,12 @@ class chunk {
 
 	}
 
-	manual_update() {
-		this.rekt.material.color.set(this.color);
-		this.rekt.material.needsUpdate = true;
+	comes() {
+		this.objs.comes();
+	}
+
+	goes() {
+		this.objs.goes();
 	}
 
 	sec() {
@@ -120,6 +123,7 @@ class chunk {
 }
 
 class chunk_objs {
+	active = false
 	objs: Obj[] = []
 	constructor(private chunk: chunk) {
 
@@ -137,9 +141,19 @@ class chunk_objs {
 		if (i > -1)
 			this.objs.splice(i, 1);
 	}
-	create() {
+	comes() {
+		if (this.active)
+			return;
+		this.active = true;
 		for (let obj of this.objs)
-			obj.create();
+			obj.comes();
+	}
+	goes() {
+		if (!this.active)
+			return;
+		this.active = false;
+		for (let obj of this.objs)
+			obj.goes();
 	}
 }
 
@@ -222,7 +236,6 @@ class chunk_fitter<T extends chunk> {
 		const view = Egyt.game.view;
 
 		let middle = Egyt.map2.query_world_pixel(<zx>[...view.center()]).tile;
-		let lefttop = Egyt.map2.query_world_pixel([Egyt.game.view.min[0], Egyt.game.view.max[1]]).tile;
 
 		let b = this.master.big(middle);
 
@@ -235,6 +248,23 @@ class chunk_fitter<T extends chunk> {
 			c.vis();
 		}
 
+	}
+
+	chunks: chunk[] = []
+
+	indexOf(c: chunk) {
+		return this.chunks.indexOf(c);
+	}
+
+	add(c: chunk) {
+		if (-1 == this.indexOf(c))
+			this.chunks.push(c);
+	}
+
+	remove(c: chunk) {
+		let i = this.indexOf(c);
+		if (i > -1)
+			this.chunks.splice(i, 1);
 	}
 
 	snake(b: zx, n: number = 1, m: number = -1) {
@@ -269,17 +299,12 @@ class chunk_fitter<T extends chunk> {
 				be = 1;
 			let c = this.master.at(x, y); // paints chunks with the screen
 			if (c) {
-				//if (be)
-				//c.color = ['springgreen', 'peachpuff', 'coral', 'salmon', 'thistle'][Math.floor(Egyt.game.scale*2)];
-				//c.manual_update();
+				c.comes();
+				this.add(c);
 				if (j + 2 < i && c.sec() == aabb3.SEC.OUT) {
 					j = i;
-					if (stage == 0)
-						stage = 1;
-					if (stage == 2)
-						stage = 3;
-					//c.color = 'green';
-					//c.manual_update();
+					if (stage == 0) stage = 1;
+					if (stage == 2) stage = 3;
 				}
 			}
 			if (i >= 200)

@@ -41,7 +41,7 @@ class World {
 			tile: [0, 0]
 		});
 
-		Egyt.ply.create();
+		Egyt.ply.comes();
 	}
 }
 
