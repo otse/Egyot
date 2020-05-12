@@ -22,10 +22,9 @@ class World {
 		this.objs.push(obj);
 		this.objs.sort((a, b) => a.order - b.order);
 
-		//let c = Egyt.map2.get_chunk_tile(Zxcvs.divide(<zx>[...obj.struct.tile], 24));
 		let c = Egyt.map2.get_chunk_tile(obj.struct.tile);
 		
-		//console.log('add obj to ch', Zxcvs.string(c.p));
+		c.objs.add(obj);
 	}
 
 	update() {

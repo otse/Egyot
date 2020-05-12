@@ -41,16 +41,7 @@ namespace Agriculture {
 		constructor(growth: number, struct: Obj.Struct) {
 			super(growth, struct);
 
-			this.rekt = new Rekt({
-				asset:
-					this.growth == 1 ? Egyt.sample(tillering) :
-					this.growth == 2 ? Egyt.sample(ripening) :
-					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-				pos: Zxcvs.multp([...this.struct.tile, 0], 24),
-				dim: [24, 24],
-			});
-
-			this.rekt.initiate();
+			
 		}
 
 		produce() {

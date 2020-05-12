@@ -121,15 +121,25 @@ class chunk {
 }
 
 class chunk_objs {
+	objs: Obj[] = []
 	constructor(private chunk: chunk) {
 
 	}
+	indexOf(obj: Obj) {
+		return this.objs.indexOf(obj);
+	}
 	add(obj: Obj) {
-
+		if (-1 == this.indexOf(obj))
+			this.objs.push(obj);
 	}
 
 	remove(obj: Obj) {
-		//
+		let i = this.indexOf(obj);
+		if (i > -1)
+			this.objs.splice(i, 1);
+	}
+	create() {
+		
 	}
 }
 
@@ -205,23 +215,6 @@ class chunk_fitter<T extends chunk> {
 
 	constructor(master) {
 		this.master = master;
-
-		let c = this.master.which([5, 0]);
-		let d = this.master.which([5, 21]);
-		let e = this.master.which([-1, 0]);
-		let f = this.master.make(-1, -2);
-		/*c.color = 'gray';
-		d.color = 'gray';
-		e.color = 'gray';
-		f.color = 'gray';
-		c.manual_update();
-		d.manual_update();
-		e.manual_update();
-		f.manual_update();*/
-		this.queued.push(c);
-		this.queued.push(d);
-		this.queued.push(e);
-		this.queued.push(f);
 	}
 
 	update() {
@@ -233,15 +226,10 @@ class chunk_fitter<T extends chunk> {
 
 		let b = this.master.big(middle);
 
-		//let c = this.master.make(b[0], b[1]); // paints chunks with the screen
-		//c.color = 'gray';
-		//c.manual_update();
-
 		this.snake(b, 1, -1);
 		this.snake(b, -1, 1);
-		//let c = this.master.make(1, 0);
 
-		Win.win.find('#chunkFitter').text(`Chunk fitter: ${points.string(b)}`);
+		//Win.win.find('#chunkFitter').text(`Chunk fitter: ${points.string(b)}`);
 
 		for (let c of this.queued) {
 			c.vis();
@@ -337,7 +325,7 @@ class Map2 {
 
 		this.mark.initiate();
 		this.mark.mesh.renderOrder = 999;
-		this.mark.dontOrder = true;		
+		this.mark.dontOrder = true;
 	}
 
 	init() {
