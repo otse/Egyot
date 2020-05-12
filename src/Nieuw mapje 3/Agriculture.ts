@@ -50,6 +50,10 @@ namespace Agriculture {
 			this.produce();
 		}
 
+		goes() {
+			this.release();
+		}
+
 		produce() {
 			console.log('produce wheat');
 
@@ -63,6 +67,10 @@ namespace Agriculture {
 			});
 
 			this.rekt.initiate();
+		}
+
+		release() {
+			this.rekt.deinitiate();
 		}
 	}
 

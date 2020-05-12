@@ -16,7 +16,6 @@ declare class sobj {
 }
 
 class chunk {
-	visible
 	color
 	on = false
 
@@ -35,7 +34,6 @@ class chunk {
 
 	constructor(x, y, private master: chunk_master<chunk>) {
 		this.objs = new chunk_objs(this);
-		this.visible = false;
 		this.color = 'white';
 		this.p = [x, y];
 
@@ -127,23 +125,12 @@ class chunk {
 	sec() {
 		return Egyt.game.view.intersect(this.boundscreen);
 	}
-	vis() {
-		let sec = Egyt.game.view.intersect(this.boundscreen) != aabb3.SEC.OUT;
+	see() {
+		return this.sec() != aabb3.SEC.OUT;
+	}
+	update() {
 
-		if (sec && !this.visible) {
-			this.visible = true;
-			console.log('visible true');
-		}
-		else if (!sec && this.visible) {
-			this.visible = false;
-			console.log('visible false');
-		}
-		//console.log('vis', sec, 'for', Zxcvs.string(this.p));
-
-		//this.outline.material.wireframe = !sec;// ? 'green' : 'red');
-		this.outline.material.needsUpdate = true;
-
-		return sec;
+		return;
 	}
 
 }
@@ -243,7 +230,7 @@ class chunk_master<T extends chunk> {
 
 class chunk_fitter<T extends chunk> { // chunk-snake
 
-	queued: T[] = []
+	shown: T[] = []
 
 	constructor(private master: chunk_master<T>) {
 		this.master = master;
@@ -257,8 +244,13 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 		this.snake(b, 1, 1);
 		this.snake(b, -1, -1);
 
-		for (let c of this.queued) {
-			c.vis();
+		let i = this.shown.length;
+		while (i--) {
+			let c = this.shown[i];
+			if (!c.see()) {
+				c.goes();
+				this.shown.splice(i, 1);
+			}
 		}
 	}
 	snake(b: zx, n: number = 1, m: number = -1) {
@@ -298,10 +290,10 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 					if (stage == 0) stage = 1;
 					if (stage == 2) stage = 3;
 				}
-				if (c.sec() != aabb3.SEC.OUT) {
+				if (c.see()) {
 					c.comes();
 					if (c.notempty())
-						this.queued.push(c);
+						this.shown.push(c);
 				}
 			}
 			if (i >= 200)

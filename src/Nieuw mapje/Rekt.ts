@@ -74,6 +74,8 @@ class Rekt {
 	public deinitiate() {
 		ThreeQuarter.scene.remove(this.mesh);
 
+		Rekt.num--;
+
 		this.geometry.dispose();
 		this.material.dispose();
 	}
