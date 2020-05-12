@@ -50,16 +50,16 @@ class aabb3 {
 		}
 	}
 
-	extend(v: Zxc) {
+	extend(v: zxc) {
 		this.min = min3(this.min, v) as zxc;
 		this.max = max3(this.max, v) as zxc;
 	}
 
-	diagonal(): Zxc {
+	diagonal(): zxc {
 		return subtr3(this.max, this.min) as zxc;
 	}
 
-	center(): Zxc {
+	center(): zxc {
 		return addit3(this.min, scalar3(this.diagonal(), 0.5)) as zxc;
 	}
 
@@ -72,20 +72,20 @@ class aabb3 {
 		this.max[2] *= n;
 	}
 
-	translate(v: Zxc) {
+	translate(v: zxc) {
 		addit3(this.min, v);
 		addit3(this.max, v);
 	}
 
 	intersect(v: aabb3) {
 		if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
-			this.max[1] < v.min[1] || this.min[1] > v.max[1] ||
-			this.max[2] < v.min[2] || this.min[2] > v.max[2])
+			this.max[1] < v.min[1] || this.min[1] > v.max[1] //||
+			/*this.max[2] < v.min[2] || this.min[2] > v.max[2]*/)
 			return aabb3.SEC.OUT;
 
 		if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
-			this.min[1] <= v.min[1] && this.max[1] >= v.max[1] &&
-			this.min[2] <= v.min[2] && this.max[2] >= v.max[2])
+			this.min[1] <= v.min[1] && this.max[1] >= v.max[1] //&&
+			/*this.min[2] <= v.min[2] && this.max[2] >= v.max[2]*/)
 			return aabb3.SEC.IN;
 
 		return aabb3.SEC.CROSS;

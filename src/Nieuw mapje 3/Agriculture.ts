@@ -65,6 +65,9 @@ namespace Agriculture {
 
 	export function place_wheat(growth, pos: Zx) {
 		
+		if (Math.random()>.99)
+			return;
+			
 		const p = Points.multp([...pos, 0], 24);
 
 		let wheat = new Wheat(growth, {

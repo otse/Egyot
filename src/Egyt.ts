@@ -98,7 +98,7 @@ export namespace Egyt {
 			</a>
 			<div>
 				Move the view with <key>W</key> <key>A</key> <key>S</key> <key>D</key>.
-				Scroll to zoom.
+				Scroll to zoom. Hold <key>X</key> to fast scroll.
 			</div>
 
 			<a>World editing
@@ -130,6 +130,7 @@ export namespace Egyt {
 				<span id="chunk"></span><br/>
 				<span id="mouseTile"></span><br/>
 				<span id="worldSquareChunk"></span><br/>
+				<span id="chunkFitter"></span><br/>
 			</div>
 
 			<a>Items Demo

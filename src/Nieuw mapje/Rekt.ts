@@ -54,7 +54,7 @@ class Rekt {
 			map: map,
 			transparent: true,
 			opacity: this.struct.opacity,
-			//color: this.stats.color || 0xffffff
+			color: this.struct.color || 0xffffff
 		});
 
 		this.mesh = new Mesh(this.geometry, this.material);

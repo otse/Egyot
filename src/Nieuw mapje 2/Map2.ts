@@ -16,14 +16,23 @@ declare class sobj {
 }
 
 class chunk {
+	visible
+	color
+
+	objs: chunk_objs
 	p: zx
 	bound: aabb3
 	boundscreen: aabb3
+
 	array: Obj[][][]
+
 	rekt: Rekt
-	wire: Rekt
+	outline: Rekt
 
 	constructor(x, y, master) {
+		this.objs = new chunk_objs(this);
+		this.visible = false;
+		this.color = 'white';
 		this.p = [x, y];
 
 		let pos = points.multp([x + 1, y, 0], master.span * 24);
@@ -46,16 +55,19 @@ class chunk {
 			<zxc>points.add(<zxc>[...real], [master.span * 12, master.span * 6, 0])
 		)
 
-		this.wire = new Rekt({
+		this.outline = new Rekt({
 			name: 'TileSwab Wire',
 			pos: real,
 			dim: [master.span * 24, master.span * 12],
-			asset: 'egyt/128'
+			asset: 'egyt/128',
+			color: this.color
+
 		});
 
-		this.wire.noDimetricization = true;
-		this.wire.initiate();
-		this.wire.material.wireframe = true;
+		this.outline.noDimetricization = true;
+		this.outline.initiate();
+		this.outline.mesh.renderOrder = -999;
+		this.outline.material.wireframe = true;
 
 		//Agriculture.plop_wheat_area(3, this.bound);
 
@@ -64,39 +76,61 @@ class chunk {
 		this.rekt = new Rekt({
 			pos: pos,
 			dim: [master.span * 24, master.span * 12],
-			asset: 'egyt/tenbyten'
+			asset: 'egyt/tenbyten',
+			color: this.color
 		})
 
 		this.rekt.initiate();
 
-		const colors = ['pink', 'red', 'magenta', 'orange']
+		//const colors = ['pink', 'red', 'magenta', 'orange'];
+		const colors = ['springgreen', 'peachpuff', 'coral', 'salmon', 'thistle'];
 
-		this.rekt.mesh.renderOrder = -1;
+		this.rekt.mesh.renderOrder = -1000;
 		this.rekt.material.color.set(Egyt.sample(colors));
 
 	}
 
-	add(any: any) {
-
+	manual_update() {
+		this.rekt.material.color.set(this.color);
+		this.rekt.material.needsUpdate = true;
 	}
 
-	remove(any: any) {
-		//
+	sec() {
+		return Egyt.game.view.intersect(this.boundscreen);
 	}
 
 	vis() {
-		const view = Egyt.game.view;
+		let sec = Egyt.game.view.intersect(this.boundscreen) != aabb3.SEC.OUT;
 
-		let sec = this.boundscreen.intersect(view) != aabb3.SEC.OUT;
+		if (sec && !this.visible) {
+			this.visible = true;
+			console.log('visible true');
+		}
+		else if (!sec && this.visible) {
+			this.visible = false;
+			console.log('visible false');
+		}
+		//console.log('vis', sec, 'for', Zxcvs.string(this.p));
 
-		console.log('vis', sec, 'for', Zxcvs.string(this.p));
-
-		this.rekt.material.color = new Color(sec ? 'green' : 'red');
-		this.rekt.material.needsUpdate = true;
+		//this.outline.material.wireframe = !sec;// ? 'green' : 'red');
+		this.outline.material.needsUpdate = true;
 
 		return sec;
 	}
 
+}
+
+class chunk_objs {
+	constructor(private chunk: chunk) {
+
+	}
+	add(obj: Obj) {
+
+	}
+
+	remove(obj: Obj) {
+		//
+	}
 }
 
 class statchunk extends chunk {
@@ -109,6 +143,8 @@ class dynchunk extends chunk {
 
 class chunk_master<T extends chunk> {
 	readonly span: number
+	readonly width: number
+	readonly height: number
 
 	arrays: T | null[][] = []
 
@@ -116,6 +152,8 @@ class chunk_master<T extends chunk> {
 
 	constructor(private testType: new (x, y, m) => T, span: number) {
 		this.span = span;
+		this.width = span * 24;
+		this.height = span * 12;
 
 		this.fitter = new chunk_fitter<T>(this);
 	}
@@ -136,14 +174,17 @@ class chunk_master<T extends chunk> {
 	}
 
 	make(x, y): T {
-		this.at(x, y);
-		let c = this.arrays[y][x] = new this.testType(x, y, this);
+		let c;
+		c = this.at(x, y);
+		if (c)
+			return c;
+		c = this.arrays[y][x] = new this.testType(x, y, this);
 		return c;
 	}
 
 	which(t: zx): T {
 		let b = this.big(t);
-		let c = this.at(b[0], b[1]) || this.make(b[0], b[1])
+		let c = this.at(b[0], b[1]) || this.make(b[0], b[1]);
 		return c;
 	}
 
@@ -164,20 +205,94 @@ class chunk_fitter<T extends chunk> {
 		let c = this.master.which([5, 0]);
 		let d = this.master.which([5, 21]);
 		let e = this.master.which([-1, 0]);
+		let f = this.master.make(-1, -2);
+		/*c.color = 'gray';
+		d.color = 'gray';
+		e.color = 'gray';
+		f.color = 'gray';
+		c.manual_update();
+		d.manual_update();
+		e.manual_update();
+		f.manual_update();*/
 		this.queued.push(c);
 		this.queued.push(d);
 		this.queued.push(e);
+		this.queued.push(f);
 	}
 
 	update() {
+		// this.statmaster.big(mouse.tile);
 		const view = Egyt.game.view;
 
-		let topleft = [view.min[0], view.max[1]] as zx;
+		let middle = Egyt.map2.query_world_pixel([...view.center()] as zx).tile;
+		let lefttop = Egyt.map2.query_world_pixel([Egyt.game.view.min[0], Egyt.game.view.max[1]]).tile;
+
+		let b = this.master.big(middle);
+
+		//let c = this.master.make(b[0], b[1]); // paints chunks with the screen
+		//c.color = 'gray';
+		//c.manual_update();
+
+		this.snake(b, 1, -1);
+		this.snake(b, -1, 1);
+		//let c = this.master.make(1, 0);
+
+		Win.win.find('#chunkFitter').text(`Chunk fitter: ${points.string(b)}`);
 
 		for (let c of this.queued) {
-			//c.vis();
+			c.vis();
 		}
 
+	}
+
+	snake(b: zx, n: number = 1, m: number = -1) {
+		let i = 0;
+		let j = 0;
+		let x = b[0];
+		let y = b[1];
+		let stage = 0;
+
+		while (true) {
+			i++;
+			switch (stage) {
+				case 0:
+					x += n;
+					y += n;
+					break;
+				case 1:
+					y += m;
+					stage = 2;
+					break;
+				case 2:
+					x += m;
+					y += m;
+					break;
+				case 3:
+					y += m;
+					stage = 0;
+					break;
+			}
+			let be;
+			if (!this.master.at(x, y))
+				be = 1;
+			let c = this.master.at(x, y); // paints chunks with the screen
+			if (c) {
+				//if (be)
+				//c.color = ['springgreen', 'peachpuff', 'coral', 'salmon', 'thistle'][Math.floor(Egyt.game.scale*2)];
+				//c.manual_update();
+				if (j + 2 < i && c.sec() == aabb3.SEC.OUT) {
+					j = i;
+					if (stage == 0)
+						stage = 1;
+					if (stage == 2)
+						stage = 3;
+					//c.color = 'green';
+					//c.manual_update();
+				}
+			}
+			if (i >= 200)
+				break;
+		}
 	}
 
 }
