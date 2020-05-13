@@ -65,9 +65,23 @@ class chunk {
 			<zxc>points.add(<zxc>[...real], [-this.master.width / 2, -this.master.height / 2, 0]),
 			<zxc>points.add(<zxc>[...real], [this.master.width / 2, this.master.height / 2, 0])
 		)
+
+		
 	}
 	empty() {
 		return this.objs.many() < 1;
+	}
+	show() {
+		let rekt = new Rekt({
+			//istile: true,
+			xy: this.mult,
+			wh: [this.master.width, this.master.height],
+			asset: 'egyt/tenbyten',
+			color: Egyt.sample(['red', 'blue'])
+		});
+
+		rekt.initiate();
+		rekt.mesh.renderOrder = -999;
 	}
 	comes() {
 		this.on = true;
@@ -196,8 +210,8 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 
 		let b = this.master.big(middle);
 
-		this.snake(b, 1, 1);
-		this.snake(b, -1, -1);
+		this.snake(b, 1);
+		this.snake(b, -1);
 
 		let i = this.shown.length;
 		while (i--) {
@@ -209,13 +223,23 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 			}
 		}
 	}
-	snake(b: zx, n: number = 1, m: number = -1) {
+	snake(b: zx, n: number = 1) {
 		let i = 0;
 		let x = b[0], y = b[1];
 		let stage = 0;
 		let s = 0;
 		while (true) {
 			i++;
+			let c = this.master.guarantee(x, y);
+			if (s > 2 && c.sec() == aabb3.SEC.OUT) {
+				if (stage == 0) stage = 1;
+				if (stage == 2) stage = 3;
+			}
+			if (!c.on && c.see()) {
+				c.comes();
+				if (!c.empty())
+					this.shown.push(c);
+			}
 			switch (stage) {
 				case 0:
 					x += n;
@@ -223,33 +247,22 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 					s++;
 					break;
 				case 1:
-					y -= m;
+					y -= n;
 					stage = 2;
 					s = 0;
 					break;
 				case 2:
-					x -= m;
-					y -= m;
+					x -= n;
+					y -= n;
 					s++;
 					break;
 				case 3:
-					y -= m;
+					y -= n;
 					stage = 0;
 					s = 0;
 					break;
 			}
-			let c = this.master.guarantee(x, y);
-			if (c) {
-				if (s > 2 && c.sec() == aabb3.SEC.OUT) {
-					if (stage == 0) stage = 1;
-					if (stage == 2) stage = 3;
-				}
-				if (!c.on && c.see()) {
-					c.comes();
-					if (!c.empty())
-						this.shown.push(c);
-				}
-			}
+			
 			if (i >= 200)
 				break;
 		}
@@ -292,20 +305,24 @@ class Map2 {
 
 	init() {
 		let granary = new Rekt({
-			xy: points.multp([0, -1, 0], 24),
+			istile: true,
+			xy: [6, -1],
 			wh: [192, 156],
 			asset: 'egyt/building/granary'
 		});
 
 		let tobaccoshop = new Rekt({
-			xy: points.multp([-14, -10, 0], 24),
+			istile: true,
+			xy: [-16, -13],
 			wh: [144, 144],
 			asset: 'egyt/building/redstore'
 		});
 
-		Agriculture.plop_wheat_area(1, new aabb3([-9, -4, 0], [-9+12, -12, 0]));
-		Agriculture.plop_wheat_area(1, new aabb3([-9, -14, 0], [-9+12, -22, 0]));
-		Agriculture.plop_wheat_area(2, new aabb3([5, -4, 0], [5+12+12+12, -12, 0]));
+		Agriculture.plop_wheat_area(1, new aabb3([-9, -4, 0], [3, -22, 0]));
+		Agriculture.plop_wheat_area(2, new aabb3([5, -4, 0], [5+50-2, -12, 0]));
+		Agriculture.plop_wheat_area(2, new aabb3([5+50, -4, 0], [5+50-2+50, -12, 0]));
+		Agriculture.plop_wheat_area(3, new aabb3([5, -14, 0], [5+50-2, -22, 0]));
+		Agriculture.plop_wheat_area(3, new aabb3([5+50, -14, 0], [5+50-2+50, -22, 0]));
 		//Agriculture.plop_wheat_area(2, new aabb3([5, -14, 0], [5+12+12+12, -22, 0]));
 		//Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
 		//Agriculture.plop_wheat_area(3, new aabb3([-4, -4, 0], [20, -39, 0]));
@@ -314,7 +331,7 @@ class Map2 {
 		//Agriculture.plop_wheat_area(3, new aabb3([-20, -302, 0], [11, -600, 0]));
 
 		granary.initiate();
-		tobaccoshop.initiate();
+		//tobaccoshop.initiate();
 	}
 
 	get_chunk_tile(t: zx | zxc) {

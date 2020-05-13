@@ -70,7 +70,7 @@ class Game {
 
 		this.pos = [0, 0, 0]; //[-1665, 3585, 0];
 		this.dpi = window.devicePixelRatio;
-		this.scale = 2 / this.dpi;
+		this.scale = 1 / this.dpi;
 
 		this.view = new aabb3([0, 0, 0]);
 

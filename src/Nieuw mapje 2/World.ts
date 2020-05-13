@@ -26,6 +26,9 @@ class World {
 		
 		c.objs.add(obj);
 		obj.chunk = c;
+
+		if (c.on)
+			obj.comes();
 	}
 
 	update() {

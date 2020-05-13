@@ -95,7 +95,7 @@ export namespace Egyt {
 		<div>Hi</div>
 		<br />
 		<div class="region small">
-			<a collapse>Tutorial
+			<a>Tutorial
 			</a>
 			<div>
 				Move the view with <key>W</key> <key>A</key> <key>S</key> <key>D</key>.
@@ -119,7 +119,7 @@ export namespace Egyt {
 				Nothing here yet
 			</div>
 
-			<a collapse>Stats
+			<a>Stats
 			</a>
 			<div>
 				<span id="gameAabb"></span><br/>
@@ -143,6 +143,8 @@ export namespace Egyt {
 				</div>
 			</div>
 		</div>`);
+
+		setTimeout(() => Win.cornerbox('hi', 'welcome'), 2000);
 
 		started = true;
 	}

@@ -63,3 +63,19 @@ div.rpgitem > span:nth-child(2) {
 
 /* end of <div><span><span> */
 
+
+/* begin of cornerbox */
+
+div.cornerbox {
+	display: inline-block;
+}
+
+div.cornerbox > span:first-child {
+	display: block;
+}
+
+div.cornerbox > span:nth-child(2) {
+	display: block;
+}
+
+/* end of cornerbox */

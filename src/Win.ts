@@ -45,6 +45,14 @@ namespace Win {
 		nyan.find('div').children().find('span').next('span').parent().addClass('rpgitem');
 	}
 
+	export function cornerbox(title: string, message: string) {
+
+		let jay = $('<div>').addClass('cornerbox').append('span').text(title).append('span').text(message);
+
+		win.append(jay);
+
+	}
+
 	export function init() {
 		(window as any).Win = Win;
 

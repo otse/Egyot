@@ -84,7 +84,7 @@ export namespace ThreeQuarter {
 		clock = new Clock();
 
 		scene = new Scene();
-		scene.background = new Color('rgb(53, 74, 55)'); // #444
+		scene.background = new Color('rgb(40, 72, 42)'); // #444
 		scene2 = new Scene();
 
 		dpi = window.devicePixelRatio;

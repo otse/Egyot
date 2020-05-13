@@ -32,7 +32,6 @@ class Rekt {
 	center: zx
 
 	constructor(struct: Rekt.Struct) {
-
 		Rekt.num++;
 
 		this.struct = struct;
