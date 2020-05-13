@@ -7,7 +7,8 @@ import Zxcvs from "../Zxcvs";
 
 namespace Forestation {
 
-	let plopping: TreePlop | null;
+	let positions: zx[] = [[-18, -12]]
+	let plopping: Tree | null;
 
 	const trees = [
 		'egyt/tree/oaktree3',
@@ -17,7 +18,7 @@ namespace Forestation {
 		//'egyt/birchtree3',
 	]
 
-	export class TreePlop extends Obj {
+	export class Tree extends Obj {
 
 		rekt: Rekt
 
@@ -28,6 +29,7 @@ namespace Forestation {
 			this.rekt = new Rekt({
 				obj: this,
 				asset: Egyt.sample(trees),
+				istile: true,
 				xy: this.struct.tile,
 				wh: [120, 132],
 			});
@@ -41,7 +43,7 @@ namespace Forestation {
 
 			let p = <zx>[...Egyt.map2.mouse_tile];
 
-			this.struct.tile = <zx>p;
+			this.struct.tile = p;
 			this.rekt.struct.xy = p;
 			this.rekt.mult();
 
@@ -55,6 +57,11 @@ namespace Forestation {
 	export function init() {
 		console.log('forestation');
 
+		for (let pos of positions)
+			new Tree({
+				tile: pos
+			});
+
 		(window as any).Forestation = Forestation;
 	}
 
@@ -67,7 +74,7 @@ namespace Forestation {
 
 	export function plop_tree() {
 
-		let plop = new TreePlop({
+		let plop = new Tree({
 			tile: Egyt.map2.mouse_tile
 		});
 

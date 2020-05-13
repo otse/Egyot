@@ -291,10 +291,10 @@ class Map2 {
 	}
 
 	init() {
-		let tinybarn = new Rekt({
+		let granary = new Rekt({
 			xy: points.multp([0, -1, 0], 24),
 			wh: [192, 156],
-			asset: 'egyt/building/tinybarn'
+			asset: 'egyt/building/granary'
 		});
 
 		let tobaccoshop = new Rekt({
@@ -303,15 +303,17 @@ class Map2 {
 			asset: 'egyt/building/redstore'
 		});
 
-		Agriculture.plop_wheat_area(1, new aabb3([-9, -4, 0], [2, -6, 0]));
-		Agriculture.plop_wheat_area(2, new aabb3([-9, -8, 0], [2, -10, 0]));
-		Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
-		Agriculture.plop_wheat_area(3, new aabb3([-9, -16, 0], [2, -50, 0]));
-		Agriculture.plop_wheat_area(2, new aabb3([-25, 14, 0], [5, 50, 0]));
+		Agriculture.plop_wheat_area(1, new aabb3([-9, -4, 0], [-9+12, -12, 0]));
+		Agriculture.plop_wheat_area(1, new aabb3([-9, -14, 0], [-9+12, -22, 0]));
+		Agriculture.plop_wheat_area(2, new aabb3([5, -4, 0], [5+12+12+12, -12, 0]));
+		//Agriculture.plop_wheat_area(2, new aabb3([5, -14, 0], [5+12+12+12, -22, 0]));
+		//Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
+		//Agriculture.plop_wheat_area(3, new aabb3([-4, -4, 0], [20, -39, 0]));
+		//Agriculture.plop_wheat_area(2, new aabb3([-25, 14, 0], [5, 50, 0]));
 		//Agriculture.plop_wheat_area(3, new aabb3([-9, -52, 0], [2, -300, 0]));
 		//Agriculture.plop_wheat_area(3, new aabb3([-20, -302, 0], [11, -600, 0]));
 
-		tinybarn.initiate();
+		granary.initiate();
 		tobaccoshop.initiate();
 	}
 
