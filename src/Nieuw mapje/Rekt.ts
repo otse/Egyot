@@ -1,6 +1,8 @@
 import { ThreeQuarter, THREE } from "../ThreeQuarter";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
+import Zxcvs from "../Zxcvs";
+import Obj from "./Obj";
 
 class Rekt {
 
@@ -9,9 +11,11 @@ class Rekt {
 	dontOrder = false
 
 	readonly struct: {
+		obj?: Obj
 		name?: string
-		xy: Zxc
-		wh: Zx
+		istile?: boolean
+		xy: zx
+		wh: zx
 		asset?: string
 		flip?: boolean
 		opacity?: number,
@@ -24,8 +28,8 @@ class Rekt {
 	material: MeshBasicMaterial
 	geometry: PlaneBufferGeometry
 
-	actualpos: Zxc
-	center: Zx
+	actualpos: zxc
+	center: zx
 
 	constructor(struct: Rekt.Struct) {
 
@@ -33,30 +37,31 @@ class Rekt {
 
 		this.struct = struct;
 
+		if (struct.istile)
+			this.mult();
+
 		this.actualpos = [0, 0, 0];
 		this.center = [0, 0];
 
 		if (this.struct.opacity == undefined) this.struct.opacity = 1;
 	}
-
+	public mult() {
+		this.struct.xy = Zxcvs.multp([...this.struct.xy], 24);
+	}
 	public initiate() {
 
-		// At least 2, 1 segments or glitch
 		this.geometry = new PlaneBufferGeometry(
 			this.struct.wh[0], this.struct.wh[1], 1, 1);
 
 		let map;
-
 		if (this.struct.asset)
 			map = ThreeQuarter.loadTexture(`assets/${this.struct.asset}.png`);
-
 		this.material = new MeshBasicMaterial({
 			map: map,
 			transparent: true,
 			opacity: this.struct.opacity,
 			color: this.struct.color || 0xffffff
 		});
-
 		this.mesh = new Mesh(this.geometry, this.material);
 		this.mesh.frustumCulled = true;
 		this.mesh.scale.set(1, 1, 1);
@@ -68,11 +73,20 @@ class Rekt {
 
 		this.now_update_pos();
 
-		ThreeQuarter.scene.add(this.mesh);
+		let c;
+		if (c = this.struct.obj?.chunk) {
+			c.group.add(this.mesh);
+		}
+		else
+			ThreeQuarter.scene.add(this.mesh);
 	}
 
 	public deinitiate() {
-		ThreeQuarter.scene.remove(this.mesh);
+		let c;
+		if (c = this.struct.obj?.chunk)
+			c.group.remove(this.mesh);
+		else
+			ThreeQuarter.scene.remove(this.mesh);
 
 		Rekt.num--;
 
@@ -99,7 +113,7 @@ class Rekt {
 			if (this.middleBottom) {
 				let w = d[0] / 2;
 				let h = d[1] / 2;
-				
+
 				y += h;
 			}
 

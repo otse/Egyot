@@ -12,7 +12,7 @@ class Man extends Obj {
     produce() {
         return;
         this.rekt = new Rekt({
-            xy: <zxc>[...this.struct.tile, 0],
+            xy: this.struct.tile,
             wh: [22, 25],
             asset: 'egyt/pumpkin'
         })

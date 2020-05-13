@@ -25,14 +25,13 @@ class World {
 		let c = Egyt.map2.get_chunk_tile(obj.struct.tile);
 		
 		c.objs.add(obj);
+		obj.chunk = c;
 	}
 
 	update() {
-
 		for (let obj of this.objs) {
 			obj.update();
 		}
-
 	}
 
 	init() {

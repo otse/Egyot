@@ -26,12 +26,8 @@ namespace Agriculture {
 	]
 
 	export class Crop extends Obj {
-		growth: number
-
-		constructor(growth: number, struct: Obj.Struct) {
+		constructor(protected growth: number, struct: Obj.Struct) {
 			super(struct);
-
-			this.growth = growth;
 		}
 	}
 
@@ -40,27 +36,24 @@ namespace Agriculture {
 
 		constructor(growth: number, struct: Obj.Struct) {
 			super(growth, struct);
-
-			
 		}
-
 		comes() {
 			super.comes();
-			
 			this.grow();
 		}
 		goes() {
 			super.goes();
-			
 			this.rekt.deinitiate();
 		}
 		grow() {
 			this.rekt = new Rekt({
+				obj: this,
 				asset:
 					this.growth == 1 ? Egyt.sample(tillering) :
 					this.growth == 2 ? Egyt.sample(ripening) :
 					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-				xy: Zxcvs.multp([...this.struct.tile, 0], 24),
+				istile: true,
+				xy: this.struct.tile,
 				wh: [24, 24],
 			});
 
@@ -82,8 +75,6 @@ namespace Agriculture {
 
 		if (Math.random() > .99)
 			return;
-
-		//const mult = Points.multp([...tile, 0], 24);
 
 		let wheat = new Wheat(growth, {
 			tile: tile

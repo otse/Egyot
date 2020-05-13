@@ -8,7 +8,8 @@ import Agriculture from "../Nieuw mapje 3/Agriculture";
 import { aabb3 } from "../Bound";
 import Obj from "../Nieuw mapje/Obj";
 import Zxcvs from "../Zxcvs";
-import { Color } from "three";
+import { Color, Group } from "three";
+import { ThreeQuarter } from "../ThreeQuarter";
 
 
 declare class sobj {
@@ -18,6 +19,7 @@ declare class sobj {
 class chunk {
 	color
 	on = false
+	group: Group
 
 	objs: chunk_objs
 	p: zx
@@ -36,6 +38,7 @@ class chunk {
 		this.objs = new chunk_objs(this);
 		this.color = 'white';
 		this.p = [x, y];
+		this.group = new Group;
 
 		this.set_bounds();
 	}
@@ -63,18 +66,25 @@ class chunk {
 			<zxc>points.add(<zxc>[...real], [this.master.width / 2, this.master.height / 2, 0])
 		)
 	}
-
-	notempty() {
-		return this.objs.many() > 0;
+	empty() {
+		return this.objs.many() < 1;
 	}
 	comes() {
 		this.on = true;
-		if (this.notempty())
+		if (!this.empty()) {
+			ThreeQuarter.scene.add(this.group);
 			this.objs.comes();
+		}
 	}
 	goes() {
 		this.on = false;
-		this.objs.goes();
+		if (!this.empty()) {
+			ThreeQuarter.scene.remove(this.group);
+			for (var i = this.group.children.length - 1; i >= 0; i--) {
+				this.group.remove(this.group.children[i]);
+			}
+			this.objs.goes();
+		}
 	}
 	sec() {
 		return Egyt.game.view.intersect(this.boundscreen);
@@ -236,7 +246,7 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 				}
 				if (!c.on && c.see()) {
 					c.comes();
-					if (c.notempty())
+					if (!c.empty())
 						this.shown.push(c);
 				}
 			}
@@ -270,7 +280,7 @@ class Map2 {
 		this.mouse_tile = [0, 0];
 
 		this.mark = new Rekt({
-			xy: [0, 0, 0],
+			xy: [0, 0],
 			wh: [22, 25],
 			asset: 'egyt/iceblock'
 		});
@@ -341,7 +351,7 @@ class Map2 {
 
 		this.mouse_tile = mouse.tile;
 
-		this.mark.struct.xy = <zxc>[...mouse.mult, 0];
+		this.mark.struct.xy = mouse.mult;
 		this.mark.now_update_pos();
 
 		Win.win.find('#mouseTile').text(`World square: ${points.string(mouse.tile)}`);
@@ -370,4 +380,4 @@ class Map2 {
 	}
 }
 
-export { Map2 }
+export { Map2, chunk, chunk_master, chunk_fitter, chunk_objs }

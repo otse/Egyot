@@ -1,8 +1,10 @@
+import { chunk } from "../Nieuw mapje 2/Map2";
+
 class Obj {
-	static ons = 0;
-	order = 0
+	static active = 0;
 	on = false
-	clickable = false
+	order = 0
+	chunk: chunk | null = null
 
 	readonly struct: {
 		tile: zx
@@ -10,19 +12,17 @@ class Obj {
 	}
 	constructor(struct: Obj['struct']) {
 		Obj.num++;
-
 		this.struct = struct;
-
 	}
 	update() {
 	}
 	comes() {
+		Obj.active++;
 		this.on = true;
-		Obj.ons++;
 	}
 	goes() {
+		Obj.active--;
 		this.on = false;
-		Obj.ons--;
 	}
 }
 

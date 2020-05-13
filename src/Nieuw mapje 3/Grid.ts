@@ -39,7 +39,7 @@ namespace Tilization {
 			let p = <zx>[...Egyt.map2.mouse_tile];
 
 			this.struct.tile = <zx>p;
-			this.rekt.struct.xy = <zxc>[...p, 0];
+			this.rekt.struct.xy = <zx>[...p, 0];
 
 			this.rekt.now_update_pos();
 
