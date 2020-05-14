@@ -1,17 +1,17 @@
-Skills and their ranks:
-    Tailoring:
-        Knitter --> Clothier
-
-    Artisanry:
-
-    Farming: 
-        Knave --> Peasant --> Farmer
+Preword
+I like to write code...but that's it. No actual game. Here are some of my bad ideas:
 
 Den of evil
-A mine with ore, monsters and rewards
+A mine with ore, monsters and rewards. Would look good isometric.
 
-Oracle
-"There will be no zombies soon"
+Oracle / Gazebo
+"There may be bats... soon..."
 
 Necromancy / Evilness
-Things inconspicously wither and die around you
+Things inconspicously and slowly wither and die around you
+
+Starting Area - Farm
+Several large fields and a granary. It provides wheat for all.
+
+Runescape, OSRS
+I look dreamily at runescape.

@@ -36,8 +36,10 @@ class chunk {
 	outline: Rekt
 
 	constructor(x, y, private master: chunk_master<chunk>) {
+		const colors = ['lightsalmon', 'khaki', 'lightgreen', 'paleturquoise', 'plum', 'pink'];
+
 		this.objs = new chunk_objs(this);
-		this.color = 'white';
+		//this.color = Egyt.sample(colors);
 		this.p = [x, y];
 		this.group = new Group;
 

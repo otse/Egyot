@@ -59,7 +59,7 @@ class Rekt {
 			map: map,
 			transparent: true,
 			opacity: this.struct.opacity,
-			color: this.struct.color || 0xffffff
+			color: this.struct.obj?.chunk?.color || this.struct.color || 0xffffff
 		});
 		this.mesh = new Mesh(this.geometry, this.material);
 		this.mesh.frustumCulled = true;
