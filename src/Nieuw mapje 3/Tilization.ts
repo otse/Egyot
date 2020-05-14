@@ -7,7 +7,7 @@ import Zxcvs from "../Zxcvs";
 
 namespace Tilization {
 
-	let plopping: TilePlop | null;
+	let plopping: Tile | null;
 
 	const colors = [
 		//'egyt/tilered',
@@ -15,18 +15,19 @@ namespace Tilization {
 		'egyt/tileorange',
 	]
 
-	export class TilePlop extends Obj {
+	export class Tile extends Obj {
 
 		rekt: Rekt
 
-		constructor(struct: Obj.Struct) {
+		constructor(asset, struct: Obj.Struct) {
 
 			super(struct);
 
 			this.rekt = new Rekt({
-				asset: Egyt.sample(colors),
-				xy: Zxcvs.multp([...this.struct.tile, 0], 24),
-				wh: [24, 12],
+				asset: asset,
+				istile: true,
+				xy: this.struct.tile,
+				wh: [22, 11],
 			});
 
 			this.rekt.initiate();
@@ -38,8 +39,10 @@ namespace Tilization {
 
 			let p = <zx>[...Egyt.map2.mouse_tile];
 
-			this.struct.tile = <zx>p;
+			this.struct.tile = p;
+
 			this.rekt.struct.xy = <zx>[...p, 0];
+			this.rekt.mult();
 
 			this.rekt.now_update_pos();
 
@@ -56,19 +59,31 @@ namespace Tilization {
 
 	export function update() {
 		if (!plopping && App.map['y'] == 1) {
-			plopping = plop_tile();
+			plopping = place_tile(Egyt.sample(colors), Egyt.map2.mouse_tile);
 		}
 	}
 
-	export function plop_tile() {
+	export function place_tile(asset, pos) {
 
-		let plop = new TilePlop({
-			tile: <zx>[...Egyt.map2.mouse_tile]
+		let tile = new Tile(asset, {
+			tile: pos
 		});
 
-		Egyt.world.add(plop);
+		Egyt.world.add(tile);
 
-		return plop;
+		return tile;
+	}
+	
+	export function area_sample(assets: string[], aabb: aabb3) {
+		const every = (pos: Zx) => place_tile(Egyt.sample(assets), pos);
+
+		Zxcvs.area_every(aabb, every);
+	}
+
+	export function plop_tile_area(asset: string, aabb: aabb3) {
+		const every = (pos: Zx) => place_tile(asset, pos);
+
+		Zxcvs.area_every(aabb, every);
 	}
 }
 

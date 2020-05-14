@@ -20,13 +20,10 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Love+Ya+Like+A+Sister&display=swap" rel="stylesheet">
 
-    <!-- uncomment one -->
-    <link rel="stylesheet" type="text/css" href="style95.css">
-    <link rel="stylesheet" type="text/css" href="style2.css">
+    <link rel="stylesheet" type="text/css" href="style95.css?v=3">
+    <link rel="stylesheet" type="text/css" href="style2.css?v=3">
 
-    <!-- <script src="js/stackblur.min.js"></script> -->
-
-    <script src="js/bundle.js?v=0.031"></script>
+    <script src="js/bundle.js?v=0.035"></script>
 
     <title>is this a farming sim</title>
 
@@ -34,7 +31,7 @@
 
     <script>
         $(document).ready(function () {
-            App.Boot('wix');
+            App.Boot('twix');
         });
     </script>
 
@@ -66,36 +63,35 @@
 </head>
 
 <body>
+    <div id="win"></div>
+
     <script id="fragment_shader_screen" type="x-shader/x-fragment">
-			varying vec2 vUv;
-			uniform sampler2D tDiffuse;
-			void main() {
-				gl_FragColor = texture2D( tDiffuse, vUv );
-			}
-        </script>
+        varying vec2 vUv;
+        uniform sampler2D tDiffuse;
+        void main() {
+            gl_FragColor = texture2D( tDiffuse, vUv );
+        }
+    </script>
 
     <script id="fragment_shader_pass_1" type="x-shader/x-fragment">
-			varying vec2 vUv;
-			uniform float time;
-			void main() {
-				float r = vUv.x;
-				if( vUv.y < 0.5 ) r = 0.0;
-				float g = vUv.y;
-				if( vUv.x < 0.5 ) g = 0.0;
-				gl_FragColor = vec4( r, g, time, 1.0 );
-			}
-		</script>
+        varying vec2 vUv;
+        uniform float time;
+        void main() {
+            float r = vUv.x;
+            if( vUv.y < 0.5 ) r = 0.0;
+            float g = vUv.y;
+            if( vUv.x < 0.5 ) g = 0.0;
+            gl_FragColor = vec4( r, g, time, 1.0 );
+        }
+    </script>
 
     <script id="vertexShader" type="x-shader/x-vertex">
-			varying vec2 vUv;
-			void main() {
-				vUv = uv;
-				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-			}
-        </script>
-
-    <div id="win"></div>
-    <!--<div id="sound_on">sound on</div>-->
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        }
+    </script>
 </body>
 
 </html>

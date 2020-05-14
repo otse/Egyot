@@ -10,6 +10,7 @@ import Obj from "../Nieuw mapje/Obj";
 import Zxcvs from "../Zxcvs";
 import { Color, Group } from "three";
 import { ThreeQuarter } from "../ThreeQuarter";
+import Tilization from "../Nieuw mapje 3/Tilization";
 
 
 declare class sobj {
@@ -240,9 +241,9 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 				u++;
 			else {
 				u = 0;
-				c.comes();
-				if (!c.empty())
+				if (!c.on && !c.empty())
 					this.shown.push(c);
+				c.comes();
 			}
 			switch (stage) {
 				case 0:
@@ -268,7 +269,7 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 			}
 
 			if (u > 5 || i >= 200) {
-				console.log('break at iteration', i);
+				//console.log('break at iteration', i);
 
 				break;
 			}
@@ -314,7 +315,7 @@ class Map2 {
 		let granary = new Rekt({
 			istile: true,
 			xy: [6, -1],
-			wh: [192, 156],
+			wh: [216, 168],
 			asset: 'egyt/building/granary'
 		});
 
@@ -325,17 +326,19 @@ class Map2 {
 			asset: 'egyt/building/redstore'
 		});
 
-		Agriculture.plop_wheat_area(1, new aabb3([-9, -4, 0], [3, -22, 0]));
-		Agriculture.plop_wheat_area(2, new aabb3([5, -4, 0], [5 + 50 - 2, -12, 0]));
-		Agriculture.plop_wheat_area(2, new aabb3([5 + 50, -4, 0], [5 + 50 - 2 + 50, -12, 0]));
-		Agriculture.plop_wheat_area(3, new aabb3([5, -14, 0], [5 + 50 - 2, -22, 0]));
-		Agriculture.plop_wheat_area(3, new aabb3([5 + 50, -14, 0], [5 + 50 - 2 + 50, -22, 0]));
+		Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));
+		Agriculture.area_wheat(2, new aabb3([5, -4, 0], [5 + 50 - 2, -12, 0]));
+		Agriculture.area_wheat(2, new aabb3([5 + 50, -4, 0], [5 + 50 - 2 + 50, -12, 0]));
+		Agriculture.area_wheat(3, new aabb3([5, -14, 0], [5 + 50 - 2, -22, 0]));
+		Agriculture.area_wheat(3, new aabb3([5 + 50, -14, 0], [5 + 50 - 2 + 50, -22, 0]));
 		//Agriculture.plop_wheat_area(2, new aabb3([5, -14, 0], [5+12+12+12, -22, 0]));
 		//Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
 		//Agriculture.plop_wheat_area(3, new aabb3([-4, -4, 0], [20, -39, 0]));
 		//Agriculture.plop_wheat_area(2, new aabb3([-25, 14, 0], [5, 50, 0]));
 		//Agriculture.plop_wheat_area(3, new aabb3([-9, -52, 0], [2, -300, 0]));
 		//Agriculture.plop_wheat_area(3, new aabb3([-20, -302, 0], [11, -600, 0]));
+
+		Tilization.area_sample(['egyt/ground/stone1', 'egyt/ground/stone2'], new aabb3([-4, 0, 0], [103, -2, 0]));
 
 		granary.initiate();
 		//tobaccoshop.initiate();

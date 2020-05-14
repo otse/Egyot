@@ -54,7 +54,7 @@ namespace Agriculture {
 					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
 				istile: true,
 				xy: this.struct.tile,
-				wh: [24, 24],
+				wh: [22, 22],
 			});
 
 			this.rekt.initiate();
@@ -85,7 +85,7 @@ namespace Agriculture {
 		return wheat;
 	}
 
-	export function plop_wheat_area(growth: number, aabb: aabb3) {
+	export function area_wheat(growth: number, aabb: aabb3) {
 		const every = (pos: Zx) => place_wheat(growth, pos);
 
 		Points.area_every(aabb, every);

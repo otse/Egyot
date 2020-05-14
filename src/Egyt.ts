@@ -4,12 +4,12 @@ import Obj from "./Nieuw mapje/Obj";
 import { Win } from "./Win";
 import Game from "./Game";
 import Forestation from "./Nieuw mapje 3/Forestation";
-import Tilization from "./Nieuw mapje 3/Grid";
+import Tilization from "./Nieuw mapje 3/Tilization";
 import Agriculture from "./Nieuw mapje 3/Agriculture";
 
 export namespace Egyt {
 
-	export const YUM = 24; // evenly divisible n
+	export const YUM = 22; // evenly divisible n
 
 	export var game: Game;
 	export var map2: Map2;
