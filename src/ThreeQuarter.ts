@@ -151,10 +151,10 @@ export namespace ThreeQuarter {
 		h = window.innerHeight;
 
 		if (w % 2 != 0) {
-			w -= 1;
+			//w -= 1;
 		}
 		if (h % 2 != 0) {
-			h -= 1;
+			//h -= 1;
 		}
 
 		let targetwidth = w;
@@ -182,7 +182,7 @@ export namespace ThreeQuarter {
 		camera.updateProjectionMatrix();
 
 		renderer.setSize(
-			window.innerWidth, window.innerHeight);
+			w, h);
 
 	}
 

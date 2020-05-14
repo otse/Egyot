@@ -92,7 +92,7 @@ export namespace Egyt {
 		Win.init();
 
 		Win.raw(`
-		<div>Hi</div>
+		<div>Menu</div>
 		<br />
 		<div class="region small">
 			<a>Tutorial
@@ -121,12 +121,14 @@ export namespace Egyt {
 
 			<a>Stats
 			</a>
-			<div>
+			<div class="stats">
 				<span id="gameAabb"></span><br/>
+				<span id="gamePos"></span><br/>
+				
 				<span id="numRekts"></span><br/>
 				<span id="numObjs"></span><br/>
 				<span id="numObjsActive"></span><br/>
-				<span id="gamePos"></span><br/>
+				
 				<span id="mouseTile"></span><br/>
 				<span id="worldSquareChunk"></span><br/>
 				<span id="chunksShown"></span><br/>
@@ -144,7 +146,7 @@ export namespace Egyt {
 			</div>
 		</div>`);
 
-		setTimeout(() => Win.cornerbox('hi', 'welcome'), 2000);
+		//setTimeout(() => Win.messageslide('', 'You get one cheap set of shoes, and a well-kept shovel.'), 1000);
 
 		started = true;
 	}

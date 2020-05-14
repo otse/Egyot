@@ -10,8 +10,6 @@
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
     <meta http-equiv="pragma" content="no-cache" />
 
-    <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <script src="http://threejs.org/build/three.min.js"></script>
@@ -19,6 +17,8 @@
     <script src="http://threejs.org/examples/js/postprocessing/RenderPass.js"></script>
     <script src="http://threejs.org/examples/js/postprocessing/ShaderPass.js"></script>
     <script src="http://threejs.org/examples/js/shaders/CopyShader.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Love+Ya+Like+A+Sister&display=swap" rel="stylesheet">
 
     <!-- uncomment one -->
     <link rel="stylesheet" type="text/css" href="style95.css">
@@ -33,16 +33,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
     <script>
-        $(document).ready(function () {            
+        $(document).ready(function () {
             App.Boot('wix');
         });
     </script>
 
     <style>
         body {
-            background: rgb(255,0,255);
+            background: rgb(255, 0, 255);
             margin: 0;
             padding: 0;
+            font-family: 'Love Ya Like A Sister', cursive;
         }
 
         #win {
@@ -50,29 +51,30 @@
             display: block;
             z-index: 9;
             padding: 20px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
             color: white;
         }
 
-        canvas
-        {
+        canvas {
             position: absolute;
             image-rendering: pixelated;
         }
-
     </style>
 
 </head>
 
 <body>
-        <script id="fragment_shader_screen" type="x-shader/x-fragment">
+    <script id="fragment_shader_screen" type="x-shader/x-fragment">
 			varying vec2 vUv;
 			uniform sampler2D tDiffuse;
 			void main() {
 				gl_FragColor = texture2D( tDiffuse, vUv );
 			}
         </script>
-        
-        <script id="fragment_shader_pass_1" type="x-shader/x-fragment">
+
+    <script id="fragment_shader_pass_1" type="x-shader/x-fragment">
 			varying vec2 vUv;
 			uniform float time;
 			void main() {
@@ -84,14 +86,14 @@
 			}
 		</script>
 
-		<script id="vertexShader" type="x-shader/x-vertex">
+    <script id="vertexShader" type="x-shader/x-vertex">
 			varying vec2 vUv;
 			void main() {
 				vUv = uv;
 				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 			}
         </script>
-        
+
     <div id="win"></div>
     <!--<div id="sound_on">sound on</div>-->
 </body>

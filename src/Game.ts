@@ -148,7 +148,7 @@ class Game {
 		Zxcvs.floor(this.view.min);
 		Zxcvs.floor(this.view.max);
 
-		Win.win.find('#gameAabb').text(`Viewport: ${this.view.min[0]}, ${this.view.min[1]} x ${this.view.max[0]}, ${this.view.max[1]} `);
+		Win.win.find('#gameAabb').html(`Viewport: <span>${this.view.min[0]}, ${this.view.min[1]} x ${this.view.max[0]}, ${this.view.max[1]} `);
 
 		return;
 		

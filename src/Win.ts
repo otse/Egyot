@@ -45,9 +45,9 @@ namespace Win {
 		nyan.find('div').children().find('span').next('span').parent().addClass('rpgitem');
 	}
 
-	export function cornerbox(title: string, message: string) {
+	export function messageslide(title: string, message: string) {
 
-		let jay = $('<div>').addClass('cornerbox').append('span').text(title).append('span').text(message);
+		let jay = $('<div>').addClass('messageslide').append(`<span>${title}`).append(`<span>${message}`);
 
 		win.append(jay);
 

@@ -8,6 +8,12 @@ block:selector {
 }
 */
 
+
+#win {
+	padding: 20px;
+	color: white;
+}
+
 .region {
     
 }
@@ -75,3 +81,21 @@ div.rpgitem > span:nth-child(2) {
 
 /* end of <div><span><span> */
 
+
+/* begin of messageslide */
+
+div.messageslide {
+	margin: 0px;
+    padding: 20px;
+    width: 40%;
+}
+
+div.messageslide > span:first-child {
+	margin-bottom: 3px;
+}
+
+div.messageslide > span:nth-child(2) {
+	
+}
+
+/* end of messageslide */
