@@ -66,7 +66,7 @@ class chunk {
 			<zxc>points.add(<zxc>[...real], [this.master.width / 2, this.master.height / 2, 0])
 		)
 
-		
+
 	}
 	empty() {
 		return this.objs.many() < 1;
@@ -84,21 +84,21 @@ class chunk {
 		rekt.mesh.renderOrder = -999;
 	}
 	comes() {
-		this.on = true;
-		if (!this.empty()) {
+		if (!this.on && !this.empty()) {
 			ThreeQuarter.scene.add(this.group);
 			this.objs.comes();
 		}
+		this.on = true;
 	}
 	goes() {
-		this.on = false;
-		if (!this.empty()) {
+		if (this.on && !this.empty()) {
 			ThreeQuarter.scene.remove(this.group);
 			for (var i = this.group.children.length - 1; i >= 0; i--) {
 				this.group.remove(this.group.children[i]);
 			}
 			this.objs.goes();
 		}
+		this.on = false;
 	}
 	sec() {
 		return Egyt.game.view.intersect(this.boundscreen);
@@ -228,6 +228,7 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 		let x = b[0], y = b[1];
 		let stage = 0;
 		let s = 0;
+		let u = 0;
 		while (true) {
 			i++;
 			let c = this.master.guarantee(x, y);
@@ -235,7 +236,10 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 				if (stage == 0) stage = 1;
 				if (stage == 2) stage = 3;
 			}
-			if (!c.on && c.see()) {
+			if (!c.see())
+				u++;
+			else {
+				u = 0;
 				c.comes();
 				if (!c.empty())
 					this.shown.push(c);
@@ -262,9 +266,12 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 					s = 0;
 					break;
 			}
-			
-			if (i >= 200)
+
+			if (u > 5 || i >= 200) {
+				console.log('break at iteration', i);
+
 				break;
+			}
 		}
 	}
 
@@ -319,10 +326,10 @@ class Map2 {
 		});
 
 		Agriculture.plop_wheat_area(1, new aabb3([-9, -4, 0], [3, -22, 0]));
-		Agriculture.plop_wheat_area(2, new aabb3([5, -4, 0], [5+50-2, -12, 0]));
-		Agriculture.plop_wheat_area(2, new aabb3([5+50, -4, 0], [5+50-2+50, -12, 0]));
-		Agriculture.plop_wheat_area(3, new aabb3([5, -14, 0], [5+50-2, -22, 0]));
-		Agriculture.plop_wheat_area(3, new aabb3([5+50, -14, 0], [5+50-2+50, -22, 0]));
+		Agriculture.plop_wheat_area(2, new aabb3([5, -4, 0], [5 + 50 - 2, -12, 0]));
+		Agriculture.plop_wheat_area(2, new aabb3([5 + 50, -4, 0], [5 + 50 - 2 + 50, -12, 0]));
+		Agriculture.plop_wheat_area(3, new aabb3([5, -14, 0], [5 + 50 - 2, -22, 0]));
+		Agriculture.plop_wheat_area(3, new aabb3([5 + 50, -14, 0], [5 + 50 - 2 + 50, -22, 0]));
 		//Agriculture.plop_wheat_area(2, new aabb3([5, -14, 0], [5+12+12+12, -22, 0]));
 		//Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
 		//Agriculture.plop_wheat_area(3, new aabb3([-4, -4, 0], [20, -39, 0]));
