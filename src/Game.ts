@@ -113,8 +113,8 @@ class Game {
 			else {
 				this.scale += factor;
 			}
-			if (this.scale > 4 / this.dpi)
-				this.scale = 4 / this.dpi;
+			if (this.scale > 2 / this.dpi)
+				this.scale = 2 / this.dpi;
 
 			console.log('scale up', this.scale);
 		}

@@ -338,7 +338,11 @@ class Map2 {
 		//Agriculture.plop_wheat_area(3, new aabb3([-9, -52, 0], [2, -300, 0]));
 		//Agriculture.plop_wheat_area(3, new aabb3([-20, -302, 0], [11, -600, 0]));
 
-		Tilization.area_sample(['egyt/ground/stone1', 'egyt/ground/stone2'], new aabb3([-4, 0, 0], [103, -2, 0]));
+		const ground = [
+			'egyt/ground/gravel1',
+			'egyt/ground/gravel2',
+		];
+		Tilization.area_sample(50, ground, new aabb3([-9, 0, 0], [103, -2, 0]));
 
 		granary.initiate();
 		//tobaccoshop.initiate();

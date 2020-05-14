@@ -59,11 +59,14 @@ namespace Tilization {
 
 	export function update() {
 		if (!plopping && App.map['y'] == 1) {
-			plopping = place_tile(Egyt.sample(colors), Egyt.map2.mouse_tile);
+			plopping = <Tile>place_tile(100, Egyt.sample(colors), Egyt.map2.mouse_tile);
 		}
 	}
 
-	export function place_tile(asset, pos) {
+	export function place_tile(chance: number, asset: string, pos) {
+
+		if (Math.random() > chance / 100)
+			return;
 
 		let tile = new Tile(asset, {
 			tile: pos
@@ -73,15 +76,15 @@ namespace Tilization {
 
 		return tile;
 	}
-	
-	export function area_sample(assets: string[], aabb: aabb3) {
-		const every = (pos: Zx) => place_tile(Egyt.sample(assets), pos);
+
+	export function area_sample(chance: number, assets: string[], aabb: aabb3) {
+		const every = (pos: Zx) => place_tile(chance, Egyt.sample(assets), pos);
 
 		Zxcvs.area_every(aabb, every);
 	}
 
-	export function plop_tile_area(asset: string, aabb: aabb3) {
-		const every = (pos: Zx) => place_tile(asset, pos);
+	export function area(chance: number, asset: string, aabb: aabb3) {
+		const every = (pos: Zx) => place_tile(chance, asset, pos);
 
 		Zxcvs.area_every(aabb, every);
 	}
