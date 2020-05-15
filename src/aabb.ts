@@ -38,7 +38,7 @@ class aabb3 {
 	min: zxc
 	max: zxc
 
-	static dupe(a: aabb3){
+	static dupe(a: aabb3) {
 		let b = new aabb3(a.min, a.max);
 		return b;
 	}
@@ -87,6 +87,20 @@ class aabb3 {
 			this.min[1] <= v.min[1] && this.max[1] >= v.max[1] //&&
 			/*this.min[2] <= v.min[2] && this.max[2] >= v.max[2]*/)
 			return aabb3.SEC.IN;
+
+		return aabb3.SEC.CROSS;
+	}
+
+	intersect2(v: aabb3) {
+		if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
+			this.min[1] <= v.min[1] && this.max[1] >= v.max[1] //&&
+			/*this.min[2] <= v.min[2] && this.max[2] >= v.max[2]*/)
+			return aabb3.SEC.IN;
+
+		if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
+			this.max[1] < v.min[1] || this.min[1] > v.max[1] //||
+			/*this.max[2] < v.min[2] || this.min[2] > v.max[2]*/)
+			return aabb3.SEC.OUT;
 
 		return aabb3.SEC.CROSS;
 	}

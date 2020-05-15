@@ -1,9 +1,9 @@
 import Rekt from "../Nieuw mapje/Rekt";
 import Egyt from "../Egyt";
-import { aabb3 } from "../Bound";
+import { aabb3 } from "../aabb";
 import Obj from "../Nieuw mapje/Obj";
-import App from "../App";
-import Zxcvs from "../Zxcvs";
+import App from "../badhelper";
+import points from "../points";
 
 namespace Forestation {
 
@@ -38,8 +38,6 @@ namespace Forestation {
 			trees.push(this);
 		}
 		comes() {
-			console.log('tree comes');
-
 			this.rekt.use();
 		}
 		goes() {

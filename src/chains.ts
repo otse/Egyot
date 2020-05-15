@@ -1,10 +1,10 @@
 import Rekt from "./Nieuw mapje/Rekt";
 import Obj from "./Nieuw mapje/Obj";
-import Zxcvs from "./Zxcvs";
-import { ThreeQuarter } from "./ThreeQuarter";
+import points from "./points";
+import { tq } from "./tq";
 import Egyt from "./Egyt";
 
-namespace Win {
+namespace Chains {
 	export var win;
 
 	var body;
@@ -65,7 +65,7 @@ namespace Win {
 	}
 
 	export function init() {
-		(window as any).Win = Win;
+		(window as any).Chains = Chains;
 
 		body = $('body');
 		win = $('#win');
@@ -73,18 +73,21 @@ namespace Win {
 
 	export function update() {
 
-		if (Win.collapsed.Stats) {
-			Win.win.find('#fpsStat').text(`Fps: ${parseInt(ThreeQuarter.fps)}`);
-			Win.win.find('#memoryStat').text(`Memory: ${(ThreeQuarter.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${ThreeQuarter.memory.jsHeapSizeLimit / 1048576}`);
-			Win.win.find('#numRekts').html('Num rekts: ' + Rekt.num);
-			Win.win.find('#numObjs').html('Num objs: ' + Obj.num);
-			Win.win.find('#numObjsActive').html('Num objs active: ' + Obj.active);
+		if (Chains.collapsed.Stats) {
+			Chains.win.find('#fpsStat').text(`Fps: ${parseInt(tq.fps)}`);
+			Chains.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
 
-			Win.win.find('#worldSquare').text(`World square: ${Zxcvs.string(Egyt.map2.mouse_tile)}`);
-			Win.win.find('#worldSquareChunk').text(`World square chunk: ${Zxcvs.string(Egyt.map2.statmaster.big(Egyt.map2.mouse_tile))}`);
-			Win.win.find('#chunksShown').text(`Chunks shown: ${Egyt.map2.statmaster.fitter.shown.length}`);
-			Win.win.find('#snakeTurns').text(`Chunk Snake lines: ${Egyt.map2.statmaster.fitter.lines}`);
-			Win.win.find('#snakeTotal').text(`Chunk Snake total traversed: ${Egyt.map2.statmaster.fitter.total}`);
+			Chains.win.find('#gamePos').text(`Game pos: ${points.string(Egyt.game.pos)}`);
+
+			Chains.win.find('#numRekts').html('Num rekts: ' + Rekt.num);
+			Chains.win.find('#numObjs').html('Num objs: ' + Obj.num);
+			Chains.win.find('#numObjsActive').html('Num objs active: ' + Obj.active);
+
+			Chains.win.find('#worldSquare').text(`World square: ${points.string(Egyt.map2.mouse_tile)}`);
+			Chains.win.find('#worldSquareChunk').text(`World square chunk: ${points.string(Egyt.map2.statmaster.big(Egyt.map2.mouse_tile))}`);
+			Chains.win.find('#chunksShown').text(`Chunks shown: ${Egyt.map2.statmaster.fitter.shown.length}`);
+			Chains.win.find('#snakeTurns').text(`Chunk Snake lines: ${Egyt.map2.statmaster.fitter.lines}`);
+			Chains.win.find('#snakeTotal').text(`Chunk Snake total traversed: ${Egyt.map2.statmaster.fitter.total}`);
 		}
 	}
 
@@ -102,4 +105,4 @@ namespace Win {
 	}
 }
 
-export { Win };
+export { Chains as Win };

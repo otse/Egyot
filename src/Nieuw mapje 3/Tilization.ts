@@ -1,9 +1,9 @@
 import Rekt from "../Nieuw mapje/Rekt";
 import Egyt from "../Egyt";
-import { aabb3 } from "../Bound";
+import { aabb3 } from "../aabb";
 import Obj from "../Nieuw mapje/Obj";
-import App from "../App";
-import Zxcvs from "../Zxcvs";
+import App from "../badhelper";
+import points from "../points";
 
 namespace Tilization {
 
@@ -85,13 +85,13 @@ namespace Tilization {
 	export function area_sample(chance: number, assets: string[], aabb: aabb3) {
 		const every = (pos: Zx) => place_tile(chance, Egyt.sample(assets), pos);
 
-		Zxcvs.area_every(aabb, every);
+		points.area_every(aabb, every);
 	}
 
 	export function area(chance: number, asset: string, aabb: aabb3) {
 		const every = (pos: Zx) => place_tile(chance, asset, pos);
 
-		Zxcvs.area_every(aabb, every);
+		points.area_every(aabb, every);
 	}
 }
 

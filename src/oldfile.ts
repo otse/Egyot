@@ -1,15 +1,15 @@
-import { ThreeQuarter, THREE } from "./ThreeQuarter";
+import { tq, THREE } from "./tq";
 
-import App from "./App";
+import App from "./badhelper";
 
 import Rekt from "./Nieuw mapje/Rekt";
 import Obj from "./Nieuw mapje/Obj";
 
 import Selection from "./Nieuw mapje 5/Selection";
 import { Object3D, Mesh, PlaneBufferGeometry, MeshBasicMaterial } from "three";
-import { aabb3 } from "./Bound";
-import Zxcvs from "./Zxcvs";
-import { Win } from "./Win";
+import { aabb3 } from "./aabb";
+import points from "./points";
+import { Win } from "./chains";
 
 // todo, aweful
 export namespace Areas {
@@ -127,16 +127,16 @@ class Game {
 			console.log('scale down', this.scale);
 		}
 
-		ThreeQuarter.scene.scale.set(this.scale, this.scale, 1);
+		tq.scene.scale.set(this.scale, this.scale, 1);
 
-		let p2 = Zxcvs.multpClone(p, this.scale);
+		let p2 = points.multpClone(p, this.scale);
 
-		ThreeQuarter.scene.position.set(p2[0], p2[1], 0);
+		tq.scene.position.set(p2[0], p2[1], 0);
 
 		this.focal = [-p[0], -p[1], 0];
 
-		let w = ThreeQuarter.target.width;
-		let h = ThreeQuarter.target.height;
+		let w = tq.target.width;
+		let h = tq.target.height;
 
 		let w2 = w / this.dpi / this.scale;
 		let h2 = h / this.dpi / this.scale;
@@ -145,8 +145,8 @@ class Game {
 			[-p[0] - w2 / 2, -p[1] - h2 / 2, 0],
 			[-p[0] + w2 / 2, -p[1] + h2 / 2, 0]
 		);
-		Zxcvs.floor(this.view.min);
-		Zxcvs.floor(this.view.max);
+		points.floor(this.view.min);
+		points.floor(this.view.max);
 
 		Win.win.find('#gameAabb').html(`Viewport: <span>${this.view.min[0]}, ${this.view.min[1]} x ${this.view.max[0]}, ${this.view.max[1]} `);
 

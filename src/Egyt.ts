@@ -1,8 +1,8 @@
 import { World } from "./Nieuw mapje 2/World";
 import { Map2 } from "./Nieuw mapje 2/Map2";
 import Obj from "./Nieuw mapje/Obj";
-import { Win } from "./Win";
-import Game from "./Game";
+import { Win } from "./chains";
+import Game from "./oldfile";
 import Forestation from "./Nieuw mapje 3/Forestation";
 import Tilization from "./Nieuw mapje 3/Tilization";
 import Agriculture from "./Nieuw mapje 3/Agriculture";

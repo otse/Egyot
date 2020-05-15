@@ -1,7 +1,7 @@
-import { ThreeQuarter, THREE } from "../ThreeQuarter";
+import { tq, THREE } from "../tq";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
-import Zxcvs from "../Zxcvs";
+import points from "../points";
 import Obj from "./Obj";
 
 class Rekt {
@@ -45,7 +45,7 @@ class Rekt {
 		if (this.struct.opacity == undefined) this.struct.opacity = 1;
 	}
 	public mult() {
-		this.struct.xy = Zxcvs.multp([...this.struct.xy], 24);
+		this.struct.xy = points.multp([...this.struct.xy], 24);
 	}
 	public use() {
 
@@ -61,7 +61,7 @@ class Rekt {
 
 		let map;
 		if (this.struct.asset)
-			map = ThreeQuarter.loadTexture(`assets/${this.struct.asset}.png`);
+			map = tq.loadTexture(`assets/${this.struct.asset}.png`);
 
 		this.material = new MeshBasicMaterial({
 			map: map,
@@ -86,7 +86,7 @@ class Rekt {
 			c.group.add(this.mesh);
 		}
 		else
-			ThreeQuarter.scene.add(this.mesh);
+			tq.scene.add(this.mesh);
 	}
 
 	public unuse() {
@@ -98,7 +98,7 @@ class Rekt {
 		if (c = this.struct.obj?.chunk)
 			c.group.remove(this.mesh);
 		else
-			ThreeQuarter.scene.remove(this.mesh);
+			tq.scene.remove(this.mesh);
 
 		Rekt.num--;
 

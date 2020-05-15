@@ -3,8 +3,8 @@ import Rekt from "../Nieuw mapje/Rekt";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 
-import { ThreeQuarter } from "../ThreeQuarter";
-import Zxcvs from "../Zxcvs";
+import { tq } from "../tq";
+import points from "../points";
 import Egyt from "../Egyt";
 
 class Selection {
@@ -41,7 +41,7 @@ class Selection {
 
 		this.mesh.renderOrder = 500;
 
-		ThreeQuarter.scene.add(this.mesh);
+		tq.scene.add(this.mesh);
 	}
 
 	Update(mouse: Zx) {
@@ -52,11 +52,11 @@ class Selection {
 	}
 
 	Sufficient(mouse: Zx) {
-		let rem = Zxcvs.subtract(
-			<zx>Zxcvs.clone(this.end), this.start);
+		let rem = points.subtract(
+			<zx>points.clone(this.end), this.start);
 
-		const px = Zxcvs.together(
-			Zxcvs.abs(rem as Zx));
+		const px = points.together(
+			points.abs(rem as Zx));
 
 		if (!this.enuf && px > 15) {
 			this.enuf = true;
@@ -66,19 +66,19 @@ class Selection {
 	}
 
 	View(mouse: Zx) {
-		Zxcvs.subtract(
+		points.subtract(
 			mouse, Egyt.game.pos);
 
-		Zxcvs.subtract(
-			mouse, Zxcvs.divide(
-				<zx>Zxcvs.clone(ThreeQuarter.wh), 2));
+		points.subtract(
+			mouse, points.divide(
+				<zx>points.clone(tq.wh), 2));
 
 		let scale = 1;
 
 		if (Egyt.game.scale == 0.5)
 			scale = 2;
 
-		Zxcvs.multp(
+		points.multp(
 			mouse, scale);
 	}
 
@@ -93,28 +93,28 @@ class Selection {
 		if (!this.enuf)
 			return;
 
-		let size = Zxcvs.subtract(
-			<zx>Zxcvs.clone(this.end), this.start);
+		let size = points.subtract(
+			<zx>points.clone(this.end), this.start);
 
-		let pos = Zxcvs.subtract(
-			<zx>Zxcvs.clone(mouse), Zxcvs.divide(<zx>Zxcvs.clone(size), 2));
+		let pos = points.subtract(
+			<zx>points.clone(mouse), points.divide(<zx>points.clone(size), 2));
 
 		this.mesh.scale.set(size[0], size[1], 1);
 		this.mesh.position.set(pos[0], pos[1], 0);
 
-		ThreeQuarter.changes = true;
+		tq.changes = true;
 	}
 
 	End() {
 		if (!this.enuf)
 			return;
 
-		ThreeQuarter.scene.remove(this.mesh);
+		tq.scene.remove(this.mesh);
 
 		this.geometry.dispose();
 		this.material.dispose();
 
-		ThreeQuarter.changes = true;
+		tq.changes = true;
 	}
 }
 

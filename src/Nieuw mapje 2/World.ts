@@ -1,7 +1,7 @@
 import Obj from "../Nieuw mapje/Obj";
 import Egyt from "../Egyt";
 import { Ply } from "./Guy";
-import Zxcvs from "../Zxcvs";
+import points from "../points";
 
 class World {
 	static rig() {

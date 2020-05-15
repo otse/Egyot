@@ -1,6 +1,6 @@
-import { ThreeQuarter as ThreeQuarter } from "./ThreeQuarter";
+import { tq as tq } from "./tq";
 
-import Game from "./Game";
+import Game from "./oldfile";
 import Egyt from "./Egyt";
 
 export const enum KEY {
@@ -66,7 +66,7 @@ export namespace App {
 	}
 
 	export function Boot(version: string) {
-
+		
 		App.version = version;
 
 		document.onkeydown = document.onkeyup = onkeys;
@@ -75,13 +75,13 @@ export namespace App {
 		document.onmouseup = onup;
 		document.onwheel = onwheel;
 
-		ThreeQuarter.init();
+		tq.init();
 		
 		Egyt.init();
 
 		loo(0);
 
-		setTimeout(() => ThreeQuarter.changes = true, 10);
+		setTimeout(() => tq.changes = true, 10);
 	}
 
 	// Lokale functies
@@ -102,11 +102,11 @@ export namespace App {
 	const loo = (timestamp) => {
 		requestAnimationFrame(loo);
 
-		ThreeQuarter.update();
+		tq.update();
 		Egyt.game.update();
 		Egyt.update();
 		
-		ThreeQuarter.render();
+		tq.render();
 
 		wheel = 0;
 

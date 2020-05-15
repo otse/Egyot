@@ -1,15 +1,14 @@
 import Rekt from "../Nieuw mapje/Rekt";
-import { Win } from "../Win";
+import { Win } from "../chains";
 import Egyt from "../Egyt";
-import App from "../App";
-import points from "../Zxcvs";
+import App from "../badhelper";
+import points from "../points";
 import Forestation from "../Nieuw mapje 3/Forestation";
 import Agriculture from "../Nieuw mapje 3/Agriculture";
-import { aabb3 } from "../Bound";
+import { aabb3 } from "../aabb";
 import Obj from "../Nieuw mapje/Obj";
-import Zxcvs from "../Zxcvs";
 import { Color, Group, WebGLRenderTarget, Int8Attribute, RGBFormat, NearestFilter, LinearFilter, RGBAFormat } from "three";
-import { ThreeQuarter } from "../ThreeQuarter";
+import { tq } from "../tq";
 import Tilization from "../Nieuw mapje 3/Tilization";
 
 
@@ -18,12 +17,13 @@ declare class sobj {
 }
 
 class chunk {
-	childobjscolor
 	on = false
+	changed = true
 	group: Group
+	childobjscolor
 
-	objs: chunk_objs
-	rtt: chunk_rtt
+	readonly objs: chunk_objs
+	rt: chunk_rtt
 	p: zx
 	tile: zx
 	mult: zx
@@ -38,7 +38,7 @@ class chunk {
 
 	outline: Rekt
 
-	constructor(x, y, private master: chunk_master<chunk>) {
+	constructor(x, y, public master: chunk_master<chunk>) {
 		const colors = ['lightsalmon', 'khaki', 'lightgreen', 'paleturquoise', 'plum', 'pink'];
 
 		this.objs = new chunk_objs(this);
@@ -78,8 +78,6 @@ class chunk {
 			<zxc>points.add(<zxc>[...real], [-this.master.width / 2, -this.master.height / 2, 0]),
 			<zxc>points.add(<zxc>[...real], [this.master.width / 2, this.master.height / 2, 0])
 		)
-
-
 	}
 	empty() {
 		return this.objs.many() < 1;
@@ -97,23 +95,25 @@ class chunk {
 			return;
 		this.rekt.use();
 		this.rekt.mesh.renderOrder = -9999;
-		ThreeQuarter.scene.add(this.group);
 		this.objs.comes();
+		if (this.objs.objs.length >= 10 && !this.rt)
+			this.rt = new chunk_rtt(this);
+		if (!this.rt)
+			tq.scene.add(this.group);
 		this.on = true;
 	}
 	goes() {
 		if (!this.on)
 			return;
 		this.rekt.unuse();
-		ThreeQuarter.scene.remove(this.group);
-		for (var i = this.group.children.length - 1; i >= 0; i--) {
-			this.group.remove(this.group.children[i]);
-		}
+		tq.scene.remove(this.group);
+		while (this.group.children.length > 0)
+			this.group.remove(this.group.children[0]);
 		this.objs.goes();
 		this.on = false;
 	}
 	sec() {
-		return Egyt.game.view.intersect(this.boundscreen);
+		return Egyt.game.view.intersect2(this.boundscreen);
 	}
 	see() {
 		return this.sec() != aabb3.SEC.OUT;
@@ -122,7 +122,9 @@ class chunk {
 		return this.sec() == aabb3.SEC.OUT;
 	}
 	update() {
-		return;
+		//if (this.changed && this.rtt)
+		//	this.rtt.render();
+		this.changed = false;
 	}
 }
 
@@ -140,11 +142,13 @@ class chunk_objs {
 	add(obj: Obj) {
 		if (-1 == this.indexOf(obj))
 			this.objs.push(obj);
+		this.chunk.changed = true;
 	}
 	remove(obj: Obj) {
 		let i = this.indexOf(obj);
 		if (i > -1)
 			this.objs.splice(i, 1);
+		this.chunk.changed = true;
 	}
 	comes() {
 		for (let obj of this.objs)
@@ -177,6 +181,7 @@ class chunk_master<T extends chunk> {
 		this.span = span;
 		this.width = span * 24;
 		this.height = span * 12;
+
 		this.fitter = new chunk_fitter<T>(this);
 	}
 	update() {
@@ -330,9 +335,13 @@ class chunk_rtt {
 
 	target: WebGLRenderTarget
 
-	constructor(private master: chunk_master<chunk>) {
-		this.w = this.master.width + this.padding;
-		this.h = this.master.height + this.padding;
+	constructor(private chunk: chunk) {
+		this.w = this.chunk.master.width + this.padding;
+		this.h = this.chunk.master.height + this.padding;
+
+		//console.log('chunk rtt');
+		this.readyup();
+		this.render();
 	}
 
 	readyup() {
@@ -346,6 +355,29 @@ class chunk_rtt {
 				magFilter: NearestFilter,
 				format: RGBAFormat
 			});
+	}
+
+	render() {
+		console.log('chunk_rtt render');
+
+		while (tq.scene3.children.length > 0)
+			tq.scene3.remove(tq.scene3.children[0]);
+
+		//const clone = this.chunk.group.clone();
+
+		let mult = <zxc>[...this.chunk.mult, 0];
+
+		tq.scene3.position.fromArray([...this.chunk.mult, 0]);
+		tq.scene3.add(this.chunk.group);
+
+		tq.renderer.setRenderTarget(this.target);
+
+		tq.renderer.setClearColor(new Color('cyan'), 0.5);
+		tq.renderer.clear();
+
+		tq.renderer.render(tq.scene3, tq.camera);
+
+		this.chunk.rekt.material.map = this.target.texture;
 	}
 }
 
@@ -431,9 +463,6 @@ class Map2 {
 		// farms se
 		Agriculture.area_wheat(1, new aabb3([-15, 21, 0], [-40, 101, 0]));
 		Agriculture.area_wheat(1, new aabb3([-15, 103, 0], [-40, 183, 0]));
-
-
-
 	}
 
 	get_chunk_tile(t: zx | zxc) {
@@ -441,7 +470,6 @@ class Map2 {
 	}
 
 	query_world_pixel(query: zx): { tile: zx, mult: zx } {
-
 		let p = query;
 
 		let p1 = <zx>points.clone(p);
@@ -475,17 +503,12 @@ class Map2 {
 		this.mark.struct.xy = mouse.mult;
 		this.mark.now_update_pos();
 
-
-
 	}
 
 	update() {
 		this.mark_mouse();
 
 		this.statmaster.update();
-
-		Win.win.find('#chunk').text(`Chunk: ${points.string(this.statmaster.big(Egyt.game.pos))}`);
-		Win.win.find('#gamePos').text(`Game pos: ${points.string(Egyt.game.pos)}`);
 
 		let worldPixelsLeftUpperCorner = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
 		let worldPixelsRightLowerCorner = [Egyt.game.view.max[0], Egyt.game.view.min[1]] as zx;

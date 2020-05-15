@@ -1,6 +1,6 @@
 import { default as THREE, OrthographicCamera, Clock, Scene, WebGLRenderer, Texture, TextureLoader, WebGLRenderTarget, ShaderMaterial, Mesh, PlaneBufferGeometry, Color } from 'three';
-import App from './App';
-import { Win } from './Win';
+import App from './badhelper';
+import { Win } from './chains';
 
 export { THREE };
 
@@ -27,9 +27,9 @@ void main() {
 	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }`
 
-// 2:1 renderer
+// three quarter
 
-export namespace ThreeQuarter {
+export namespace tq {
 
 	export var changes = true;
 	export var dpi;
@@ -38,6 +38,7 @@ export namespace ThreeQuarter {
 	export var clock: Clock
 	export var scene: Scene
 	export var scene2: Scene
+	export var scene3: Scene
 	export var camera: OrthographicCamera
 	export var target: WebGLRenderTarget
 	export var renderer: WebGLRenderer
@@ -106,6 +107,7 @@ export namespace ThreeQuarter {
 		scene = new Scene();
 		scene.background = new Color('rgb(40, 72, 42)'); // #444
 		scene2 = new Scene();
+		scene3 = new Scene();
 
 		dpi = window.devicePixelRatio;
 
@@ -136,7 +138,7 @@ export namespace ThreeQuarter {
 		someMore();
 		onWindowResize();
 
-		(window as any).Two_ = ThreeQuarter;
+		(window as any).tq = tq;
 	}
 
 	function someMore() {

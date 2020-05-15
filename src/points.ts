@@ -1,6 +1,6 @@
-import { aabb3 } from "./Bound";
+import { aabb3 } from "./aabb";
 
-namespace Zxcvs {
+namespace points {
 
 	export function area_every(aabb: aabb3, callback: (pos: zx) => any) {
 		let y = aabb.min[1];
@@ -99,4 +99,4 @@ namespace Zxcvs {
 
 }
 
-export default Zxcvs;
+export default points;
