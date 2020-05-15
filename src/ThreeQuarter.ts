@@ -60,7 +60,7 @@ export namespace ThreeQuarter {
 	var reset = 0;
 	var frames = 0;
 	export var fps;
-	export var heap;
+	export var memory;
 
 	// https://github.com/mrdoob/stats.js/blob/master/src/Stats.js#L71
 	export function calc() {
@@ -71,10 +71,8 @@ export namespace ThreeQuarter {
 			fps = frames;
 			frames = 0;
 		}
-		
-		const memory = (<any>window.performance).memory;
-		heap = `${(memory.usedJSHeapSize / 1048576).toFixed(4)} / ${memory.jsHeapSizeLimit / 1048576}`;
-			
+
+		memory = (<any>window.performance).memory;
 	}
 	export function render() {
 

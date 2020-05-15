@@ -2,6 +2,7 @@ import Rekt from "./Nieuw mapje/Rekt";
 import Obj from "./Nieuw mapje/Obj";
 import Zxcvs from "./Zxcvs";
 import { ThreeQuarter } from "./ThreeQuarter";
+import Egyt from "./Egyt";
 
 namespace Win {
 	export var win;
@@ -22,24 +23,32 @@ namespace Win {
 
 	}
 
+	export var collapsed: { [href: string]: boolean } = {};
+
 	export function rig_charges(nyan: JQuery) {
-		
+
 		// In Vsc
 		// View -> Toggle Word Wrap
 
 		/*
 			An hyperlink and a paragraph form a collapser
 		*/
-		nyan.find('a').next('div').addClass('bar').prev().addClass('foo').click(function() {	
-			$(this).toggleClass("toggle").next('.bar').toggleClass('toggle');
+		const _collapse = (jay) => {
+			collapsed[jay.text()] = !!jay.hasClass('toggle');
+		}
+		nyan.find('a').next('div').addClass('bar').prev().addClass('foo').click(function () {
+			let jay = $(this);
+			jay.toggleClass("toggle").next('.bar').toggleClass('toggle');
+			_collapse(jay);
 		}).append('<span>');
- 
+
 		nyan.find('a.foo').each((i, e) => {
 			let jay = $(e);
 			(window as any).afoo = jay;
-			if (jay.attr('collapse') == "") {				
+			if (jay.attr('collapse') == "") {
 				jay.addClass('toggle').next().addClass('toggle');
-			} 
+				_collapse(jay);
+			}
 		});
 		/*
 			A div with two spans is an rpg item.
@@ -63,11 +72,20 @@ namespace Win {
 	}
 
 	export function update() {
-		$('#fpsStat').text(`Fps: ${parseInt(ThreeQuarter.fps)}`);
-		$('#memoryStat').text(`Memory: ${ThreeQuarter.heap}`);
-		$('#numRekts').html('Num rekts: '+Rekt.num);
-		$('#numObjs').html('Num objs: '+Obj.num);
-		$('#numObjsActive').html('Num objs active: '+Obj.active);
+
+		if (Win.collapsed.Stats) {
+			Win.win.find('#fpsStat').text(`Fps: ${parseInt(ThreeQuarter.fps)}`);
+			Win.win.find('#memoryStat').text(`Memory: ${(ThreeQuarter.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${ThreeQuarter.memory.jsHeapSizeLimit / 1048576}`);
+			Win.win.find('#numRekts').html('Num rekts: ' + Rekt.num);
+			Win.win.find('#numObjs').html('Num objs: ' + Obj.num);
+			Win.win.find('#numObjsActive').html('Num objs active: ' + Obj.active);
+
+			Win.win.find('#worldSquare').text(`World square: ${Zxcvs.string(Egyt.map2.mouse_tile)}`);
+			Win.win.find('#worldSquareChunk').text(`World square chunk: ${Zxcvs.string(Egyt.map2.statmaster.big(Egyt.map2.mouse_tile))}`);
+			Win.win.find('#chunksShown').text(`Chunks shown: ${Egyt.map2.statmaster.fitter.shown.length}`);
+			Win.win.find('#snakeTurns').text(`Chunk-snake turns: ${Egyt.map2.statmaster.fitter.turns}`);
+			Win.win.find('#snakeTotal').text(`Chunk-snake total: ${Egyt.map2.statmaster.fitter.total}`);
+		}
 	}
 
 	export function raw(html: string) {

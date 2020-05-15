@@ -205,6 +205,9 @@ class chunk_master<T extends chunk> {
 
 class chunk_fitter<T extends chunk> { // chunk-snake
 
+	turns: number
+	total: number
+
 	shown: T[] = []
 
 	constructor(private master: chunk_master<T>) {
@@ -215,6 +218,9 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 
 		let b = this.master.big(middle);
 
+		this.turns = 0;
+		this.total = 0;
+		
 		this.snake(b, 1);
 		this.snake(b, -1);
 
@@ -271,7 +277,9 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 					s = 0;
 					break;
 			}
-
+			if (!s)
+				this.turns++;
+			this.total++;
 			if (u > 5 || i >= 300) {
 				//console.log('break at iteration', i);
 
@@ -434,9 +442,7 @@ class Map2 {
 		this.mark.struct.xy = mouse.mult;
 		this.mark.now_update_pos();
 
-		Win.win.find('#mouseTile').text(`World square: ${points.string(mouse.tile)}`);
-		Win.win.find('#worldSquareChunk').text(`World square chunk: ${points.string(this.statmaster.big(mouse.tile))}`);
-		Win.win.find('#chunksShown').text(`Chunks shown: ${Egyt.map2.statmaster.fitter.shown.length}`);
+
 
 	}
 
@@ -453,9 +459,6 @@ class Map2 {
 
 		const x = this.query_world_pixel(worldPixelsLeftUpperCorner).tile;
 		const y = this.query_world_pixel(worldPixelsRightLowerCorner).tile;
-
-		Win.win.find('#leftUpperCornerTile').text(`Left upper corner tile: ${points.string(x)}`);
-		Win.win.find('#rightLowerCornerTile').text(`Right lower corner tile: ${points.string(y)}`);
 
 	}
 }

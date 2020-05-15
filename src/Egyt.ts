@@ -92,18 +92,16 @@ export namespace Egyt {
 		Win.init();
 
 		Win.raw(`
-		<div>You may have to reload the page for latest version</div>
+		<div>May have to reload to ensure latest version</div>
 		<br />
 		<div class="region small">
-			<a>Tutorial
-			</a>
+			<a>Tutorial</a>
 			<div>
 				Move the view with <key>W</key> <key>A</key> <key>S</key> <key>D</key>.
 				Scroll to zoom. Hold <key>X</key> to fast scroll.
 			</div>
 
-			<a>World editing
-			</a>
+			<a>World editing</a>
 			<div>
 				You can plop objects with these shortcuts.
 				<br/><br/>
@@ -113,37 +111,34 @@ export namespace Egyt {
 				<key>Esc</key> cancel<br/>
 			</div>
 
-			<a>Settings
-			</a>
+			<a>Settings</a>
 			<div>
 				Nothing here yet
 			</div>
 
-			<a>Stats
-			</a>
+			<a>Stats</a>
 			<div class="stats">
 				<span id="fpsStat">xx</span><br/>
 				<span id="memoryStat">xx</span><br/>
+				<br/>
 				<span id="gameAabb"></span><br/>
 				<span id="gamePos"></span><br/>
-				
+				<br/>
 				<span id="numRekts"></span><br/>
 				<span id="numObjs"></span><br/>
 				<span id="numObjsActive"></span><br/>
-				
-				<span id="mouseTile"></span><br/>
+				<span id="worldSquare"></span><br/>
 				<span id="worldSquareChunk"></span><br/>
 				<span id="chunksShown"></span><br/>
+				<span id="snakeTurns"></span><br/>
+				<span id="snakeTotal"></span><br/>
 			</div>
 
-			<a>Items Demo
-			</a>
+			<a>Items Demo</a>
 			<div>
 				<div>
-					<span>Coral Orb
-					</span>
-					<span>It used to belong to an elemental spirit. It has the ability to summon rainstorms.
-					</span>
+					<span>Coral Orb</span>
+					<span>It used to belong to an elemental spirit. It has the ability to summon rainstorms.</span>
 				</div>
 			</div>
 		</div>`);
