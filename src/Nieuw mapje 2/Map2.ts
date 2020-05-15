@@ -270,7 +270,7 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 					break;
 			}
 
-			if (u > 5 || i >= 200) {
+			if (u > 5 || i >= 300) {
 				//console.log('break at iteration', i);
 
 				break;
@@ -340,11 +340,26 @@ class Map2 {
 		//Agriculture.plop_wheat_area(3, new aabb3([-9, -52, 0], [2, -300, 0]));
 		//Agriculture.plop_wheat_area(3, new aabb3([-20, -302, 0], [11, -600, 0]));
 
-		const ground = [
+		const stones = [
+			'egyt/ground/stone1',
+			'egyt/ground/stone2',
+		];
+		//Tilization.area_sample(30, stones, new aabb3([-2, 0, 0], [6, -2, 0]));
+
+		const gravels = [
 			'egyt/ground/gravel1',
 			'egyt/ground/gravel2',
 		];
-		Tilization.area_sample(50, ground, new aabb3([-9, 0, 0], [103, -2, 0]));
+		// long road se
+		Tilization.area_sample(80, gravels, new aabb3([-13, 0, 0], [400, -2, 0]));
+
+		// long road ne
+		Tilization.area_sample(80, gravels, new aabb3([-13, 0, 0], [-11, 400, 0]));
+
+		// farms se
+		Agriculture.area_wheat(2, new aabb3([-15, 21, 0], [-20, 101, 0]));
+		Agriculture.area_wheat(2, new aabb3([-15, 103, 0], [-20, 183, 0]));
+
 
 		granary.initiate();
 		//tobaccoshop.initiate();
