@@ -33,7 +33,7 @@ class chunk {
 
 	array: Obj[][][]
 
-	rekt: Rekt | null
+	rekt: Rekt
 	rektcolor = 'white'
 
 	outline: Rekt
@@ -47,6 +47,13 @@ class chunk {
 		this.group = new Group;
 
 		this.set_bounds();
+
+		this.rekt = new Rekt({
+			xy: this.mult,
+			wh: [this.master.width, this.master.height],
+			asset: 'egyt/tenbyten',
+			color: this.rektcolor
+		});
 	}
 
 	set_bounds() {
@@ -77,29 +84,19 @@ class chunk {
 	empty() {
 		return this.objs.many() < 1;
 	}
-	show() {
-		this.rekt = new Rekt({
-			xy: this.mult,
-			wh: [this.master.width, this.master.height],
-			asset: 'egyt/tenbyten',
-			color: this.rektcolor
-		});
-
-		this.rekt.initiate();
-		this.rekt.mesh.renderOrder = -9999;
-	}
 	update_color() {
-		if (!this.rekt)
+		if (!this.rekt.inuse)
 			return;
 		this.rekt.material.color.set(new Color(this.rektcolor));
 		this.rekt.material.needsUpdate = true;
 	}
 	comes() {
-		//if (this.empty())
-			//return;
+		if (this.empty())
+			return;
 		if (this.on)
 			return;
-		this.show();
+		this.rekt.use();
+		this.rekt.mesh.renderOrder = -9999;
 		ThreeQuarter.scene.add(this.group);
 		this.objs.comes();
 		this.on = true;
@@ -107,6 +104,7 @@ class chunk {
 	goes() {
 		if (!this.on)
 			return;
+		this.rekt.unuse();
 		ThreeQuarter.scene.remove(this.group);
 		for (var i = this.group.children.length - 1; i >= 0; i--) {
 			this.group.remove(this.group.children[i]);
@@ -221,8 +219,15 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 	total: number
 
 	shown: T[] = []
+	colors: string[] = []
 
 	constructor(private master: chunk_master<T>) {
+		for (let r = 100; r < 255; r += 8)
+			this.colors.push(`rgb(${r},0,0)`);
+		for (let g = 100; g < 255; g += 8)
+			this.colors.push(`rgb(0,${g},0)`);
+		for (let b = 100; b < 255; b += 8)
+			this.colors.push(`rgb(0,0,${b})`);
 	}
 
 	update() {
@@ -253,13 +258,8 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 		i = 0;
 		s = 0;
 		u = 0;
-		let color = 0;
-		const colors = [
-			//'lightyellow', 'lemonchiffon', 'lightgoldenrodyellow', 'papayawhip', 'moccasin', 'peachpuff', 'palegoldenrod',
-			//'lightcyan', 'paleturquoise', 'turquoise', 'mediumaquamarine', 'darkcyan',
-			//'lavender', 'thistle', 'plum', 'violet', 'orchid', 'fuchsia', 'mediumorchid', 'darkviolet', 'darkmagenta', 'indigo',
-			'gainsboro', 'lightgray', 'silver', 'darkgray', 'gray', 'dimgray',
-		];
+		let color = -2;
+
 		while (true) {
 			i++;
 			let c: T;
@@ -277,30 +277,35 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 				c.comes();
 				if (!on && c.on)
 					this.shown.push(c);
-				color++;
-				if (color >= colors.length)
-					color = 0;
-				c.rektcolor = colors[color];
-				c.update_color();
+				if (c.on) {
+					color++;
+					if (color >= this.colors.length)
+						color = 0;
+					if (color == -1)
+						c.rektcolor = 'white';
+					else
+						c.rektcolor = this.colors[color];
+					c.update_color();
+				}
 			}
 			switch (stage) {
 				case 0:
-					x += n;
 					y += n;
+					//y += n;
 					s++;
 					break;
 				case 1:
-					y -= n;
+					x -= n;
 					stage = 2;
 					s = 0;
 					break;
 				case 2:
-					x -= n;
 					y -= n;
+					//y -= n;
 					s++;
 					break;
 				case 3:
-					y -= n;
+					x -= n;
 					stage = 0;
 					s = 0;
 					break;
@@ -308,7 +313,7 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 			if (!s)
 				this.lines++;
 			this.total++;
-			if (u > 5 || i >= 300) {
+			if (u > 5 || i >= 350) {
 				//console.log('break at iteration', i);
 
 				break;
@@ -372,7 +377,7 @@ class Map2 {
 			asset: 'egyt/iceblock'
 		});
 
-		this.mark.initiate();
+		this.mark.use();
 		this.mark.mesh.renderOrder = 999;
 		this.mark.dontOrder = true;
 	}
@@ -392,7 +397,7 @@ class Map2 {
 			asset: 'egyt/building/redstore'
 		});
 
-		granary.initiate();
+		granary.use();
 		//tobaccoshop.initiate();
 
 		//Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));

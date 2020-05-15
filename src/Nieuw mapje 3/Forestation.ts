@@ -27,11 +27,6 @@ namespace Forestation {
 		constructor(struct: Obj.Struct) {
 			super(struct);
 
-			trees.push(this);
-		}
-		comes() {
-			console.log('tree comes');
-
 			this.rekt = new Rekt({
 				obj: this,
 				asset: Egyt.sample(treez),
@@ -40,10 +35,15 @@ namespace Forestation {
 				wh: [120, 132],
 			});
 
-			this.rekt.initiate();
+			trees.push(this);
+		}
+		comes() {
+			console.log('tree comes');
+
+			this.rekt.use();
 		}
 		goes() {
-			this.rekt.deinitiate();
+			this.rekt.unuse();
 		}
 		update() {
 		}

@@ -29,10 +29,15 @@ namespace Tilization {
 				xy: this.struct.tile,
 				wh: [22, 11],
 			});
-
-			this.rekt.initiate();
 		}
-
+		comes() {
+			super.comes();
+			this.rekt.use();
+		}
+		goes() {
+			super.goes();
+			this.rekt.unuse();
+		}
 		update() {
 			if (plopping != this)
 				return;

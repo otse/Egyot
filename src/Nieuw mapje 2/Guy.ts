@@ -17,7 +17,7 @@ class Man extends Obj {
             asset: 'egyt/pumpkin'
         })
 
-        this.rekt.initiate();
+        this.rekt.use();
 
         this.rekt.mesh.renderOrder = 1;
     }

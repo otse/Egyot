@@ -31,6 +31,8 @@ class Rekt {
 	actualpos: zxc
 	center: zx
 
+	inuse = false
+
 	constructor(struct: Rekt.Struct) {
 		this.struct = struct;
 
@@ -45,7 +47,12 @@ class Rekt {
 	public mult() {
 		this.struct.xy = Zxcvs.multp([...this.struct.xy], 24);
 	}
-	public initiate() {
+	public use() {
+
+		if (this.inuse)
+			console.warn('rekt already inuse');
+
+		this.inuse = true;
 
 		Rekt.num++;
 
@@ -71,6 +78,7 @@ class Rekt {
 
 		//UV.FlipPlane(this.geometry, 0, true);
 
+
 		this.now_update_pos();
 
 		let c;
@@ -81,7 +89,11 @@ class Rekt {
 			ThreeQuarter.scene.add(this.mesh);
 	}
 
-	public deinitiate() {
+	public unuse() {
+		if (!this.inuse)
+			return;
+		this.inuse = false;
+
 		let c;
 		if (c = this.struct.obj?.chunk)
 			c.group.remove(this.mesh);

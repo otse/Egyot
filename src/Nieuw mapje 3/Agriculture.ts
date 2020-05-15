@@ -36,16 +36,7 @@ namespace Agriculture {
 
 		constructor(growth: number, struct: Obj.Struct) {
 			super(growth, struct);
-		}
-		comes() {
-			super.comes();
-			this.grow();
-		}
-		goes() {
-			super.goes();
-			this.rekt.deinitiate();
-		}
-		grow() {
+
 			this.rekt = new Rekt({
 				obj: this,
 				asset:
@@ -56,8 +47,14 @@ namespace Agriculture {
 				xy: this.struct.tile,
 				wh: [22, 22],
 			});
-
-			this.rekt.initiate();
+		}
+		comes() {
+			super.comes();
+			this.rekt.use();
+		}
+		goes() {
+			super.goes();
+			this.rekt.unuse();
 		}
 	}
 

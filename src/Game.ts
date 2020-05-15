@@ -83,7 +83,7 @@ class Game {
 
 		this.frustumRekt.noDimetricization = true; // dont 2:1
 
-		this.frustumRekt.initiate();
+		this.frustumRekt.use();
 		this.frustumRekt.mesh.renderOrder = 9999999;
 		this.frustumRekt.material.wireframe = true;
 	}
