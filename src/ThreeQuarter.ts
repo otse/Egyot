@@ -1,5 +1,6 @@
 import { default as THREE, OrthographicCamera, Clock, Scene, WebGLRenderer, Texture, TextureLoader, WebGLRenderTarget, ShaderMaterial, Mesh, PlaneBufferGeometry, Color } from 'three';
 import App from './App';
+import { Win } from './Win';
 
 export { THREE };
 
@@ -56,10 +57,31 @@ export namespace ThreeQuarter {
 		//filmic.composer.render();
 	}
 
+	var reset = 0;
+	var frames = 0;
+	export var fps;
+	export var heap;
+
+	// https://github.com/mrdoob/stats.js/blob/master/src/Stats.js#L71
+	export function calc() {
+		const s = Date.now() / 1000;
+		frames++;
+		if (s - reset >= 1) {
+			reset = s;
+			fps = frames;
+			frames = 0;
+		}
+		
+		const memory = (<any>window.performance).memory;
+		heap = `${(memory.usedJSHeapSize / 1048576).toFixed(4)} / ${memory.jsHeapSizeLimit / 1048576}`;
+			
+	}
 	export function render() {
 
 		//if (!changes)
 		//return;
+
+		calc();
 
 		renderer.setRenderTarget(target);
 		renderer.clear();
@@ -79,7 +101,7 @@ export namespace ThreeQuarter {
 
 	export function init() {
 
-		console.log('Two Init');
+		console.log('ThreeQuarter Init');
 
 		clock = new Clock();
 
@@ -96,7 +118,7 @@ export namespace ThreeQuarter {
 		target = new WebGLRenderTarget(
 			window.innerWidth, window.innerHeight,
 			{
-				minFilter: THREE.LinearFilter,
+				minFilter: THREE.NearestFilter,
 				magFilter: THREE.NearestFilter,
 				format: THREE.RGBFormat
 			});
@@ -108,11 +130,11 @@ export namespace ThreeQuarter {
 		renderer.autoClear = true;
 		renderer.setClearColor(0xffffff, 0);
 
-		
+
 		document.body.appendChild(renderer.domElement);
-		
+
 		window.addEventListener('resize', onWindowResize, false);
-		
+
 		someMore();
 		onWindowResize();
 

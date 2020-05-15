@@ -1,5 +1,7 @@
 import Rekt from "./Nieuw mapje/Rekt";
 import Obj from "./Nieuw mapje/Obj";
+import Zxcvs from "./Zxcvs";
+import { ThreeQuarter } from "./ThreeQuarter";
 
 namespace Win {
 	export var win;
@@ -61,6 +63,8 @@ namespace Win {
 	}
 
 	export function update() {
+		$('#fpsStat').text(`Fps: ${parseInt(ThreeQuarter.fps)}`);
+		$('#memoryStat').text(`Memory: ${ThreeQuarter.heap}`);
 		$('#numRekts').html('Num rekts: '+Rekt.num);
 		$('#numObjs').html('Num objs: '+Obj.num);
 		$('#numObjsActive').html('Num objs active: '+Obj.active);

@@ -8,7 +8,7 @@ import Agriculture from "../Nieuw mapje 3/Agriculture";
 import { aabb3 } from "../Bound";
 import Obj from "../Nieuw mapje/Obj";
 import Zxcvs from "../Zxcvs";
-import { Color, Group } from "three";
+import { Color, Group, WebGLRenderTarget, Int8Attribute, RGBFormat, NearestFilter, LinearFilter, RGBAFormat } from "three";
 import { ThreeQuarter } from "../ThreeQuarter";
 import Tilization from "../Nieuw mapje 3/Tilization";
 
@@ -23,6 +23,7 @@ class chunk {
 	group: Group
 
 	objs: chunk_objs
+	rtt: chunk_rtt
 	p: zx
 	tile: zx
 	mult: zx
@@ -84,10 +85,11 @@ class chunk {
 		});
 
 		rekt.initiate();
-		rekt.mesh.renderOrder = -999;
+		rekt.mesh.renderOrder = -9999;
 	}
 	comes() {
 		if (!this.on && !this.empty()) {
+			this.show();
 			ThreeQuarter.scene.add(this.group);
 			this.objs.comes();
 		}
@@ -280,6 +282,32 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 
 }
 
+class chunk_rtt {
+	readonly padding = Egyt.YUM * 2;
+	readonly w: number
+	readonly h: number
+
+	target: WebGLRenderTarget
+
+	constructor(private master: chunk_master<chunk>) {
+		this.w = this.master.width + this.padding;
+		this.h = this.master.height + this.padding;
+	}
+
+	readyup() {
+		if (this.target)
+			return;
+
+		this.target = new WebGLRenderTarget(
+			this.w, this.h,
+			{
+				minFilter: NearestFilter,
+				magFilter: NearestFilter,
+				format: RGBAFormat
+			});
+	}
+}
+
 class Map2 {
 	static rig() {
 		return new Map2;
@@ -323,12 +351,15 @@ class Map2 {
 
 		let tobaccoshop = new Rekt({
 			istile: true,
-			xy: [-16, -13],
+			xy: [-13, 2],
 			wh: [144, 144],
 			asset: 'egyt/building/redstore'
 		});
 
-		Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));
+		granary.initiate();
+		//tobaccoshop.initiate();
+
+		//Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));
 		Agriculture.area_wheat(2, new aabb3([5, -4, 0], [5 + 50 - 2, -12, 0]));
 		Agriculture.area_wheat(2, new aabb3([5 + 50, -4, 0], [5 + 50 - 2 + 50, -12, 0]));
 		Agriculture.area_wheat(3, new aabb3([5, -14, 0], [5 + 50 - 2, -22, 0]));
@@ -351,18 +382,17 @@ class Map2 {
 			'egyt/ground/gravel2',
 		];
 		// long road se
-		Tilization.area_sample(80, gravels, new aabb3([-13, 0, 0], [400, -2, 0]));
+		Tilization.area_sample(50, gravels, new aabb3([-13, 0, 0], [400, -2, 0]));
 
 		// long road ne
-		Tilization.area_sample(80, gravels, new aabb3([-13, 0, 0], [-11, 400, 0]));
+		Tilization.area_sample(50, gravels, new aabb3([-13, 0, 0], [-11, 400, 0]));
 
 		// farms se
-		Agriculture.area_wheat(2, new aabb3([-15, 21, 0], [-20, 101, 0]));
-		Agriculture.area_wheat(2, new aabb3([-15, 103, 0], [-20, 183, 0]));
+		Agriculture.area_wheat(1, new aabb3([-15, 21, 0], [-40, 101, 0]));
+		Agriculture.area_wheat(1, new aabb3([-15, 103, 0], [-40, 183, 0]));
 
 
-		granary.initiate();
-		//tobaccoshop.initiate();
+
 	}
 
 	get_chunk_tile(t: zx | zxc) {

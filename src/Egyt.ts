@@ -9,7 +9,7 @@ import Agriculture from "./Nieuw mapje 3/Agriculture";
 
 export namespace Egyt {
 
-	export const YUM = 22; // evenly divisible n
+	export const YUM = 24; // evenly divisible
 
 	export var game: Game;
 	export var map2: Map2;
@@ -92,7 +92,7 @@ export namespace Egyt {
 		Win.init();
 
 		Win.raw(`
-		<div>Menu</div>
+		<div>You may have to reload the page for latest version</div>
 		<br />
 		<div class="region small">
 			<a>Tutorial
@@ -122,6 +122,8 @@ export namespace Egyt {
 			<a>Stats
 			</a>
 			<div class="stats">
+				<span id="fpsStat">xx</span><br/>
+				<span id="memoryStat">xx</span><br/>
 				<span id="gameAabb"></span><br/>
 				<span id="gamePos"></span><br/>
 				
