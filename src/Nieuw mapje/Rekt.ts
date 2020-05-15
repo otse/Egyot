@@ -32,8 +32,6 @@ class Rekt {
 	center: zx
 
 	constructor(struct: Rekt.Struct) {
-		Rekt.num++;
-
 		this.struct = struct;
 
 		if (struct.istile)
@@ -49,17 +47,20 @@ class Rekt {
 	}
 	public initiate() {
 
+		Rekt.num++;
+
 		this.geometry = new PlaneBufferGeometry(
 			this.struct.wh[0], this.struct.wh[1], 1, 1);
 
 		let map;
 		if (this.struct.asset)
 			map = ThreeQuarter.loadTexture(`assets/${this.struct.asset}.png`);
+
 		this.material = new MeshBasicMaterial({
 			map: map,
 			transparent: true,
 			opacity: this.struct.opacity,
-			color: this.struct.obj?.chunk?.color || this.struct.color || 0xffffff
+			color: this.struct.obj?.chunk?.childobjscolor || this.struct.color || 0xffffff
 		});
 		this.mesh = new Mesh(this.geometry, this.material);
 		this.mesh.frustumCulled = true;

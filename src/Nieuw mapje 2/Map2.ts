@@ -18,7 +18,7 @@ declare class sobj {
 }
 
 class chunk {
-	color
+	childobjscolor
 	on = false
 	group: Group
 
@@ -33,7 +33,9 @@ class chunk {
 
 	array: Obj[][][]
 
-	rekt: Rekt
+	rekt: Rekt | null
+	rektcolor = 'white'
+
 	outline: Rekt
 
 	constructor(x, y, private master: chunk_master<chunk>) {
@@ -76,33 +78,40 @@ class chunk {
 		return this.objs.many() < 1;
 	}
 	show() {
-		let rekt = new Rekt({
-			//istile: true,
+		this.rekt = new Rekt({
 			xy: this.mult,
 			wh: [this.master.width, this.master.height],
 			asset: 'egyt/tenbyten',
-			color: Egyt.sample(['red', 'blue'])
+			color: this.rektcolor
 		});
 
-		rekt.initiate();
-		rekt.mesh.renderOrder = -9999;
+		this.rekt.initiate();
+		this.rekt.mesh.renderOrder = -9999;
+	}
+	update_color() {
+		if (!this.rekt)
+			return;
+		this.rekt.material.color.set(new Color(this.rektcolor));
+		this.rekt.material.needsUpdate = true;
 	}
 	comes() {
-		if (!this.on && !this.empty()) {
-			this.show();
-			ThreeQuarter.scene.add(this.group);
-			this.objs.comes();
-		}
+		//if (this.empty())
+			//return;
+		if (this.on)
+			return;
+		this.show();
+		ThreeQuarter.scene.add(this.group);
+		this.objs.comes();
 		this.on = true;
 	}
 	goes() {
-		if (this.on && !this.empty()) {
-			ThreeQuarter.scene.remove(this.group);
-			for (var i = this.group.children.length - 1; i >= 0; i--) {
-				this.group.remove(this.group.children[i]);
-			}
-			this.objs.goes();
+		if (!this.on)
+			return;
+		ThreeQuarter.scene.remove(this.group);
+		for (var i = this.group.children.length - 1; i >= 0; i--) {
+			this.group.remove(this.group.children[i]);
 		}
+		this.objs.goes();
 		this.on = false;
 	}
 	sec() {
@@ -110,6 +119,9 @@ class chunk {
 	}
 	see() {
 		return this.sec() != aabb3.SEC.OUT;
+	}
+	out() {
+		return this.sec() == aabb3.SEC.OUT;
 	}
 	update() {
 		return;
@@ -205,7 +217,7 @@ class chunk_master<T extends chunk> {
 
 class chunk_fitter<T extends chunk> { // chunk-snake
 
-	turns: number
+	lines: number
 	total: number
 
 	shown: T[] = []
@@ -218,9 +230,9 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 
 		let b = this.master.big(middle);
 
-		this.turns = 0;
+		this.lines = 0;
 		this.total = 0;
-		
+
 		this.snake(b, 1);
 		this.snake(b, -1);
 
@@ -228,32 +240,48 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 		while (i--) {
 			let c = this.shown[i];
 			c.update();
-			if (!c.see()) {
+			if (c.out()) {
 				c.goes();
 				this.shown.splice(i, 1);
 			}
 		}
 	}
 	snake(b: zx, n: number = 1) {
-		let i = 0;
+		let i, s, u;
 		let x = b[0], y = b[1];
 		let stage = 0;
-		let s = 0;
-		let u = 0;
+		i = 0;
+		s = 0;
+		u = 0;
+		let color = 0;
+		const colors = [
+			//'lightyellow', 'lemonchiffon', 'lightgoldenrodyellow', 'papayawhip', 'moccasin', 'peachpuff', 'palegoldenrod',
+			//'lightcyan', 'paleturquoise', 'turquoise', 'mediumaquamarine', 'darkcyan',
+			//'lavender', 'thistle', 'plum', 'violet', 'orchid', 'fuchsia', 'mediumorchid', 'darkviolet', 'darkmagenta', 'indigo',
+			'gainsboro', 'lightgray', 'silver', 'darkgray', 'gray', 'dimgray',
+		];
 		while (true) {
 			i++;
-			let c = this.master.guarantee(x, y);
-			if (s > 2 && c.sec() == aabb3.SEC.OUT) {
-				if (stage == 0) stage = 1;
-				if (stage == 2) stage = 3;
-			}
-			if (!c.see())
+			let c: T;
+			c = this.master.guarantee(x, y);
+			if (c.out()) {
+				if (s > 2) {
+					if (stage == 0) stage = 1;
+					if (stage == 2) stage = 3;
+				}
 				u++;
+			}
 			else {
 				u = 0;
-				if (!c.on && !c.empty())
-					this.shown.push(c);
+				const on = c.on;
 				c.comes();
+				if (!on && c.on)
+					this.shown.push(c);
+				color++;
+				if (color >= colors.length)
+					color = 0;
+				c.rektcolor = colors[color];
+				c.update_color();
 			}
 			switch (stage) {
 				case 0:
@@ -278,7 +306,7 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 					break;
 			}
 			if (!s)
-				this.turns++;
+				this.lines++;
 			this.total++;
 			if (u > 5 || i >= 300) {
 				//console.log('break at iteration', i);

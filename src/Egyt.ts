@@ -92,7 +92,7 @@ export namespace Egyt {
 		Win.init();
 
 		Win.raw(`
-		<div>May have to reload to ensure latest version</div>
+		<div>Hint: Press stats for cool render stuff</div>
 		<br />
 		<div class="region small">
 			<a>Tutorial</a>

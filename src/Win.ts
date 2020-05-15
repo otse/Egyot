@@ -83,8 +83,8 @@ namespace Win {
 			Win.win.find('#worldSquare').text(`World square: ${Zxcvs.string(Egyt.map2.mouse_tile)}`);
 			Win.win.find('#worldSquareChunk').text(`World square chunk: ${Zxcvs.string(Egyt.map2.statmaster.big(Egyt.map2.mouse_tile))}`);
 			Win.win.find('#chunksShown').text(`Chunks shown: ${Egyt.map2.statmaster.fitter.shown.length}`);
-			Win.win.find('#snakeTurns').text(`Chunk-snake turns: ${Egyt.map2.statmaster.fitter.turns}`);
-			Win.win.find('#snakeTotal').text(`Chunk-snake total: ${Egyt.map2.statmaster.fitter.total}`);
+			Win.win.find('#snakeTurns').text(`Chunk Snake lines: ${Egyt.map2.statmaster.fitter.lines}`);
+			Win.win.find('#snakeTotal').text(`Chunk Snake total traversed: ${Egyt.map2.statmaster.fitter.total}`);
 		}
 	}
 
