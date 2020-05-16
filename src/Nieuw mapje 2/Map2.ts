@@ -16,12 +16,9 @@ declare class sobj {
 
 }
 
-// optimize with render-target / render-to-texture
-const RT = false;
-
 class chunk {
 	on = false
-	changed = true
+	changes = true
 	group: Group
 	group_bluh: Group
 	childobjscolor
@@ -77,8 +74,11 @@ class chunk {
 		middle[2] = 0;
 
 		this.rekt_offset = this.tile;
-		this.group.position.fromArray(middle);
-		//this.group.position.fromArray(<zxc>[...p1, 0]);
+
+		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
+			this.group.position.fromArray(middle);
+			//this.group.renderOrder = this.rekt?.mesh?.renderOrder;
+		}
 
 		this.bound = new aabb3(
 			[x * this.master.span, y * this.master.span, 0],
@@ -117,7 +117,7 @@ class chunk {
 		this.on = true;
 	}
 	comes_pt2() {
-		if (!RT)
+		if (!Egyt.USE_CHUNK_RT)
 			return;
 		const treshold = this.objs.objs.length >= 10;
 		if (!treshold)
@@ -146,11 +146,9 @@ class chunk {
 		return this.sec() == aabb3.SEC.OUT;
 	}
 	update() {
-		//if (this.changed && this.rtt)
-		//	this.rtt.render();
-		if (this.rt)
+		if (Egyt.USE_CHUNK_RT && this.rt && this.changes)
 			this.rt.render();
-		this.changed = false;
+		this.changes = false;
 	}
 }
 
@@ -168,13 +166,13 @@ class chunk_objs {
 	add(obj: Obj) {
 		if (-1 == this.indexOf(obj))
 			this.objs.push(obj);
-		this.chunk.changed = true;
+		this.chunk.changes = true;
 	}
 	remove(obj: Obj) {
 		let i = this.indexOf(obj);
 		if (i > -1)
 			this.objs.splice(i, 1);
-		this.chunk.changed = true;
+		this.chunk.changes = true;
 	}
 	comes() {
 		for (let obj of this.objs)
@@ -368,7 +366,7 @@ class chunk_rt {
 		this.w = this.chunk.master.width;// + this.padding;
 		this.h = this.chunk.master.height;// + this.padding;
 
-		//console.log('chunk rtt');
+		console.log('chunk rtt');
 		this.camera = new OrthographicCamera(
 			this.w / - 2,
 			this.w / 2,
@@ -405,14 +403,15 @@ class chunk_rt {
 
 		while (tq.scene3.children.length > 0)
 			tq.scene3.remove(tq.scene3.children[0]);
+		
+		//this.group.
 
 		//const clone = this.chunk.group.clone();
+		const clone = this.chunk.group;
+		
+		clone.position.set(0, -100, 0);
 
-		let mult = <zxc>[...this.chunk.mult, -100];
-		//mult[0] = -mult[0];
-		//mult[1] = -mult[1];
-
-		let geometry = new PlaneBufferGeometry(
+		/*let geometry = new PlaneBufferGeometry(
 			24, 12, 1, 1);
 
 		let material = new MeshBasicMaterial({
@@ -421,11 +420,9 @@ class chunk_rt {
 		});
 		let mesh = new Mesh(geometry, material);
 
-		tq.scene3.add(mesh);
+		tq.scene3.add(mesh);*/
 
-		//this.camera.position.fromArray(mult);
-		tq.scene3.add(this.chunk.group);
-		//tq.scene3.position.copy(tq.scene.position);
+		tq.scene3.add(clone);
 
 		tq.renderer.setRenderTarget(this.target);
 		tq.renderer.clear();

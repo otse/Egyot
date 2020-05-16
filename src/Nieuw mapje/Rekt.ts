@@ -3,6 +3,7 @@ import { tq, THREE } from "../tq";
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 import points from "../points";
 import Obj from "./Obj";
+import Egyt from "../Egyt";
 
 class Rekt {
 
@@ -118,10 +119,11 @@ class Rekt {
 			y = p[1];
 		}
 		else {
-			let c = this.struct.obj?.chunk;
-			if (c) {
-				points.subtract(p, c.rekt_offset);
-				//console.log('subtract static_offset');
+			if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
+				let c = this.struct.obj?.chunk;
+				if (c) {
+					points.subtract(p, c.rekt_offset);
+				}
 			}
 			x = p[0] / 2 + p[1] / 2;
 			y = p[1] / 4 - p[0] / 4;

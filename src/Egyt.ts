@@ -9,6 +9,9 @@ import Agriculture from "./Nieuw mapje 3/Agriculture";
 
 export namespace Egyt {
 
+	export const USE_CHUNK_RT = true;
+	export const OFFSET_CHUNK_OBJ_REKT = true;
+
 	export const YUM = 24; // evenly divisible
 
 	export var game: Game;
