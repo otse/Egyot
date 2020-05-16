@@ -40,6 +40,7 @@ export namespace tq {
 	export var scene2: Scene
 	export var scene3: Scene
 	export var camera: OrthographicCamera
+	export var camera3: OrthographicCamera
 	export var target: WebGLRenderTarget
 	export var renderer: WebGLRenderer
 
@@ -82,6 +83,9 @@ export namespace tq {
 
 		calc();
 
+		//renderer.setSize(
+		//	window.innerWidth, window.innerHeight);
+
 		renderer.setRenderTarget(target);
 		renderer.clear();
 		renderer.render(scene, camera);
@@ -108,6 +112,7 @@ export namespace tq {
 		scene.background = new Color('rgb(40, 72, 42)'); // #444
 		scene2 = new Scene();
 		scene3 = new Scene();
+		//scene3.background = new Color('pink');
 
 		dpi = window.devicePixelRatio;
 
@@ -129,7 +134,6 @@ export namespace tq {
 			window.innerWidth, window.innerHeight);
 		renderer.autoClear = true;
 		renderer.setClearColor(0xffffff, 0);
-
 
 		document.body.appendChild(renderer.domElement);
 
@@ -210,13 +214,13 @@ export namespace tq {
 
 	let mem = [];
 
-	export function loadTexture(file: string, salt?: string): Texture {
+	export function loadTexture(file: string, salt?: string | undefined, cb?): Texture {
 		if (mem[salt || file])
 			return mem[salt || file];
 
 		//console.log('LoadTexture ' + salt || file);
 
-		let texture = new TextureLoader().load(file + `?v=${App.version}`);
+		let texture = new TextureLoader().load(file + `?v=${App.version}`, cb);
 
 		texture.magFilter = THREE.NearestFilter;
 		texture.minFilter = THREE.NearestFilter;

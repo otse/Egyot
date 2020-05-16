@@ -103,7 +103,6 @@ export namespace App {
 		requestAnimationFrame(loo);
 
 		tq.update();
-		Egyt.game.update();
 		Egyt.update();
 		
 		tq.render();

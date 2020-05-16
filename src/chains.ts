@@ -61,7 +61,6 @@ namespace Chains {
 		let jay = $('<div>').addClass('messageslide').append(`<span>${title}`).append(`<span>${message}`);
 
 		win.append(jay);
-
 	}
 
 	export function init() {

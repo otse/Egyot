@@ -27,7 +27,7 @@ namespace Tilization {
 				asset: asset,
 				istile: true,
 				xy: this.struct.tile,
-				wh: [22, 11],
+				wh: [24, 12],
 			});
 		}
 		comes() {

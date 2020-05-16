@@ -7,7 +7,7 @@ import Forestation from "../Nieuw mapje 3/Forestation";
 import Agriculture from "../Nieuw mapje 3/Agriculture";
 import { aabb3 } from "../aabb";
 import Obj from "../Nieuw mapje/Obj";
-import { Color, Group, WebGLRenderTarget, Int8Attribute, RGBFormat, NearestFilter, LinearFilter, RGBAFormat } from "three";
+import { Color, Group, WebGLRenderTarget, Int8Attribute, RGBFormat, NearestFilter, LinearFilter, RGBAFormat, PlaneBufferGeometry, MeshBasicMaterial, Mesh, OrthographicCamera } from "three";
 import { tq } from "../tq";
 import Tilization from "../Nieuw mapje 3/Tilization";
 
@@ -16,15 +16,20 @@ declare class sobj {
 
 }
 
+// optimize with render-target / render-to-texture
+const RT = false;
+
 class chunk {
 	on = false
 	changed = true
 	group: Group
+	group_bluh: Group
 	childobjscolor
 
 	readonly objs: chunk_objs
-	rt: chunk_rtt
+	rt: chunk_rt
 	p: zx
+	rekt_offset: zx
 	tile: zx
 	mult: zx
 	real: zx
@@ -45,6 +50,7 @@ class chunk {
 		//this.color = Egyt.sample(colors);
 		this.p = [x, y];
 		this.group = new Group;
+		this.group_bluh = new Group;
 
 		this.set_bounds();
 
@@ -52,8 +58,9 @@ class chunk {
 			xy: this.mult,
 			wh: [this.master.width, this.master.height],
 			asset: 'egyt/tenbyten',
-			color: this.rektcolor
+			//color: this.rektcolor
 		});
+
 	}
 
 	set_bounds() {
@@ -64,6 +71,14 @@ class chunk {
 		this.tile = <zx>[...p1];
 		points.subtract(p1, [24, 0]);
 		this.mult = p1;
+
+		let middle = points.multp([x + 1, y, 0], this.master.span * 24);
+		middle = points.twoone(middle);
+		middle[2] = 0;
+
+		this.rekt_offset = this.tile;
+		this.group.position.fromArray(middle);
+		//this.group.position.fromArray(<zxc>[...p1, 0]);
 
 		this.bound = new aabb3(
 			[x * this.master.span, y * this.master.span, 0],
@@ -83,6 +98,7 @@ class chunk {
 		return this.objs.many() < 1;
 	}
 	update_color() {
+		return;
 		if (!this.rekt.inuse)
 			return;
 		this.rekt.material.color.set(new Color(this.rektcolor));
@@ -96,11 +112,19 @@ class chunk {
 		this.rekt.use();
 		this.rekt.mesh.renderOrder = -9999;
 		this.objs.comes();
-		if (this.objs.objs.length >= 10 && !this.rt)
-			this.rt = new chunk_rtt(this);
-		if (!this.rt)
-			tq.scene.add(this.group);
+		tq.scene.add(this.group);
+		this.comes_pt2();
 		this.on = true;
+	}
+	comes_pt2() {
+		if (!RT)
+			return;
+		const treshold = this.objs.objs.length >= 10;
+		if (!treshold)
+			return;
+		if (!this.rt)
+			this.rt = new chunk_rt(this);
+		this.rt.render();
 	}
 	goes() {
 		if (!this.on)
@@ -124,6 +148,8 @@ class chunk {
 	update() {
 		//if (this.changed && this.rtt)
 		//	this.rtt.render();
+		if (this.rt)
+			this.rt.render();
 		this.changed = false;
 	}
 }
@@ -328,20 +354,32 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 
 }
 
-class chunk_rtt {
+class chunk_rt {
 	readonly padding = Egyt.YUM * 2;
 	readonly w: number
 	readonly h: number
 
+	offset: zx = [0, 0]
+
 	target: WebGLRenderTarget
+	camera
 
 	constructor(private chunk: chunk) {
-		this.w = this.chunk.master.width + this.padding;
-		this.h = this.chunk.master.height + this.padding;
+		this.w = this.chunk.master.width;// + this.padding;
+		this.h = this.chunk.master.height;// + this.padding;
 
 		//console.log('chunk rtt');
+		this.camera = new OrthographicCamera(
+			this.w / - 2,
+			this.w / 2,
+			this.h / 2,
+			this.h / - 2,
+			- 100, 100);
+		this.camera.position.set(0, 0, -100);
+
+		this.camera.updateProjectionMatrix();
+
 		this.readyup();
-		this.render();
 	}
 
 	readyup() {
@@ -357,27 +395,43 @@ class chunk_rtt {
 			});
 	}
 
+	latch() {
+		this.chunk.rekt.material.map = this.target.texture;
+		this.chunk.rekt.material.needsUpdate = true;
+	}
+
 	render() {
-		console.log('chunk_rtt render');
+		//console.log('chunk_rtt render');
 
 		while (tq.scene3.children.length > 0)
 			tq.scene3.remove(tq.scene3.children[0]);
 
 		//const clone = this.chunk.group.clone();
 
-		let mult = <zxc>[...this.chunk.mult, 0];
+		let mult = <zxc>[...this.chunk.mult, -100];
+		//mult[0] = -mult[0];
+		//mult[1] = -mult[1];
 
-		tq.scene3.position.fromArray([...this.chunk.mult, 0]);
+		let geometry = new PlaneBufferGeometry(
+			24, 12, 1, 1);
+
+		let material = new MeshBasicMaterial({
+			map: tq.loadTexture(`assets/egyt/tileorange.png`),
+			transparent: true
+		});
+		let mesh = new Mesh(geometry, material);
+
+		tq.scene3.add(mesh);
+
+		//this.camera.position.fromArray(mult);
 		tq.scene3.add(this.chunk.group);
+		//tq.scene3.position.copy(tq.scene.position);
 
 		tq.renderer.setRenderTarget(this.target);
-
-		tq.renderer.setClearColor(new Color('cyan'), 0.5);
 		tq.renderer.clear();
+		tq.renderer.render(tq.scene3, this.camera);
 
-		tq.renderer.render(tq.scene3, tq.camera);
-
-		this.chunk.rekt.material.map = this.target.texture;
+		this.latch();
 	}
 }
 
@@ -415,6 +469,15 @@ class Map2 {
 	}
 
 	init() {
+		tq.loadTexture('assets/egyt/tileorange.png', undefined, () => Egyt.resourced('TILE_ORANGE'))
+		tq.loadTexture('assets/egyt/farm/wheat_i.png', undefined, () => Egyt.resourced('WHEAT_I'))
+		tq.loadTexture('assets/egyt/farm/wheat_il.png', undefined, () => Egyt.resourced('WHEAT_IL'))
+		tq.loadTexture('assets/egyt/farm/wheat_ili.png', undefined, () => Egyt.resourced('WHEAT_ILI'))
+		tq.loadTexture('assets/egyt/farm/wheat_ilil.png', undefined, () => Egyt.resourced('WHEAT_ILIL'))
+		tq.loadTexture('assets/egyt/farm/wheat_ilili.png', undefined, () => Egyt.resourced('WHEAT_ILILI'))
+	}
+
+	populate() {
 		let granary = new Rekt({
 			istile: true,
 			xy: [6, -1],

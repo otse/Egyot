@@ -24,7 +24,12 @@ export namespace Egyt {
 
 	export enum RESOURCES {
 		UNDEFINED_OR_INIT = 0,
-		//FONT_WHITE,
+		TILE_ORANGE,
+		WHEAT_I,
+		WHEAT_IL,
+		WHEAT_ILI,
+		WHEAT_ILIL,
+		WHEAT_ILILI,
 		//FONT_YELLOW,
 		//FONT_MISSION,
 		//SPRITES,
@@ -62,16 +67,16 @@ export namespace Egyt {
 
 	export function init() {
 		console.log('egyt init');
-
-		resourced('UNDEFINED_OR_INIT');
-
+		
 		game = Game.rig();
 		world = World.rig();
 		map2 = Map2.rig();
 		map2.init();
-
+		
 		Forestation.init();
 		Tilization.init();
+
+		resourced('UNDEFINED_OR_INIT');
 
 		(window as any).Egyt = Egyt;
 	}
@@ -82,6 +87,8 @@ export namespace Egyt {
 			return;
 
 		console.log('egyt starting');
+
+		map2.populate();
 
 		//if (window.location.href.indexOf("#win95") != -1)
 		//	Win.load_sheet('style95.css');
@@ -152,6 +159,8 @@ export namespace Egyt {
 
 		if (!started)
 			return;
+		
+		Egyt.game.update();
 
 		Forestation.update();
 		Tilization.update();

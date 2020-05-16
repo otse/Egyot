@@ -107,16 +107,22 @@ class Rekt {
 	}
 
 	now_update_pos() {
-		const p = this.struct.xy;
 		const d = this.struct.wh;
 
 		let x, y;
+
+		let p = <zx>[...this.struct.xy];
 
 		if (this.noDimetricization) {
 			x = p[0];
 			y = p[1];
 		}
 		else {
+			let c = this.struct.obj?.chunk;
+			if (c) {
+				points.subtract(p, c.rekt_offset);
+				//console.log('subtract static_offset');
+			}
 			x = p[0] / 2 + p[1] / 2;
 			y = p[1] / 4 - p[0] / 4;
 
@@ -129,14 +135,15 @@ class Rekt {
 				y += h;
 			}
 
-			if (!this.dontOrder)
+			if (!this.dontOrder && this.mesh)
 				this.mesh.renderOrder = -p[1] + p[0];
 
 		}
 
 		this.actualpos = [x, y, 0];
 
-		this.mesh.position.fromArray(this.actualpos);
+		if (this.mesh)
+			this.mesh.position.fromArray(this.actualpos);
 	}
 }
 
