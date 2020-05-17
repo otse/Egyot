@@ -14,10 +14,10 @@
         "strictNullChecks": true
     },
     "files": [
-        "src/Egyt.d.ts"
+        "src2/Egyt.d.ts"
     ],
     "include": [
-        "src",
+        "src2",
         "util"
     ],
     "exclude": [

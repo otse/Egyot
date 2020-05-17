@@ -1,4 +1,4 @@
-import { aabb3 } from "./aabb";
+import { aabb3 } from "./AABB";
 
 namespace points {
 

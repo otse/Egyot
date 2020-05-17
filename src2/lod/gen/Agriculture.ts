@@ -1,10 +1,10 @@
-import Rekt from "../Nieuw mapje/Rekt";
-import Egyt from "../Egyt";
-import { aabb3 } from "../aabb";
-import Obj from "../Nieuw mapje/Obj";
-import App from "../badhelper";
-import Points from "../points";
-import points from "../points";
+import Rekt from "../../objrekt/Rekt";
+import Egyt from "../../Egyt";
+import { aabb3 } from "../../lib/aabb";
+import Obj from "../../objrekt/Obj";
+import App from "../../lib/App";
+import Points from "../../lib/Points";
+import points from "../../lib/Points";
 
 namespace Agriculture {
 

@@ -1,9 +1,9 @@
-import Rekt from "../Nieuw mapje/Rekt";
-import Egyt from "../Egyt";
-import { aabb3 } from "../aabb";
-import Obj from "../Nieuw mapje/Obj";
-import App from "../badhelper";
-import points from "../points";
+import Rekt from "../../objrekt/Rekt";
+import Egyt from "../../Egyt";
+import { aabb3 } from "../../lib/aabb";
+import Obj from "../../objrekt/Obj";
+import App from "../../lib/App";
+import points from "../../lib/Points";
 
 namespace Tilization {
 
@@ -42,7 +42,7 @@ namespace Tilization {
 			if (plopping != this)
 				return;
 
-			let p = <zx>[...Egyt.map2.mouse_tile];
+			let p = <zx>[...Egyt.map.mouse_tile];
 
 			this.struct.tile = p;
 
@@ -64,7 +64,7 @@ namespace Tilization {
 
 	export function update() {
 		if (!plopping && App.map['y'] == 1) {
-			plopping = <Tile>place_tile(100, Egyt.sample(colors), Egyt.map2.mouse_tile);
+			plopping = <Tile>place_tile(100, Egyt.sample(colors), Egyt.map.mouse_tile);
 		}
 	}
 

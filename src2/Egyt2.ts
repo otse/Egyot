@@ -1,15 +1,15 @@
-import { tq, THREE } from "./tq";
+import { TQ, THREE } from "./lib/TQ";
 
-import App from "./badhelper";
+import App from "./lib/App";
 
-import Rekt from "./Nieuw mapje/Rekt";
-import Obj from "./Nieuw mapje/Obj";
+import Rekt from "./objrekt/Rekt";
+import Obj from "./objrekt/Obj";
 
-import Selection from "./Nieuw mapje 5/Selection";
+import Selection from "./nested/Selection";
 import { Object3D, Mesh, PlaneBufferGeometry, MeshBasicMaterial } from "three";
-import { aabb3 } from "./aabb";
-import points from "./points";
-import { Win } from "./chains";
+import { aabb3 } from "./lib/AABB";
+import points from "./lib/Points";
+import { Win } from "./lib/Board";
 
 class Game {
 	rekts: Rekt[]
@@ -94,16 +94,16 @@ class Game {
 			console.log('scale down', this.scale);
 		}
 
-		tq.scene.scale.set(this.scale, this.scale, 1);
+		TQ.scene.scale.set(this.scale, this.scale, 1);
 
 		let p2 = points.multpClone(p, this.scale);
 
-		tq.scene.position.set(p2[0], p2[1], 0);
+		TQ.scene.position.set(p2[0], p2[1], 0);
 
 		this.focal = [-p[0], -p[1], 0];
 
-		let w = tq.target.width;
-		let h = tq.target.height;
+		let w = TQ.target.width;
+		let h = TQ.target.height;
 
 		let w2 = w / this.dpi / this.scale;
 		let h2 = h / this.dpi / this.scale;
