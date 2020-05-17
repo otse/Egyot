@@ -8,8 +8,9 @@ import Agriculture from "./gen/Agriculture";
 import { aabb3 } from "../lib/AABB";
 import Obj from "../objrekt/Obj";
 import { Color, Group, WebGLRenderTarget, Int8Attribute, RGBFormat, NearestFilter, LinearFilter, RGBAFormat, PlaneBufferGeometry, MeshBasicMaterial, Mesh, OrthographicCamera } from "three";
-import { TQ } from "../lib/TQ";
+import { tq } from "../lib/tq";
 import Tilization from "./gen/Tilization";
+import { tqlib } from "../lib/tqlib";
 
 
 declare class sobj {
@@ -113,7 +114,7 @@ class chunk {
 		this.rekt.use();
 		this.rekt.mesh.renderOrder = -9999;
 		this.objs.comes();
-		TQ.scene.add(this.group);
+		tq.scene.add(this.group);
 		this.comes_pt2();
 		this.on = true;
 	}
@@ -131,7 +132,7 @@ class chunk {
 		if (!this.on)
 			return;
 		this.rekt.unuse();
-		TQ.scene.remove(this.group);
+		tq.scene.remove(this.group);
 		while (this.group.children.length > 0)
 			this.group.remove(this.group.children[0]);
 		this.objs.goes();
@@ -355,7 +356,7 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 }
 
 class chunk_rt {
-	readonly padding = Egyt.YUM * 2;
+	readonly padding = Egyt.YUM * 2
 	readonly w: number
 	readonly h: number
 
@@ -365,72 +366,27 @@ class chunk_rt {
 	camera
 
 	constructor(private chunk: chunk) {
-		this.w = this.chunk.master.width;// + this.padding;
-		this.h = this.chunk.master.height;// + this.padding;
+		this.w = this.chunk.master.width;
+		this.h = this.chunk.master.height;
 
-		console.log('chunk rtt');
-		this.camera = new OrthographicCamera(
-			this.w / - 2,
-			this.w / 2,
-			this.h / 2,
-			this.h / - 2,
-			- 100, 100);
-		this.camera.position.set(0, 0, -100);
-
-		this.camera.updateProjectionMatrix();
-
-		this.readyup();
-	}
-
-	readyup() {
-		if (this.target)
-			return;
-
-		this.target = new WebGLRenderTarget(
-			this.w, this.h,
-			{
-				minFilter: NearestFilter,
-				magFilter: NearestFilter,
-				format: RGBAFormat
-			});
-	}
-
-	latch() {
-		this.chunk.rekt.material.map = this.target.texture;
-		this.chunk.rekt.material.needsUpdate = true;
+		this.camera = tqlib.ortographiccamera(this.w, this.h);
+		this.target = tqlib.rendertarget(this.w, this.h);
 	}
 
 	render() {
-		//console.log('chunk_rtt render');
+		while (tq.crtscene.children.length > 0)
+			tq.crtscene.remove(tq.crtscene.children[0]);
 
-		while (TQ.scene3.children.length > 0)
-			TQ.scene3.remove(TQ.scene3.children[0]);
-		
-		//this.group.
+		const group = this.chunk.group;
 
-		//const clone = this.chunk.group.clone();
-		const clone = this.chunk.group;
-		
-		clone.position.set(0, -this.chunk.master.height/2, 0);
+		group.position.set(0, -this.h / 2, 0);
+		tq.crtscene.add(group);
 
-		/*let geometry = new PlaneBufferGeometry(
-			24, 12, 1, 1);
+		tq.renderer.setRenderTarget(this.target);
+		tq.renderer.clear();
+		tq.renderer.render(tq.crtscene, this.camera);
 
-		let material = new MeshBasicMaterial({
-			map: tq.loadTexture(`assets/egyt/tileorange.png`),
-			transparent: true
-		});
-		let mesh = new Mesh(geometry, material);
-
-		tq.scene3.add(mesh);*/
-
-		TQ.scene3.add(clone);
-
-		TQ.renderer.setRenderTarget(this.target)
-		TQ.renderer.clear();
-		TQ.renderer.render(TQ.scene3, this.camera);
-
-		this.latch();
+		this.chunk.rekt.material.map = this.target.texture;
 	}
 }
 
@@ -464,16 +420,16 @@ class Map {
 
 		this.mark.use();
 		this.mark.mesh.renderOrder = 999;
-		this.mark.dontOrder = true;
+		//this.mark.dontOrder = true;
 	}
 
 	init() {
-		TQ.loadTexture('assets/egyt/tileorange.png', undefined, () => Egyt.resourced('TILE_ORANGE'))
-		TQ.loadTexture('assets/egyt/farm/wheat_i.png', undefined, () => Egyt.resourced('WHEAT_I'))
-		TQ.loadTexture('assets/egyt/farm/wheat_il.png', undefined, () => Egyt.resourced('WHEAT_IL'))
-		TQ.loadTexture('assets/egyt/farm/wheat_ili.png', undefined, () => Egyt.resourced('WHEAT_ILI'))
-		TQ.loadTexture('assets/egyt/farm/wheat_ilil.png', undefined, () => Egyt.resourced('WHEAT_ILIL'))
-		TQ.loadTexture('assets/egyt/farm/wheat_ilili.png', undefined, () => Egyt.resourced('WHEAT_ILILI'))
+		tqlib.loadTexture('assets/egyt/tileorange.png', undefined, () => Egyt.resourced('TILE_ORANGE'))
+		tqlib.loadTexture('assets/egyt/farm/wheat_i.png', undefined, () => Egyt.resourced('WHEAT_I'))
+		tqlib.loadTexture('assets/egyt/farm/wheat_il.png', undefined, () => Egyt.resourced('WHEAT_IL'))
+		tqlib.loadTexture('assets/egyt/farm/wheat_ili.png', undefined, () => Egyt.resourced('WHEAT_ILI'))
+		tqlib.loadTexture('assets/egyt/farm/wheat_ilil.png', undefined, () => Egyt.resourced('WHEAT_ILIL'))
+		tqlib.loadTexture('assets/egyt/farm/wheat_ilili.png', undefined, () => Egyt.resourced('WHEAT_ILILI'))
 	}
 
 	populate() {

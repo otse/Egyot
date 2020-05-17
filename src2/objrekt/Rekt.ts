@@ -1,15 +1,14 @@
-import { TQ, THREE } from "../lib/TQ";
+import { tq, THREE } from "../lib/tq";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 import points from "../lib/Points";
 import Obj from "./Obj";
 import Egyt from "../Egyt";
+import { tqlib } from "../lib/tqlib";
 
 class Rekt {
 
 	noDimetricization = false
-	middleBottom = true
-	dontOrder = false
 
 	readonly struct: {
 		obj?: Obj
@@ -64,7 +63,7 @@ class Rekt {
 
 		let map;
 		if (this.struct.asset)
-			map = TQ.loadTexture(`assets/${this.struct.asset}.png`);
+			map = tqlib.loadTexture(`assets/${this.struct.asset}.png`);
 
 		this.material = new MeshBasicMaterial({
 			map: map,
@@ -90,7 +89,7 @@ class Rekt {
 			c.group.add(this.mesh);
 		}
 		else
-			TQ.scene.add(this.mesh);
+			tq.scene.add(this.mesh);
 	}
 
 	public unuse() {
@@ -102,7 +101,7 @@ class Rekt {
 		if (c = this.struct.obj?.chunk)
 			c.group.remove(this.mesh);
 		else
-			TQ.scene.remove(this.mesh);
+			tq.scene.remove(this.mesh);
 
 		Rekt.active--;
 
@@ -133,17 +132,14 @@ class Rekt {
 
 			this.center = [x, y];
 
-			if (this.middleBottom) {
-				let w = d[0] / 2;
-				let h = d[1] / 2;
+			// middle bottom
+			let w = d[0] / 2;
+			let h = d[1] / 2;
 
-				y += h;
-			}
-
-			if (!this.dontOrder)
-				this.mesh.renderOrder = -p[1] + p[0];
+			y += h;
 
 		}
+		this.mesh.renderOrder = -p[1] + p[0];
 
 		this.actualpos = [x, y, 0];
 

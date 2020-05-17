@@ -104,13 +104,13 @@ export namespace Egyt {
 		Win.init();
 
 		Win.raw(`
-		<div>Hint: Press stats for cool render stuff</div>
+		<div>May have to reload for latest version<br/>
 		<br />
 		<div class="region small">
 			<a>Tutorial</a>
 			<div>
 				Move the view with <key>W</key> <key>A</key> <key>S</key> <key>D</key>.
-				Scroll to zoom. Hold <key>X</key> to fast scroll.
+				Scrollwheel to zoom. Hold <key>X</key> to go faster.
 			</div>
 
 			<a>World editing</a>
@@ -128,13 +128,12 @@ export namespace Egyt {
 				Nothing here yet
 			</div>
 
-			<a>Stats</a>
+			<a collapse>Stats</a>
 			<div class="stats">
 				<span id="fpsStat">xx</span><br/>
 				<span id="memoryStat">xx</span><br/>
 				<br/>
 				<span id="gameAabb"></span><br/>
-				<span id="gamePos"></span><br/>
 				<br/>
 				<span id="numChunks"></span><br/>
 				<span id="numObjs"></span><br/>
@@ -143,9 +142,9 @@ export namespace Egyt {
 				<span id="square"></span><br/>
 				<span id="squareChunk"></span><br/>
 				<span id="squareChunkRt">xx</span><br/>
+				<br />
 				<span id="snakeTurns"></span><br/>
 				<span id="snakeTotal"></span><br/>
-				<br/>
 				<br/>
 				<span id="USE_CHUNK_RTT">USE_CHUNK_RTT: ${USE_CHUNK_RT}</span><br/>
 				<span id="OFFSET_CHUNK_OBJ_REKT">OFFSET_CHUNK_OBJ_REKT: ${OFFSET_CHUNK_OBJ_REKT}</span><br/>

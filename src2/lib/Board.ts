@@ -1,7 +1,7 @@
 import Rekt from "../objrekt/Rekt";
 import Obj from "../objrekt/Obj";
 import points from "./Points";
-import { TQ } from "./TQ";
+import { tq } from "./tq";
 import Egyt from "../Egyt";
 
 namespace Board {
@@ -73,10 +73,11 @@ namespace Board {
 	export function update() {
 
 		if (Board.collapsed.Stats) {
-			Board.win.find('#fpsStat').text(`Fps: ${parseInt(TQ.fps)}`);
-			Board.win.find('#memoryStat').text(`Memory: ${(TQ.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${TQ.memory.jsHeapSizeLimit / 1048576}`);
+			Board.win.find('#fpsStat').text(`Fps: ${parseInt(tq.fps)}`);
+			Board.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
 
-			Board.win.find('#gamePos').text(`Game pos: ${points.string(Egyt.game.pos)}`);
+			Board.win.find('#gameAabb').html(`View bounding volume: <span>${Egyt.game.view.min[0]}, ${Egyt.game.view.min[1]} x ${Egyt.game.view.max[0]}, ${Egyt.game.view.max[1]} `);
+			//Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
 
 			Board.win.find('#numChunks').text(`Num chunks: ${Egyt.map.statmaster.fitter.shown.length} / ${Egyt.map.statmaster.total}`);
 			Board.win.find('#numObjs').html(`Num objs: ${Obj.active} / ${Obj.num}`);

@@ -29,7 +29,7 @@ void main() {
 
 // three quarter
 
-export namespace TQ {
+export namespace tq {
 
 	export var changes = true;
 	export var dpi;
@@ -38,7 +38,7 @@ export namespace TQ {
 	export var clock: Clock
 	export var scene: Scene
 	export var scene2: Scene
-	export var scene3: Scene
+	export var crtscene: Scene
 	export var camera: OrthographicCamera
 	export var camera3: OrthographicCamera
 	export var target: WebGLRenderTarget
@@ -111,7 +111,7 @@ export namespace TQ {
 		scene = new Scene();
 		scene.background = new Color('rgb(40, 72, 42)'); // #444
 		scene2 = new Scene();
-		scene3 = new Scene();
+		crtscene = new Scene();
 		//scene3.background = new Color('pink');
 
 		dpi = window.devicePixelRatio;
@@ -142,7 +142,7 @@ export namespace TQ {
 		someMore();
 		onWindowResize();
 
-		(window as any).tq = TQ;
+		(window as any).tq = tq;
 	}
 
 	function someMore() {
@@ -212,21 +212,4 @@ export namespace TQ {
 
 	}
 
-	let mem = [];
-
-	export function loadTexture(file: string, salt?: string | undefined, cb?): Texture {
-		if (mem[salt || file])
-			return mem[salt || file];
-
-		//console.log('LoadTexture ' + salt || file);
-
-		let texture = new TextureLoader().load(file + `?v=${App.version}`, cb);
-
-		texture.magFilter = THREE.NearestFilter;
-		texture.minFilter = THREE.NearestFilter;
-
-		mem[salt || file] = texture;
-
-		return texture;
-	}
 }

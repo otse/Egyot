@@ -1,4 +1,4 @@
-import { TQ as TQ } from "./TQ";
+import { tq as tq } from "./tq";
 
 import Game from "../Egyt2";
 import Egyt from "../Egyt";
@@ -75,13 +75,13 @@ export namespace App {
 		document.onmouseup = onup;
 		document.onwheel = onwheel;
 
-		TQ.init();
+		tq.init();
 		
 		Egyt.init();
 
 		loo(0);
 
-		setTimeout(() => TQ.changes = true, 10);
+		setTimeout(() => tq.changes = true, 10);
 	}
 
 	// Lokale functies
@@ -102,10 +102,10 @@ export namespace App {
 	const loo = (timestamp) => {
 		requestAnimationFrame(loo);
 
-		TQ.update();
+		tq.update();
 		Egyt.update();
 		
-		TQ.render();
+		tq.render();
 
 		wheel = 0;
 

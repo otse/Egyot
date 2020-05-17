@@ -3,7 +3,7 @@ import Rekt from "../objrekt/Rekt";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 
-import { TQ } from "../lib/TQ";
+import { tq } from "../lib/tq";
 import points from "../lib/Points";
 import Egyt from "../Egyt";
 
@@ -41,7 +41,7 @@ class Selection {
 
 		this.mesh.renderOrder = 500;
 
-		TQ.scene.add(this.mesh);
+		tq.scene.add(this.mesh);
 	}
 
 	Update(mouse: zx) {
@@ -71,7 +71,7 @@ class Selection {
 
 		points.subtract(
 			mouse, points.divide(
-				<zx>points.clone(TQ.wh), 2));
+				<zx>points.clone(tq.wh), 2));
 
 		let scale = 1;
 
@@ -102,19 +102,19 @@ class Selection {
 		this.mesh.scale.set(size[0], size[1], 1);
 		this.mesh.position.set(pos[0], pos[1], 0);
 
-		TQ.changes = true;
+		tq.changes = true;
 	}
 
 	End() {
 		if (!this.enuf)
 			return;
 
-		TQ.scene.remove(this.mesh);
+		tq.scene.remove(this.mesh);
 
 		this.geometry.dispose();
 		this.material.dispose();
 
-		TQ.changes = true;
+		tq.changes = true;
 	}
 }
 

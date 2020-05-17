@@ -1,4 +1,4 @@
-import { TQ, THREE } from "./lib/TQ";
+import { tq, THREE } from "./lib/tq";
 
 import App from "./lib/App";
 
@@ -94,16 +94,15 @@ class Game {
 			console.log('scale down', this.scale);
 		}
 
-		TQ.scene.scale.set(this.scale, this.scale, 1);
+		tq.scene.scale.set(this.scale, this.scale, 1);
 
 		let p2 = points.multpClone(p, this.scale);
 
-		TQ.scene.position.set(p2[0], p2[1], 0);
+		tq.scene.position.set(p2[0], p2[1], 0);
 
-		this.focal = [-p[0], -p[1], 0];
 
-		let w = TQ.target.width;
-		let h = TQ.target.height;
+		let w = tq.target.width;
+		let h = tq.target.height;
 
 		let w2 = w / this.dpi / this.scale;
 		let h2 = h / this.dpi / this.scale;
@@ -115,10 +114,10 @@ class Game {
 		points.floor(this.view.min);
 		points.floor(this.view.max);
 
-		Win.win.find('#gameAabb').html(`Viewport: <span>${this.view.min[0]}, ${this.view.min[1]} x ${this.view.max[0]}, ${this.view.max[1]} `);
+		this.focal = [-p[0], -p[1], 0];
 
 		return;
-		
+
 		this.frustumRekt.mesh.scale.set(w2, h2, 1);
 		this.frustumRekt.struct.xy = <zx>[...this.focal];
 		this.frustumRekt.now_update_pos();
