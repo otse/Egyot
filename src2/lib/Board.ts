@@ -78,19 +78,18 @@ namespace Board {
 
 			Board.win.find('#gamePos').text(`Game pos: ${points.string(Egyt.game.pos)}`);
 
-			Board.win.find('#numRekts').html('Num rekts: ' + Rekt.num);
-			Board.win.find('#numObjs').html('Num objs: ' + Obj.num);
-			Board.win.find('#numObjsActive').html('Num objs active: ' + Obj.active);
+			Board.win.find('#numChunks').text(`Num chunks: ${Egyt.map.statmaster.fitter.shown.length} / ${Egyt.map.statmaster.total}`);
+			Board.win.find('#numObjs').html(`Num objs: ${Obj.active} / ${Obj.num}`);
+			Board.win.find('#numRekts').html(`Num rekts: ${Rekt.active} / ${Rekt.num}`);
 
 			let b = Egyt.map.statmaster.big(Egyt.map.mouse_tile);
 			let c = Egyt.map.statmaster.at(b[0], b[1]);
 				
-			Board.win.find('#worldSquare').text(`World square: ${points.string(Egyt.map.mouse_tile)}`);
-			Board.win.find('#worldSquareChunk').text(`World square chunk: ${points.string(b)}`);
-			Board.win.find('#worldSquareChunkRt').text(`World square chunk rt: ${c?.rt ? 'true' : 'false'}`);
-			Board.win.find('#chunksShown').text(`Chunks shown: ${Egyt.map.statmaster.fitter.shown.length}`);
-			Board.win.find('#snakeTurns').text(`Chunk Snake lines: ${Egyt.map.statmaster.fitter.lines}`);
-			Board.win.find('#snakeTotal').text(`Chunk Snake total traversed: ${Egyt.map.statmaster.fitter.total}`);
+			Board.win.find('#square').text(`Mouse: ${points.string(Egyt.map.mouse_tile)}`);
+			Board.win.find('#squareChunk').text(`Mouse chunk: ${points.string(b)}`);
+			Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${c?.rt ? 'true' : 'false'}`);
+			Board.win.find('#snakeTurns').text(`CSnake turns: ${Egyt.map.statmaster.fitter.lines}`);
+			Board.win.find('#snakeTotal').text(`CSnake total: ${Egyt.map.statmaster.fitter.total}`);
 		}
 	}
 

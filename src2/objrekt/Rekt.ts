@@ -37,6 +37,8 @@ class Rekt {
 	constructor(struct: Rekt.Struct) {
 		this.struct = struct;
 
+		Rekt.num++;
+
 		if (struct.istile)
 			this.mult();
 
@@ -53,9 +55,9 @@ class Rekt {
 		if (this.inuse)
 			console.warn('rekt already inuse');
 
-		this.inuse = true;
+		Rekt.active++;
 
-		Rekt.num++;
+		this.inuse = true;
 
 		this.geometry = new PlaneBufferGeometry(
 			this.struct.wh[0], this.struct.wh[1], 1, 1);
@@ -102,7 +104,7 @@ class Rekt {
 		else
 			TQ.scene.remove(this.mesh);
 
-		Rekt.num--;
+		Rekt.active--;
 
 		this.geometry.dispose();
 		this.material.dispose();
@@ -152,6 +154,7 @@ class Rekt {
 
 namespace Rekt {
 	export let num = 0;
+	export let active = 0;
 
 	export type Struct = Rekt['struct']
 }

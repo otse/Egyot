@@ -136,17 +136,17 @@ export namespace Egyt {
 				<span id="gameAabb"></span><br/>
 				<span id="gamePos"></span><br/>
 				<br/>
-				<span id="chunksShown"></span><br/>
-				<span id="numRekts"></span><br/>
+				<span id="numChunks"></span><br/>
 				<span id="numObjs"></span><br/>
-				<span id="numObjsActive"></span><br/>
+				<span id="numRekts"></span><br/>
 				<br/>
-				<span id="worldSquare"></span><br/>
-				<span id="worldSquareChunk"></span><br/>
-				<span id="worldSquareChunkRt">xx</span><br/>
+				<span id="square"></span><br/>
+				<span id="squareChunk"></span><br/>
+				<span id="squareChunkRt">xx</span><br/>
 				<span id="snakeTurns"></span><br/>
 				<span id="snakeTotal"></span><br/>
-				<br>
+				<br/>
+				<br/>
 				<span id="USE_CHUNK_RTT">USE_CHUNK_RTT: ${USE_CHUNK_RT}</span><br/>
 				<span id="OFFSET_CHUNK_OBJ_REKT">OFFSET_CHUNK_OBJ_REKT: ${OFFSET_CHUNK_OBJ_REKT}</span><br/>
 

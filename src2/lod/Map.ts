@@ -41,6 +41,7 @@ class chunk {
 	outline: Rekt
 
 	constructor(x, y, public master: chunk_master<chunk>) {
+		this.master.total++;
 		const colors = ['lightsalmon', 'khaki', 'lightgreen', 'paleturquoise', 'plum', 'pink'];
 
 		this.objs = new chunk_objs(this);
@@ -197,6 +198,7 @@ class chunk_master<T extends chunk> {
 	readonly width: number
 	readonly height: number
 
+	total: number = 0
 	arrays: T | null[][] = []
 
 	fitter: chunk_fitter<T>
