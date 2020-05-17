@@ -1,6 +1,6 @@
 import Rekt from "../../objrekt/Rekt";
 import Egyt from "../../Egyt";
-import { aabb3 } from "../../lib/aabb";
+import { aabb2 } from "../../lib/aabb";
 import Obj from "../../objrekt/Obj";
 import App from "../../lib/App";
 import points from "../../lib/Points";

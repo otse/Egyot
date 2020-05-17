@@ -8,7 +8,7 @@ export namespace tqlib {
 
     let mem = [];
 
-    export function loadTexture(file: string, key?: string, cb?): Texture {
+    export function loadtexture(file: string, key?: string, cb?): Texture {
         if (mem[key || file])
             return mem[key || file];
 
@@ -23,24 +23,17 @@ export namespace tqlib {
     }
 
     export function rendertarget(w, h) {
-        let target = new WebGLRenderTarget(w, h,
-            {
-                minFilter: NearestFilter,
-                magFilter: NearestFilter,
-                format: RGBAFormat
-            });
-
+        const o = {
+            minFilter: NearestFilter,
+            magFilter: NearestFilter,
+            format: RGBAFormat
+        };
+        let target = new WebGLRenderTarget(w, h, o);
         return target;
     }
 
     export function ortographiccamera(w, h) {
-        let camera = new OrthographicCamera(
-            w / - 2,
-            w / 2,
-            h / 2,
-            h / - 2,
-            - 100, 100);
-        camera.position.set(0, 0, -100);
+        let camera = new OrthographicCamera(w / - 2, w / 2, h / 2, h / - 2, - 100, 100);
         camera.updateProjectionMatrix();
 
         return camera;

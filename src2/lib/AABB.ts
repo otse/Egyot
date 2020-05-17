@@ -1,112 +1,78 @@
-function min3(a, b) {
+function min(a: zx, b: zx): zx {
 	return [
 		Math.min(a[0], b[0]),
-		Math.min(a[1], b[1]),
-		Math.min(a[2], b[2])];
+		Math.min(a[1], b[1])];
 }
-
-function max3(a, b) {
+function max(a: zx, b: zx): zx {
 	return [
 		Math.max(a[0], b[0]),
-		Math.max(a[1], b[1]),
-		Math.max(a[2], b[2])];
+		Math.max(a[1], b[1])];
 }
-
-function subtr3(a, b) {
+function remove(a: zx, b: zx): zx {
 	return [
 		a[0] - b[0],
-		a[1] - b[1],
-		a[2] - b[2]];
+		a[1] - b[1]];
 }
-
-function addit3(a, b) {
+function add(a: zx, b: zx): zx {
 	return [
 		a[0] + b[0],
-		a[1] + b[1],
-		a[2] + b[2]];
+		a[1] + b[1]];
 }
-
-function scalar3(a: zxc, f: number) {
+function multiply(a: zx, f: number): zx {
 	let x = a[0] * f;
 	let y = a[1] * f;
-	let z = a[2] * f;
-	return [x, y, z];
+	return [x, y];
 }
 
-class aabb3 {
-
-	min: zxc
-	max: zxc
-
-	static dupe(a: aabb3) {
-		let b = new aabb3(a.min, a.max);
+class aabb2 {
+	min: zx
+	max: zx
+	static dupe(a: aabb2) {
+		let b = new aabb2(a.min, a.max);
 		return b;
 	}
-
-	constructor(a: zxc, b: zxc | undefined = undefined) {
+	constructor(a: zx, b: zx | undefined = undefined) {
 		this.min = this.max = a;
 		if (b) {
 			this.extend(b);
 		}
 	}
-
-	extend(v: zxc) {
-		this.min = min3(this.min, v) as zxc;
-		this.max = max3(this.max, v) as zxc;
+	extend(v: zx) {
+		this.min = min(this.min, v) as zx;
+		this.max = max(this.max, v) as zx;
 	}
-
-	diagonal(): zxc {
-		return subtr3(this.max, this.min) as zxc;
+	diagonal(): zx {
+		return remove(this.max, this.min);
 	}
-
-	center(): zxc {
-		return addit3(this.min, scalar3(this.diagonal(), 0.5)) as zxc;
+	center(): zx {
+		return add(this.min, multiply(this.diagonal(), 0.5));
 	}
-
 	exponent(n: number) {
 		this.min[0] *= n;
 		this.min[1] *= n;
-		this.min[2] *= n;
+		//this.min[2] *= n;
 		this.max[0] *= n;
 		this.max[1] *= n;
-		this.max[2] *= n;
+		//this.max[2] *= n;
 	}
-
-	translate(v: zxc) {
-		addit3(this.min, v);
-		addit3(this.max, v);
+	translate(v: zx) {
+		add(this.min, v);
+		add(this.max, v);
 	}
-
-	intersect(v: aabb3) {
-		if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
-			this.max[1] < v.min[1] || this.min[1] > v.max[1] //||
-			/*this.max[2] < v.min[2] || this.min[2] > v.max[2]*/)
-			return aabb3.SEC.OUT;
-
+	intersect2(v: aabb2) {
 		if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
 			this.min[1] <= v.min[1] && this.max[1] >= v.max[1] //&&
 			/*this.min[2] <= v.min[2] && this.max[2] >= v.max[2]*/)
-			return aabb3.SEC.IN;
-
-		return aabb3.SEC.CROSS;
-	}
-
-	intersect2(v: aabb3) {
-		if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
-			this.min[1] <= v.min[1] && this.max[1] >= v.max[1] //&&
-			/*this.min[2] <= v.min[2] && this.max[2] >= v.max[2]*/)
-			return aabb3.SEC.IN;
-
+			return aabb2.SEC.IN;
 		if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
 			this.max[1] < v.min[1] || this.min[1] > v.max[1] //||
 			/*this.max[2] < v.min[2] || this.min[2] > v.max[2]*/)
-			return aabb3.SEC.OUT;
-
-		return aabb3.SEC.CROSS;
+			return aabb2.SEC.OUT;
+		return aabb2.SEC.CROSS;
 	}
 }
 
-namespace aabb3 {
+namespace aabb2 {
 
 	export enum SEC {
 		OUT,
@@ -116,4 +82,4 @@ namespace aabb3 {
 
 }
 
-export { aabb3 };
+export { aabb2 };

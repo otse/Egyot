@@ -63,7 +63,7 @@ class Rekt {
 
 		let map;
 		if (this.struct.asset)
-			map = tqlib.loadTexture(`assets/${this.struct.asset}.png`);
+			map = tqlib.loadtexture(`assets/${this.struct.asset}.png`);
 
 		this.material = new MeshBasicMaterial({
 			map: map,

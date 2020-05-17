@@ -1,12 +1,11 @@
-import { chunk } from "../lod/Map";
+import { chunk } from "../lod/Chunks";
 
 class Obj {
-	static active = 0;
-	on = false
 	order = 0
+	using = false
 	chunk: chunk | null = null
 
-	readonly struct: {
+	readonly struct: { // why readonly
 		tile: zx
 		//pos: zxc
 	}
@@ -18,15 +17,16 @@ class Obj {
 	}
 	comes() {
 		Obj.active++;
-		this.on = true;
+		this.using = true;
 	}
 	goes() {
 		Obj.active--;
-		this.on = false;
+		this.using = false;
 	}
 }
 
 namespace Obj {
+	export var active = 0;
 	export var num = 0;
 
 	export type Struct = Obj['struct']

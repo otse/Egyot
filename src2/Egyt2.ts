@@ -7,7 +7,7 @@ import Obj from "./objrekt/Obj";
 
 import Selection from "./nested/Selection";
 import { Object3D, Mesh, PlaneBufferGeometry, MeshBasicMaterial } from "three";
-import { aabb3 } from "./lib/AABB";
+import { aabb2 } from "./lib/AABB";
 import points from "./lib/Points";
 import { Win } from "./lib/Board";
 
@@ -22,7 +22,7 @@ class Game {
 	dpi: number
 
 	focal: zxc
-	view: aabb3
+	view: aabb2
 	frustumRekt: Rekt
 
 	static rig() {
@@ -39,7 +39,7 @@ class Game {
 		this.dpi = window.devicePixelRatio;
 		this.scale = 1 / this.dpi;
 
-		this.view = new aabb3([0, 0, 0]);
+		this.view = new aabb2([0, 0]);
 
 		this.frustumRekt = new Rekt({
 			name: 'Frustum',
@@ -107,9 +107,9 @@ class Game {
 		let w2 = w / this.dpi / this.scale;
 		let h2 = h / this.dpi / this.scale;
 
-		this.view = new aabb3(
-			[-p[0] - w2 / 2, -p[1] - h2 / 2, 0],
-			[-p[0] + w2 / 2, -p[1] + h2 / 2, 0]
+		this.view = new aabb2(
+			[-p[0] - w2 / 2, -p[1] - h2 / 2],
+			[-p[0] + w2 / 2, -p[1] + h2 / 2]
 		);
 		points.floor(this.view.min);
 		points.floor(this.view.max);

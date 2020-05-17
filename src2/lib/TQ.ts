@@ -1,6 +1,7 @@
 import { default as THREE, OrthographicCamera, Clock, Scene, WebGLRenderer, Texture, TextureLoader, WebGLRenderTarget, ShaderMaterial, Mesh, PlaneBufferGeometry, Color } from 'three';
 import App from './App';
 import { Win } from './Board';
+import { tqlib } from './tqlib';
 
 export { THREE };
 
@@ -197,14 +198,8 @@ export namespace tq {
 
 		target.setSize(targetwidth, targetheight);
 
-		camera = new OrthographicCamera(
-			w / - 2,
-			w / 2,
-			h / 2,
-			h / - 2,
-			- 100, 100);
-		camera.position.set(0, 0, -100);
-
+		camera = tqlib.ortographiccamera(w, h);
+		
 		camera.updateProjectionMatrix();
 
 		renderer.setSize(

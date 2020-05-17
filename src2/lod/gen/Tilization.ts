@@ -1,6 +1,6 @@
 import Rekt from "../../objrekt/Rekt";
 import Egyt from "../../Egyt";
-import { aabb3 } from "../../lib/aabb";
+import { aabb2 } from "../../lib/aabb";
 import Obj from "../../objrekt/Obj";
 import App from "../../lib/App";
 import points from "../../lib/Points";
@@ -82,13 +82,13 @@ namespace Tilization {
 		return tile;
 	}
 
-	export function area_sample(chance: number, assets: string[], aabb: aabb3) {
+	export function area_sample(chance: number, assets: string[], aabb: aabb2) {
 		const every = (pos: zx) => place_tile(chance, Egyt.sample(assets), pos);
 
 		points.area_every(aabb, every);
 	}
 
-	export function area(chance: number, asset: string, aabb: aabb3) {
+	export function area(chance: number, asset: string, aabb: aabb2) {
 		const every = (pos: zx) => place_tile(chance, asset, pos);
 
 		points.area_every(aabb, every);

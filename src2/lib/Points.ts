@@ -1,8 +1,8 @@
-import { aabb3 } from "./AABB";
+import { aabb2 } from "./AABB";
 
 namespace points {
 
-	export function area_every(aabb: aabb3, callback: (pos: zx) => any) {
+	export function area_every(aabb: aabb2, callback: (pos: zx) => any) {
 		let y = aabb.min[1];
 		for (; y <= aabb.max[1]; y++) {
 			let x = aabb.max[0];
