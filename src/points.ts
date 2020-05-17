@@ -12,11 +12,11 @@ namespace points {
 		}
 	}
 
-	export function twoone(p: zx | zxc): zxc {
-		let copy = [...p];
+	export function twoone(p: zx | zxc) {
+		let copy = <zx>[...p];
 		copy[0] = p[0] / 2 + p[1] / 2;
 		copy[1] = p[1] / 4 - p[0] / 4;
-		return <zxc>copy;
+		return copy;
 	}
 
 	export function untwoone(p: zx | zxc): zx {

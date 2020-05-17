@@ -9,8 +9,8 @@ import Agriculture from "./Nieuw mapje 3/Agriculture";
 
 export namespace Egyt {
 
-	export const USE_CHUNK_RT = true;
-	export const OFFSET_CHUNK_OBJ_REKT = true;
+	export var USE_CHUNK_RT = true;
+	export var OFFSET_CHUNK_OBJ_REKT = true;
 
 	export const YUM = 24; // evenly divisible
 
@@ -91,9 +91,11 @@ export namespace Egyt {
 
 		console.log('egyt starting');
 
+		if (window.location.href.indexOf("#nochunkrt") != -1)
+			USE_CHUNK_RT = false;
+
 		map2.populate();
 
-		//if (window.location.href.indexOf("#win95") != -1)
 		//	Win.load_sheet('style95.css');
 		//else
 		//	Win.load_sheet('style2.css');
@@ -142,6 +144,10 @@ export namespace Egyt {
 				<span id="chunksShown"></span><br/>
 				<span id="snakeTurns"></span><br/>
 				<span id="snakeTotal"></span><br/>
+				<br>
+				<span id="USE_CHUNK_RTT">USE_CHUNK_RTT: ${USE_CHUNK_RT}</span><br/>
+				<span id="OFFSET_CHUNK_OBJ_REKT">OFFSET_CHUNK_OBJ_REKT: ${OFFSET_CHUNK_OBJ_REKT}</span><br/>
+
 			</div>
 
 			<a>Items Demo</a>

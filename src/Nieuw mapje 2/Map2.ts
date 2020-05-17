@@ -69,8 +69,8 @@ class chunk {
 		points.subtract(p1, [24, 0]);
 		this.mult = p1;
 
-		let middle = points.multp([x + 1, y, 0], this.master.span * 24);
-		middle = points.twoone(middle);
+		let middle = <zxc>[...p1, 0];
+		middle = <zxc><unknown>points.twoone(middle);
 		middle[2] = 0;
 
 		this.rekt_offset = this.tile;
@@ -409,7 +409,7 @@ class chunk_rt {
 		//const clone = this.chunk.group.clone();
 		const clone = this.chunk.group;
 		
-		clone.position.set(0, -100, 0);
+		clone.position.set(0, -this.chunk.master.height/2, 0);
 
 		/*let geometry = new PlaneBufferGeometry(
 			24, 12, 1, 1);
@@ -424,7 +424,7 @@ class chunk_rt {
 
 		tq.scene3.add(clone);
 
-		tq.renderer.setRenderTarget(this.target);
+		tq.renderer.setRenderTarget(this.target)
 		tq.renderer.clear();
 		tq.renderer.render(tq.scene3, this.camera);
 

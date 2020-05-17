@@ -71,7 +71,8 @@ class Rekt {
 			color: this.struct.obj?.chunk?.childobjscolor || this.struct.color || 0xffffff
 		});
 		this.mesh = new Mesh(this.geometry, this.material);
-		this.mesh.frustumCulled = true;
+		this.mesh.frustumCulled = false;
+		this.mesh.matrixAutoUpdate = false;
 		this.mesh.scale.set(1, 1, 1);
 
 		if (this.struct.flip)
@@ -137,15 +138,15 @@ class Rekt {
 				y += h;
 			}
 
-			if (!this.dontOrder && this.mesh)
+			if (!this.dontOrder)
 				this.mesh.renderOrder = -p[1] + p[0];
 
 		}
 
 		this.actualpos = [x, y, 0];
 
-		if (this.mesh)
-			this.mesh.position.fromArray(this.actualpos);
+		this.mesh.position.fromArray(this.actualpos);
+		this.mesh.updateMatrix();
 	}
 }
 
