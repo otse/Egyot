@@ -28,7 +28,7 @@ class Map {
 
 	constructor() {
 
-		(window as any).schunk = chunk;
+		(window as any).Chunk = chunk;
 
 		this.statmaster = new chunk_master<statchunk>(statchunk, 20);
 

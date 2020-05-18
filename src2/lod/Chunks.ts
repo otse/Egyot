@@ -36,7 +36,7 @@ class chunk {
 
     array: Obj[][][]
 
-    rekt: Rekt
+    area: Rekt
     rektcolor = 'white'
 
     outline: Rekt
@@ -54,7 +54,7 @@ class chunk {
 
         this.set_bounds();
 
-        this.rekt = new Rekt({
+        this.area = new Rekt({
             xy: this.mult,
             wh: [this.master.width, this.master.height],
             asset: 'egyt/tenbyten',
@@ -98,22 +98,22 @@ class chunk {
         )
     }
     empty() {
-        return this.objs.many() < 1;
+        return this.objs.objs_().length < 1;
     }
     update_color() {
         return;
-        if (!this.rekt.inuse)
+        if (!this.area.inuse)
             return;
-        this.rekt.material.color.set(new Color(this.rektcolor));
-        this.rekt.material.needsUpdate = true;
+        this.area.material.color.set(new Color(this.rektcolor));
+        this.area.material.needsUpdate = true;
     }
     comes() {
         if (this.empty())
             return;
         if (this.on)
             return;
-        this.rekt.use();
-        this.rekt.mesh.renderOrder = -9999;
+        this.area.use();
+        this.area.mesh.renderOrder = -9999;
         this.objs.comes();
         tq.scene.add(this.group);
         this.comes_pt2();
@@ -122,7 +122,7 @@ class chunk {
     comes_pt2() {
         if (!Egyt.USE_CHUNK_RT)
             return;
-        const treshold = this.objs.objs.length >= 10;
+        const treshold = this.objs.objs_().length >= 10;
         if (!treshold)
             return;
         if (!this.rt)
@@ -132,7 +132,7 @@ class chunk {
     goes() {
         if (!this.on)
             return;
-        this.rekt.unuse();
+        this.area.unuse();
         tq.scene.remove(this.group);
         while (this.group.children.length > 0)
             this.group.remove(this.group.children[0]);
@@ -156,25 +156,31 @@ class chunk {
 }
 
 class chunk_objs {
-    objs: Obj[] = []
+    private objs: Obj[] = []
+    private table: chunk_updatetable
     constructor(private chunk: chunk) {
-
+        this.table = new chunk_updatetable(this);
     }
-    many() {
-        return this.objs.length;
+    objs_(): ReadonlyArray<Obj> {
+        return this.objs;
     }
-    indexOf(obj: Obj) {
+    indexof(obj: Obj) {
         return this.objs.indexOf(obj);
     }
     add(obj: Obj) {
-        if (-1 == this.indexOf(obj))
-            this.objs.push(obj);
+        if (-1 == this.indexof(obj)) {
+            obj.index = this.objs.push(obj) - 1;
+            this.table.add(obj);
+        }
         this.chunk.changes = true;
     }
     remove(obj: Obj) {
-        let i = this.indexOf(obj);
-        if (i > -1)
+        let i = this.indexof(obj);
+        if (i > -1) {
+            obj.index = -1;
             this.objs.splice(i, 1);
+            this.table.remove(i);
+        }
         this.chunk.changes = true;
     }
     comes() {
@@ -184,6 +190,23 @@ class chunk_objs {
     goes() {
         for (let obj of this.objs)
             obj.goes();
+    }
+}
+
+class chunk_updatetable {
+    private table: number[] = []
+    constructor(private objs: chunk_objs) {
+
+    }
+    table_(): ReadonlyArray<number> {
+        return this.table;
+    }
+    add(obj: Obj) {
+        this.table[obj.index] = obj.tickrate;
+        
+    }
+    remove(/*obj: Obj, */i: number) {
+        this.table.splice(i, 1);
     }
 }
 
@@ -378,7 +401,7 @@ class chunk_rt {
         tq.renderer.clear();
         tq.renderer.render(tq.crtscene, this.camera);
 
-        this.chunk.rekt.material.map = this.target.texture;
+        this.chunk.area.material.map = this.target.texture;
     }
 }
 
