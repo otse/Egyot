@@ -8,21 +8,15 @@ class World {
 		return new World;
 	}
 
-	objs: Obj[]
-
 	constructor() {
-		this.objs = [];
-
 		this.init();
 
 		console.log('world');
 	}
 
 	add(obj: Obj) {
-		this.objs.push(obj);
-		this.objs.sort((a, b) => a.order - b.order);
 
-		let c = Egyt.map.get_chunk_tile(obj.struct.tile);
+		let c = Egyt.map.get_chunk_at_tile(obj.struct.tile);
 		
 		c.objs.add(obj);
 
@@ -31,9 +25,7 @@ class World {
 	}
 
 	update() {
-		for (let obj of this.objs) {
-			obj.update();
-		}
+		
 	}
 
 	init() {

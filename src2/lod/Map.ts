@@ -107,7 +107,7 @@ class Map {
 		Agriculture.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
 	}
 
-	get_chunk_tile(t: zx | zxc) {
+	get_chunk_at_tile(t: zx | zxc) {
 		return this.statmaster.which(<zx>t);
 	}
 

@@ -24,7 +24,7 @@ class chunk {
 	group_bluh: Group
 	childobjscolor
 
-	readonly objs: chunk_objs
+	readonly objs: chunk_objs2
 	rt: chunk_rt
 	p: zx
 	rekt_offset: zx
@@ -46,7 +46,7 @@ class chunk {
 
 		const colors = ['lightsalmon', 'khaki', 'lightgreen', 'paleturquoise', 'plum', 'pink'];
 
-		this.objs = new chunk_objs(this);
+		this.objs = new chunk_objs2(this);
 		//this.color = Egyt.sample(colors);
 		this.p = [x, y];
 		this.group = new Group;
@@ -98,7 +98,7 @@ class chunk {
 		)
 	}
 	empty() {
-		return this.objs.array().length < 1;
+		return this.objs.tuples.length < 1;
 	}
 	update_color() {
 		return;
@@ -122,7 +122,7 @@ class chunk {
 	comes_pt2() {
 		if (!Egyt.USE_CHUNK_RT)
 			return;
-		const treshold = this.objs.array().length >= 10;
+		const treshold = this.objs.tuples.length >= 10;
 		if (!treshold)
 			return;
 		if (!this.rt)
@@ -149,75 +149,53 @@ class chunk {
 		return this.sec() == aabb2.SEC.OUT;
 	}
 	update() {
+		this.objs.updates();
 		if (Egyt.USE_CHUNK_RT && this.rt && this.changed)
 			this.rt.render();
 		this.changed = false;
 	}
 }
 
-class arrayt<T> {
-	private ar: T[] = []
-	constructor() {
-
-	}
-	add(t: T) {
-		let i = this.ar.indexOf(t);
-		if (i == -1) {
-			this.ar.push(t);
-		}
-		return i;
-	}
-	remove(t: T) {
-		let i = this.ar.indexOf(t);
-		if (i > -1) {
-			this.ar.splice(i, 1);
-		}
-		return i;
-	}
-	static had(i: number) {
-		return i > -1;
-	}
-	static hadnt(i: number) {
-		return i == -1;
-	}
-	array() {
-		return <ReadonlyArray<T>>this.ar;
-	}
-}
-
-class chunk_objs extends arrayt<Obj> {
-	private ticks: number[] = []
+class chunk_objs2 {
+	public readonly tuples: [Obj, number][] = []
 	constructor(private chunk: chunk) {
-		super()
 	}
 	rate(obj: Obj) {
-		return obj.tickrate;
+		return 1;
+	}
+	where(obj: Obj) {
+		let i = this.tuples.length;
+		while (i--)
+			if (this.tuples[i][0] == obj)
+				return i;
 	}
 	add(obj: Obj) {
-		let i = super.add(obj);
-		if (arrayt.hadnt(i)) {
-			this.ticks.push(this.rate(obj));
+		let i = this.where(obj);
+		if (i == -1) {
+			let rate = this.rate(obj);
+			this.tuples.push([obj, rate]);
 			obj.chunk = this.chunk;
 		}
-		this.chunk.changed = true;
-		return i;
 	}
 	remove(obj: Obj) {
-		let i = super.remove(obj);
-		if (arrayt.had(i)) {
-			this.ticks.splice(i, 1);
-			obj.chunk = null;
+		let i = this.where(obj);
+		if (i !== undefined)
+			this.tuples.splice(i, 1);
+	}
+	updates() {
+		for (let obj of this.tuples) {
+
 		}
-		this.chunk.changed = true;
-		return i;
 	}
 	comes() {
-		for (let obj of this.array())
-			obj.comes();
+		for (let tuple of this.tuples) {
+			tuple[0].comes();
+		}
 	}
 	goes() {
-		for (let obj of this.array())
-			obj.goes();
+		for (let tuple of this.tuples) {
+			tuple[0].goes();
+		}
 	}
 }
 
@@ -418,4 +396,4 @@ class chunk_rt {
 	}
 }
 
-export { chunk, chunk_master, chunk_fitter, chunk_objs, statchunk, dynchunk }
+export { chunk, chunk_master, chunk_fitter, chunk_objs2, statchunk, dynchunk }

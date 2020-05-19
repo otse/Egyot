@@ -48,6 +48,10 @@ namespace Agriculture {
 				wh: [22, 22],
 			});
 		}
+		update() {
+			console.log('update wheat');
+			
+		}
 		comes() {
 			super.comes();
 			this.rekt.use();
