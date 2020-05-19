@@ -25,7 +25,6 @@ class World {
 		let c = Egyt.map.get_chunk_tile(obj.struct.tile);
 		
 		c.objs.add(obj);
-		obj.chunk = c;
 
 		if (c.on)
 			obj.comes();

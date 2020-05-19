@@ -31,7 +31,7 @@ namespace Board {
 		// View -> Toggle Word Wrap
 
 		/*
-			An hyperlink and a paragraph form a collapser
+			A hyperlink and a paragraph form a collapser
 		*/
 		const _collapse = (jay) => {
 			collapsed[jay.text()] = !!jay.hasClass('toggle');
