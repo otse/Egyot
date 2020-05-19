@@ -8,8 +8,6 @@ import { tqlib } from "../lib/tqlib";
 
 class Rekt {
 
-	noDimetricization = false
-
 	readonly struct: {
 		obj?: Obj
 		name?: string
@@ -21,18 +19,19 @@ class Rekt {
 		opacity?: number,
 		color?: any
 	}
-
+	
 	mesh: Mesh
 	meshShadow: Mesh
-
+	
 	material: MeshBasicMaterial
 	geometry: PlaneBufferGeometry
-
+	
 	actualpos: zxc
 	center: zx
-
+	
 	inuse = false
 	flick = false
+	pforpixels = false
 
 	constructor(struct: Rekt.Struct) {
 		this.struct = struct;
@@ -129,7 +128,7 @@ class Rekt {
 
 		let p = <zx>[...this.struct.xy];
 
-		if (this.noDimetricization) {
+		if (this.pforpixels) { // todo phase out
 			x = p[0];
 			y = p[1];
 		}
@@ -156,7 +155,7 @@ class Rekt {
 		this.actualpos = [x, y, 0];
 
 		if (this.mesh) {
-			this.mesh.renderOrder = -p[1] + p[0];
+			this.mesh.renderOrder = -y + x;
 			this.mesh.position.fromArray(this.actualpos);
 			this.mesh.updateMatrix();
 		}

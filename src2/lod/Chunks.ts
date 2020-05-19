@@ -53,11 +53,14 @@ class chunk {
 
 		this.set_bounds();
 
+		let p2 = <zx>[...this.p];
+		points.multp(p2, this.master.span);
+
 		this.rttrekt = new Rekt({
-			xy: this.mult,
+			istile: true,
+			xy: p2,
 			wh: [this.master.width, this.master.height],
 			asset: 'egyt/tenbyten',
-			//color: this.rektcolor
 		});
 
 	}
@@ -112,10 +115,8 @@ class chunk {
 		if (this.on)
 			return;
 		this.rttrekt.use();
-		this.rttrekt.mesh.renderOrder = -9999;
 		this.objs.comes();
-		tq.scene.add(this.group);
-		tq.scene.add(this.rttgroup);
+		tq.scene.add(this.group, this.group);
 		this.comes_pt2();
 		this.on = true;
 	}
@@ -134,12 +135,11 @@ class chunk {
 		if (!this.on)
 			return;
 		this.rttrekt.unuse();
-		tq.scene.remove(this.group);
-		tq.scene.remove(this.rttgroup);
-		tqlib.rmallchilds(this.group);
-		tqlib.rmallchilds(this.rttgroup);
-		this.rt?.goes();
+		tq.scene.remove(this.group, this.rttgroup);
+		tqlib.erase_children(this.group);
+		tqlib.erase_children(this.rttgroup);
 		this.objs.goes();
+		this.rt?.goes();
 		this.on = false;
 	}
 	sec() {
@@ -153,8 +153,8 @@ class chunk {
 	}
 	update() {
 		this.objs.updates();
-		if (Egyt.USE_CHUNK_RT && this.rt && this.changed)
-			this.rt.render();
+		if (Egyt.USE_CHUNK_RT && this.changed)
+			this.rt?.render();
 		this.changed = false;
 	}
 }

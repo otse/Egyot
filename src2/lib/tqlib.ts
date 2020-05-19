@@ -39,7 +39,7 @@ export namespace tqlib {
         return camera;
     }
 
-    export function rmallchilds(group: Group) {
+    export function erase_children(group: Group) {
         while (group.children.length > 0)
 			group.remove(group.children[0]);
     }
