@@ -152,12 +152,14 @@ class Rekt {
 			y += h;
 
 		}
-		this.mesh.renderOrder = -p[1] + p[0];
 
 		this.actualpos = [x, y, 0];
 
-		this.mesh.position.fromArray(this.actualpos);
-		this.mesh.updateMatrix();
+		if (this.mesh) {
+			this.mesh.renderOrder = -p[1] + p[0];
+			this.mesh.position.fromArray(this.actualpos);
+			this.mesh.updateMatrix();
+		}
 	}
 }
 

@@ -39,7 +39,7 @@ export namespace tq {
 	export var clock: Clock
 	export var scene: Scene
 	export var scene2: Scene
-	export var crtscene: Scene
+	export var rttscene: Scene
 	export var camera: OrthographicCamera
 	export var camera3: OrthographicCamera
 	export var target: WebGLRenderTarget
@@ -112,7 +112,7 @@ export namespace tq {
 		scene = new Scene();
 		scene.background = new Color('rgb(40, 72, 42)'); // #444
 		scene2 = new Scene();
-		crtscene = new Scene();
+		rttscene = new Scene();
 		//scene3.background = new Color('pink');
 
 		dpi = window.devicePixelRatio;

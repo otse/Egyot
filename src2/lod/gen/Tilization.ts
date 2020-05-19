@@ -39,20 +39,7 @@ namespace Tilization {
 			this.rekt.unuse();
 		}
 		update() {
-			if (plopping != this)
-				return;
-
-			let p = <zx>[...Egyt.map.mouse_tile];
-
-			this.struct.tile = p;
-
-			this.rekt.struct.xy = <zx>[...p, 0];
-			this.rekt.mult();
-
-			this.rekt.now_update_pos();
-
-			if (App.left)
-				plopping = null;
+			
 		}
 	}
 
@@ -63,9 +50,7 @@ namespace Tilization {
 	}
 
 	export function update() {
-		if (!plopping && App.map['y'] == 1) {
-			plopping = <Tile>place_tile(100, Egyt.sample(colors), Egyt.map.mouse_tile);
-		}
+		
 	}
 
 	export function place_tile(chance: number, asset: string, pos) {

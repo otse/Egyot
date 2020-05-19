@@ -136,8 +136,8 @@ class chunk {
 		this.rttrekt.unuse();
 		tq.scene.remove(this.group);
 		tq.scene.remove(this.rttgroup);
-		while (this.group.children.length > 0)
-			this.group.remove(this.group.children[0]);
+		tqlib.rmallchilds(this.group);
+		tqlib.rmallchilds(this.rttgroup);
 		this.rt?.goes();
 		this.objs.goes();
 		this.on = false;
@@ -401,17 +401,17 @@ class chunk_rt {
 		
 	}
 	render() {
-		while (tq.crtscene.children.length > 0)
-			tq.crtscene.remove(tq.crtscene.children[0]);
+		while (tq.rttscene.children.length > 0)
+			tq.rttscene.remove(tq.rttscene.children[0]);
 
 		const group = this.chunk.rttgroup;
 
 		group.position.set(0, -this.h / 2, 0);
-		tq.crtscene.add(group);
+		tq.rttscene.add(group);
 
 		tq.renderer.setRenderTarget(this.target);
 		tq.renderer.clear();
-		tq.renderer.render(tq.crtscene, this.camera);
+		tq.renderer.render(tq.rttscene, this.camera);
 
 		this.chunk.rttrekt.material.map = this.target.texture;
 	}

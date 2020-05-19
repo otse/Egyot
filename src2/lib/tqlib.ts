@@ -1,4 +1,4 @@
-import { default as THREE, OrthographicCamera, Clock, Scene, WebGLRenderer, Texture, TextureLoader, WebGLRenderTarget, ShaderMaterial, Mesh, PlaneBufferGeometry, Color, NearestFilter, RGBAFormat } from 'three';
+import { default as THREE, OrthographicCamera, Clock, Scene, WebGLRenderer, Texture, TextureLoader, WebGLRenderTarget, ShaderMaterial, Mesh, PlaneBufferGeometry, Color, NearestFilter, RGBAFormat, Group } from 'three';
 import App from './App';
 import { Win } from './Board';
 
@@ -37,5 +37,10 @@ export namespace tqlib {
         camera.updateProjectionMatrix();
 
         return camera;
+    }
+
+    export function rmallchilds(group: Group) {
+        while (group.children.length > 0)
+			group.remove(group.children[0]);
     }
 }

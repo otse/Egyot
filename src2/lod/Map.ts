@@ -42,8 +42,8 @@ class Map {
 			asset: 'egyt/iceblock'
 		});
 
-		this.mark.use();
-		this.mark.mesh.renderOrder = 999;
+		//this.mark.use();
+		//this.mark.mesh.renderOrder = 999;
 		//this.mark.dontOrder = true;
 	}
 
