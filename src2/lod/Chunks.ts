@@ -25,7 +25,7 @@ class chunk {
 	childobjscolor
 
 	readonly objs: chunk_objs2
-	rt: chunk_rt
+	rt: chunk_rt | null
 	p: zx
 	rekt_offset: zx
 	tile: zx
@@ -127,6 +127,7 @@ class chunk {
 			return;
 		if (!this.rt)
 			this.rt = new chunk_rt(this);
+		this.rt.comes();
 		this.rt.render();
 	}
 	goes() {
@@ -136,6 +137,7 @@ class chunk {
 		tq.scene.remove(this.group);
 		while (this.group.children.length > 0)
 			this.group.remove(this.group.children[0]);
+		this.rt?.goes();
 		this.objs.goes();
 		this.on = false;
 	}
@@ -157,11 +159,12 @@ class chunk {
 }
 
 class chunk_objs2 {
-	public readonly tuples: [Obj, number][] = []
+	public readonly tuples: [Obj, number][]
 	constructor(private chunk: chunk) {
+		this.tuples = [];
 	}
 	rate(obj: Obj) {
-		return 1;
+		return this.tuples.length * obj.rate;
 	}
 	where(obj: Obj) {
 		let i = this.tuples.length;
@@ -171,7 +174,7 @@ class chunk_objs2 {
 	}
 	add(obj: Obj) {
 		let i = this.where(obj);
-		if (i == -1) {
+		if (i == undefined) {
 			let rate = this.rate(obj);
 			this.tuples.push([obj, rate]);
 			obj.chunk = this.chunk;
@@ -179,12 +182,16 @@ class chunk_objs2 {
 	}
 	remove(obj: Obj) {
 		let i = this.where(obj);
-		if (i !== undefined)
+		if (i != undefined)
 			this.tuples.splice(i, 1);
 	}
 	updates() {
-		for (let obj of this.tuples) {
-
+		for (let tuple of this.tuples) {
+			let rate = tuple[1]--;
+			if (rate === 0) {
+				tuple[1] = this.rate(tuple[0]);
+				tuple[0].update();
+			}
 		}
 	}
 	comes() {
@@ -376,9 +383,15 @@ class chunk_rt {
 		this.h = this.chunk.master.height;
 
 		this.camera = tqlib.ortographiccamera(this.w, this.h);
+	}
+	// todo pool the rts?
+	comes() {
 		this.target = tqlib.rendertarget(this.w, this.h);
 	}
-
+	goes() {
+		this.target.dispose();
+		
+	}
 	render() {
 		while (tq.crtscene.children.length > 0)
 			tq.crtscene.remove(tq.crtscene.children[0]);

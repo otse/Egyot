@@ -5,6 +5,7 @@ import Obj from "../../objrekt/Obj";
 import App from "../../lib/App";
 import Points from "../../lib/Points";
 import points from "../../lib/Points";
+import { Color } from "three";
 
 namespace Agriculture {
 
@@ -33,6 +34,7 @@ namespace Agriculture {
 
 	export class Wheat extends Crop {
 		rekt: Rekt
+		flick = false
 
 		constructor(growth: number, struct: Obj.Struct) {
 			super(growth, struct);
@@ -41,16 +43,21 @@ namespace Agriculture {
 				obj: this,
 				asset:
 					this.growth == 1 ? Egyt.sample(tillering) :
-					this.growth == 2 ? Egyt.sample(ripening) :
-					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
+						this.growth == 2 ? Egyt.sample(ripening) :
+							this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
 				istile: true,
 				xy: this.struct.tile,
 				wh: [22, 22],
 			});
 		}
 		update() {
-			console.log('update wheat');
-			
+			if (!this.rekt.inuse)
+				return;
+			this.flick = !!!this.flick;
+			this.rekt.material.color.set(new Color(this.flick ? 'red' : 'blue'));
+			if (this.chunk)
+				this.chunk.changed = true;
+
 		}
 		comes() {
 			super.comes();

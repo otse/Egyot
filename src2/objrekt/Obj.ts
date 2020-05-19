@@ -2,7 +2,8 @@ import { chunk } from "../lod/Chunks";
 
 class Obj {
 	order = 0
-	rate = 2
+	tick = 0
+	rate = 1
 	using = false
 	chunk: chunk | null = null
 
