@@ -21,7 +21,7 @@ class chunk {
 	on = false
 	changed = true
 	childobjscolor
-	
+
 	readonly objs: chunk_objs2
 	rt: chunk_rt | null
 	p: zx
@@ -29,12 +29,12 @@ class chunk {
 	tile: zx
 	mult: zx
 	real: zx
+	opposite: zx
 	bound: aabb2
 	boundscreen: aabb2
-	
+
 	group: Group
-	
-	rttrekt: Rekt
+
 	rttgroup: Group
 	rektcolor = 'white'
 
@@ -52,29 +52,19 @@ class chunk {
 		this.rttgroup = new Group;
 
 		this.set_bounds();
-
-		let p2 = <zx>[...this.p];
-		points.multp(p2, this.master.span);
-
-		this.rttrekt = new Rekt({
-			istile: true,
-			xy: p2,
-			wh: [this.master.width, this.master.height],
-			asset: 'egyt/tenbyten',
-		});
-
 	}
 
 	set_bounds() {
 		let x = this.p[0];
 		let y = this.p[1];
 
-		let p1 = points.multp([x + 1, y, 0], this.master.span * 24);
-		this.tile = <zx>[...p1];
-		points.subtract(p1, [24, 0]);
-		this.mult = p1;
+		let tile = points.multp([x + 1, y], this.master.span * 24);
+		this.tile = <zx>[...tile];
 
-		let middle = <zxc>[...p1, 0];
+		points.subtract(tile, [24, 0]);
+		this.mult = tile;
+
+		let middle = <zxc>[...tile, 0];
 		middle = <zxc><unknown>points.twoone(middle);
 		middle[2] = 0;
 
@@ -90,7 +80,7 @@ class chunk {
 			[x * this.master.span, y * this.master.span],
 			[(x + 1) * this.master.span, (y + 1) * this.master.span]);
 
-		let real = [...points.twoone(<zxc>[...p1]), 0] as zxc;
+		let real = [...points.twoone(<zxc>[...tile]), 0] as zxc;
 		points.subtract(real, [0, -this.master.height / 2]);
 		this.real = <zx>[...real];
 
@@ -99,22 +89,21 @@ class chunk {
 			<zx>points.add(<zxc>[...real], [this.master.width / 2, this.master.height / 2])
 		)
 	}
-	empty() {
-		return this.objs.tuples.length < 1;
-	}
 	update_color() {
 		return;
-		if (!this.rttrekt.inuse)
-			return;
-		this.rttrekt.material.color.set(new Color(this.rektcolor));
-		this.rttrekt.material.needsUpdate = true;
+		//if (!this.rttrekt.inuse)
+		//	return;
+		//this.rttrekt.material.color.set(new Color(this.rektcolor));
+		//this.rttrekt.material.needsUpdate = true;
+	}
+	empty() {
+		return this.objs.tuples.length < 1;
 	}
 	comes() {
 		if (this.empty())
 			return;
 		if (this.on)
 			return;
-		this.rttrekt.use();
 		this.objs.comes();
 		tq.scene.add(this.group, this.group);
 		this.comes_pt2();
@@ -134,7 +123,6 @@ class chunk {
 	goes() {
 		if (!this.on)
 			return;
-		this.rttrekt.unuse();
 		tq.scene.remove(this.group, this.rttgroup);
 		tqlib.erase_children(this.group);
 		tqlib.erase_children(this.rttgroup);
@@ -180,7 +168,7 @@ class chunk_objs2 {
 			let rate = this.rate(obj);
 			this.tuples.push([obj, rate]);
 			obj.chunk = this.chunk;
-			if (obj.rtt)
+			if (obj.usesrtt)
 				this.rttobjs++;
 		}
 	}
@@ -189,7 +177,7 @@ class chunk_objs2 {
 		if (i != undefined) {
 			this.tuples.splice(i, 1);
 			obj.chunk = null;
-			if (obj.rtt)
+			if (obj.usesrtt)
 				this.rttobjs++;
 		}
 	}
@@ -302,6 +290,7 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 			let c = this.shown[i];
 			c.update();
 			if (c.out()) {
+				console.log('goes');
 				c.goes();
 				this.shown.splice(i, 1);
 			}
@@ -383,22 +372,35 @@ class chunk_rt {
 
 	offset: zx = [0, 0]
 
+	rekt: Rekt
 	target: WebGLRenderTarget
-	camera
+	camera: OrthographicCamera
 
 	constructor(private chunk: chunk) {
-		this.w = this.chunk.master.width;
-		this.h = this.chunk.master.height;
-
+		this.w = this.chunk.master.width + this.padding;
+		this.h = this.chunk.master.height + this.padding;
 		this.camera = tqlib.ortographiccamera(this.w, this.h);
+
+		let p2 = <zx>[this.chunk.p[0] + 1, this.chunk.p[1]];
+		points.multp(p2, this.chunk.master.span);
+		points.subtract(p2, [1, 0]);
+
+		this.rekt = new Rekt({
+			istile: true,
+			xy: p2,
+			wh: [this.w, this.h],
+			asset: 'egyt/tenbyten'
+		});
 	}
 	// todo pool the rts?
 	comes() {
+		this.rekt.use();
+		//this.rekt.mesh.renderOrder = -999;
 		this.target = tqlib.rendertarget(this.w, this.h);
 	}
 	goes() {
+		this.rekt.unuse();
 		this.target.dispose();
-		
 	}
 	render() {
 		while (tq.rttscene.children.length > 0)
@@ -413,7 +415,7 @@ class chunk_rt {
 		tq.renderer.clear();
 		tq.renderer.render(tq.rttscene, this.camera);
 
-		this.chunk.rttrekt.material.map = this.target.texture;
+		this.rekt.material.map = this.target.texture;
 	}
 }
 

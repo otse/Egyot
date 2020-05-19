@@ -27,7 +27,7 @@ namespace Forestation {
 		constructor(struct: Obj.Struct) {
 			super(struct);
 
-			this.rtt = false;
+			this.usesrtt = false;
 
 			this.rekt = new Rekt({
 				obj: this,

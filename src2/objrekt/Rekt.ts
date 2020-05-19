@@ -19,16 +19,16 @@ class Rekt {
 		opacity?: number,
 		color?: any
 	}
-	
+
 	mesh: Mesh
 	meshShadow: Mesh
-	
+
 	material: MeshBasicMaterial
 	geometry: PlaneBufferGeometry
-	
+
 	actualpos: zxc
 	center: zx
-	
+
 	inuse = false
 	flick = false
 	pforpixels = false
@@ -91,16 +91,14 @@ class Rekt {
 
 		//UV.FlipPlane(this.geometry, 0, true);
 
-
 		this.now_update_pos();
 
 		let c;
-		if (c = this.struct.obj?.chunk) {
-			if (this.struct.obj?.rtt)
+		if (c = this.struct.obj?.chunk)
+			if (this.struct.obj?.usesrtt && Egyt.USE_CHUNK_RT)
 				c.rttgroup.add(this.mesh);
 			else
 				c.group.add(this.mesh);
-		}
 		else
 			tq.scene.add(this.mesh);
 	}
@@ -111,7 +109,10 @@ class Rekt {
 
 		let c;
 		if (c = this.struct.obj?.chunk)
-			c.group.remove(this.mesh);
+			if (this.struct.obj?.usesrtt && Egyt.USE_CHUNK_RT)
+				c.rttgroup.remove(this.mesh);
+			else
+				c.group.add(this.mesh);
 		else
 			tq.scene.remove(this.mesh);
 
@@ -149,13 +150,12 @@ class Rekt {
 			let h = d[1] / 2;
 
 			y += h;
-
 		}
 
 		this.actualpos = [x, y, 0];
 
 		if (this.mesh) {
-			this.mesh.renderOrder = -y + x;
+			this.mesh.renderOrder = -p[1] + p[0];
 			this.mesh.position.fromArray(this.actualpos);
 			this.mesh.updateMatrix();
 		}

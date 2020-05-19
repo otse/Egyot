@@ -4,7 +4,7 @@ class Obj {
 	order = 0
 	rate = 1
 	using = false
-	rtt = true
+	usesrtt = true
 	chunk: chunk | null = null
 
 	readonly struct: {
