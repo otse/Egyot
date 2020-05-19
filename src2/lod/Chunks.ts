@@ -20,10 +20,8 @@ declare class sobj {
 class chunk {
 	on = false
 	changed = true
-	group: Group
-	group_bluh: Group
 	childobjscolor
-
+	
 	readonly objs: chunk_objs2
 	rt: chunk_rt | null
 	p: zx
@@ -33,10 +31,11 @@ class chunk {
 	real: zx
 	bound: aabb2
 	boundscreen: aabb2
-
-	array: Obj[][][]
-
-	area: Rekt
+	
+	group: Group
+	
+	rttrekt: Rekt
+	rttgroup: Group
 	rektcolor = 'white'
 
 	outline: Rekt
@@ -50,11 +49,11 @@ class chunk {
 		//this.color = Egyt.sample(colors);
 		this.p = [x, y];
 		this.group = new Group;
-		this.group_bluh = new Group;
+		this.rttgroup = new Group;
 
 		this.set_bounds();
 
-		this.area = new Rekt({
+		this.rttrekt = new Rekt({
 			xy: this.mult,
 			wh: [this.master.width, this.master.height],
 			asset: 'egyt/tenbyten',
@@ -80,13 +79,13 @@ class chunk {
 
 		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
 			this.group.position.fromArray(middle);
+			this.rttgroup.position.fromArray(middle);
 			//this.group.renderOrder = this.rekt?.mesh?.renderOrder;
 		}
 
 		this.bound = new aabb2(
 			[x * this.master.span, y * this.master.span],
 			[(x + 1) * this.master.span, (y + 1) * this.master.span]);
-
 
 		let real = [...points.twoone(<zxc>[...p1]), 0] as zxc;
 		points.subtract(real, [0, -this.master.height / 2]);
@@ -102,27 +101,28 @@ class chunk {
 	}
 	update_color() {
 		return;
-		if (!this.area.inuse)
+		if (!this.rttrekt.inuse)
 			return;
-		this.area.material.color.set(new Color(this.rektcolor));
-		this.area.material.needsUpdate = true;
+		this.rttrekt.material.color.set(new Color(this.rektcolor));
+		this.rttrekt.material.needsUpdate = true;
 	}
 	comes() {
 		if (this.empty())
 			return;
 		if (this.on)
 			return;
-		this.area.use();
-		this.area.mesh.renderOrder = -9999;
+		this.rttrekt.use();
+		this.rttrekt.mesh.renderOrder = -9999;
 		this.objs.comes();
 		tq.scene.add(this.group);
+		tq.scene.add(this.rttgroup);
 		this.comes_pt2();
 		this.on = true;
 	}
 	comes_pt2() {
 		if (!Egyt.USE_CHUNK_RT)
 			return;
-		const treshold = this.objs.tuples.length >= 10;
+		const treshold = this.objs.rttobjs >= 10;
 		if (!treshold)
 			return;
 		if (!this.rt)
@@ -133,8 +133,9 @@ class chunk {
 	goes() {
 		if (!this.on)
 			return;
-		this.area.unuse();
+		this.rttrekt.unuse();
 		tq.scene.remove(this.group);
+		tq.scene.remove(this.rttgroup);
 		while (this.group.children.length > 0)
 			this.group.remove(this.group.children[0]);
 		this.rt?.goes();
@@ -159,6 +160,7 @@ class chunk {
 }
 
 class chunk_objs2 {
+	public rttobjs = 0
 	public readonly tuples: [Obj, number][]
 	constructor(private chunk: chunk) {
 		this.tuples = [];
@@ -178,19 +180,25 @@ class chunk_objs2 {
 			let rate = this.rate(obj);
 			this.tuples.push([obj, rate]);
 			obj.chunk = this.chunk;
+			if (obj.rtt)
+				this.rttobjs++;
 		}
 	}
 	remove(obj: Obj) {
 		let i = this.where(obj);
-		if (i != undefined)
+		if (i != undefined) {
 			this.tuples.splice(i, 1);
+			obj.chunk = null;
+			if (obj.rtt)
+				this.rttobjs++;
+		}
 	}
 	updates() {
 		for (let tuple of this.tuples) {
 			let rate = tuple[1]--;
-			if (rate === 0) {
-				tuple[1] = this.rate(tuple[0]);
+			if (rate <= 0) {
 				tuple[0].update();
+				tuple[1] = this.rate(tuple[0]);
 			}
 		}
 	}
@@ -396,7 +404,7 @@ class chunk_rt {
 		while (tq.crtscene.children.length > 0)
 			tq.crtscene.remove(tq.crtscene.children[0]);
 
-		const group = this.chunk.group;
+		const group = this.chunk.rttgroup;
 
 		group.position.set(0, -this.h / 2, 0);
 		tq.crtscene.add(group);
@@ -405,7 +413,7 @@ class chunk_rt {
 		tq.renderer.clear();
 		tq.renderer.render(tq.crtscene, this.camera);
 
-		this.chunk.area.material.map = this.target.texture;
+		this.chunk.rttrekt.material.map = this.target.texture;
 	}
 }
 

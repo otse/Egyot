@@ -39,25 +39,22 @@ namespace Agriculture {
 		constructor(growth: number, struct: Obj.Struct) {
 			super(growth, struct);
 
+			this.rate = 0.5;
+
 			this.rekt = new Rekt({
 				obj: this,
 				asset:
 					this.growth == 1 ? Egyt.sample(tillering) :
-						this.growth == 2 ? Egyt.sample(ripening) :
-							this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
+					this.growth == 2 ? Egyt.sample(ripening) :
+					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
 				istile: true,
 				xy: this.struct.tile,
 				wh: [22, 22],
 			});
 		}
 		update() {
-			if (!this.rekt.inuse)
-				return;
-			this.flick = !!!this.flick;
-			this.rekt.material.color.set(new Color(this.flick ? 'red' : 'blue'));
-			if (this.chunk)
-				this.chunk.changed = true;
-
+			if (Egyt.PAINT_OBJ_TICK_RATE)
+				this.rekt.paint_alternate();
 		}
 		comes() {
 			super.comes();

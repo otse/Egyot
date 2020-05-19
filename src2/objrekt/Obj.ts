@@ -2,14 +2,13 @@ import { chunk } from "../lod/Chunks";
 
 class Obj {
 	order = 0
-	tick = 0
 	rate = 1
 	using = false
+	rtt = true
 	chunk: chunk | null = null
 
-	readonly struct: { // why readonly
+	readonly struct: {
 		tile: zx
-		//pos: zxc
 	}
 	constructor(struct: Obj['struct']) {
 		Obj.num++;

@@ -1,6 +1,6 @@
 import { tq, THREE } from "../lib/tq";
 
-import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
+import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3, Color } from "three";
 import points from "../lib/Points";
 import Obj from "./Obj";
 import Egyt from "../Egyt";
@@ -32,6 +32,7 @@ class Rekt {
 	center: zx
 
 	inuse = false
+	flick = false
 
 	constructor(struct: Rekt.Struct) {
 		this.struct = struct;
@@ -48,6 +49,16 @@ class Rekt {
 	}
 	public mult() {
 		this.struct.xy = points.multp([...this.struct.xy], 24);
+	}
+	paint_alternate() {
+		if (!Egyt.PAINT_OBJ_TICK_RATE)
+			return;
+		if (!this.inuse)
+			return;
+		this.flick = !this.flick;
+		this.material.color.set(new Color(this.flick ? 'red' : 'blue'));
+		if (this.struct.obj?.chunk)
+			this.struct.obj.chunk.changed = true;
 	}
 	public use() {
 
@@ -86,12 +97,14 @@ class Rekt {
 
 		let c;
 		if (c = this.struct.obj?.chunk) {
-			c.group.add(this.mesh);
+			if (this.struct.obj?.rtt)
+				c.rttgroup.add(this.mesh);
+			else
+				c.group.add(this.mesh);
 		}
 		else
 			tq.scene.add(this.mesh);
 	}
-
 	public unuse() {
 		if (!this.inuse)
 			return;

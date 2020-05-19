@@ -11,7 +11,7 @@ export namespace Egyt {
 
 	export var USE_CHUNK_RT = true;
 	export var OFFSET_CHUNK_OBJ_REKT = true;
-	export var PAINT_UPDATE_TABLE = true;
+	export var PAINT_OBJ_TICK_RATE = true;
 
 	export const YUM = 24; // evenly divisible
 
@@ -149,7 +149,7 @@ export namespace Egyt {
 				<br/>
 				<span id="USE_CHUNK_RTT">USE_CHUNK_RTT: ${USE_CHUNK_RT}</span><br/>
 				<span id="OFFSET_CHUNK_OBJ_REKT">OFFSET_CHUNK_OBJ_REKT: ${OFFSET_CHUNK_OBJ_REKT}</span><br/>
-				<span id="PAINT_UPDATE_TABLE">PAINT_UPDATE_TABLE: ${PAINT_UPDATE_TABLE}</span><br/>
+				<span id="PAINT_OBJ_TICK_RATE">PAINT_OBJ_TICK_RATE: ${PAINT_OBJ_TICK_RATE}</span><br/>
 
 			</div>
 
