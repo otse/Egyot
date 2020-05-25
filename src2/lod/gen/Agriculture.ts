@@ -39,7 +39,7 @@ namespace Agriculture {
 		constructor(growth: number, struct: Obj.Struct) {
 			super(growth, struct);
 
-			this.rate = 0.5;
+			this.rate = 2.0;
 
 			this.rekt = new Rekt({
 				obj: this,
@@ -54,7 +54,7 @@ namespace Agriculture {
 		}
 		update() {
 			if (Egyt.PAINT_OBJ_TICK_RATE)
-				this.rekt.paint_alternate();
+				0;//this.rekt.paint_alternate();
 		}
 		comes() {
 			super.comes();

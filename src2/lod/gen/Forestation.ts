@@ -27,7 +27,9 @@ namespace Forestation {
 		constructor(struct: Obj.Struct) {
 			super(struct);
 
-			this.usesrtt = false;
+			this.rtt = false;
+
+			points.add(struct.tile, [1, -1]);
 
 			this.rekt = new Rekt({
 				obj: this,
@@ -73,11 +75,13 @@ namespace Forestation {
 		if (plopping) {
 			let tree = plopping;
 
-			let p = <zx>[...Egyt.map.mouse_tile];
+			let p = points.zx(Egyt.map.mouse_tile);
 
+			//points.add(p, [1, -1]);
 			tree.struct.tile = p;
 			tree.rekt.struct.xy = p;
 			tree.rekt.mult();
+			//tree.rekt.rorder();
 
 			tree.rekt.now_update_pos();
 
@@ -97,7 +101,7 @@ namespace Forestation {
 	export function plop_tree() {
 
 		let tree = new Tree({
-			tile: Egyt.map.mouse_tile
+			tile: [0, 0]
 		});
 
 		tree.comes();

@@ -116,7 +116,7 @@ class Game {
 
 		this.focal = [-p[0], -p[1], 0];
 
-		//return;
+		return;
 
 		this.frustumRekt.mesh.scale.set(w2, h2, 1);
 		this.frustumRekt.struct.xy = <zx>[...this.focal];

@@ -26,6 +26,7 @@ class chunk {
 	rt: chunk_rt | null
 	p: zx
 	rekt_offset: zx
+	north: zx
 	tile: zx
 	mult: zx
 	real: zx
@@ -68,12 +69,16 @@ class chunk {
 		middle = <zxc><unknown>points.twoone(middle);
 		middle[2] = 0;
 
+		this.north = [x - 3, y + 3];
+		points.multp(this.north, this.master.span * 24);
+		//points.subtract(this.north, [-24, 24]);
+
 		this.rekt_offset = this.tile;
 
 		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
 			this.group.position.fromArray(middle);
 			this.rttgroup.position.fromArray(middle);
-			//this.group.renderOrder = this.rekt?.mesh?.renderOrder;
+			this.group.renderOrder = Rekt.Srorder(this.tile);
 		}
 
 		this.bound = new aabb2(
@@ -112,7 +117,7 @@ class chunk {
 	comes_pt2() {
 		if (!Egyt.USE_CHUNK_RT)
 			return;
-		const treshold = this.objs.rttobjs >= 10;
+		const treshold = this.objs.rtts >= 10;
 		if (!treshold)
 			return;
 		if (!this.rt)
@@ -148,7 +153,7 @@ class chunk {
 }
 
 class chunk_objs2 {
-	public rttobjs = 0
+	public rtts = 0
 	public readonly tuples: [Obj, number][]
 	constructor(private chunk: chunk) {
 		this.tuples = [];
@@ -168,8 +173,8 @@ class chunk_objs2 {
 			let rate = this.rate(obj);
 			this.tuples.push([obj, rate]);
 			obj.chunk = this.chunk;
-			if (obj.usesrtt)
-				this.rttobjs++;
+			if (obj.rtt)
+				this.rtts++;
 		}
 	}
 	remove(obj: Obj) {
@@ -177,8 +182,8 @@ class chunk_objs2 {
 		if (i != undefined) {
 			this.tuples.splice(i, 1);
 			obj.chunk = null;
-			if (obj.usesrtt)
-				this.rttobjs++;
+			if (obj.rtt)
+				this.rtts++;
 		}
 	}
 	updates() {
@@ -395,7 +400,7 @@ class chunk_rt {
 	// todo pool the rts?
 	comes() {
 		this.rekt.use();
-		//this.rekt.mesh.renderOrder = -999;
+		this.rekt.rorder(this.chunk.north);
 		this.target = tqlib.rendertarget(this.w, this.h);
 	}
 	goes() {

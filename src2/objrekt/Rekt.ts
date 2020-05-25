@@ -29,7 +29,7 @@ class Rekt {
 	actualpos: zxc
 	center: zx
 
-	inuse = false
+	used = false
 	flick = false
 	pforpixels = false
 
@@ -46,27 +46,39 @@ class Rekt {
 
 		if (this.struct.opacity == undefined) this.struct.opacity = 1;
 	}
-	public mult() {
+	mult() {
 		this.struct.xy = points.multp([...this.struct.xy], 24);
+	}
+	rorder(p: zx) {
+		this.mesh.renderOrder = Rekt.Srorder(p);
 	}
 	paint_alternate() {
 		if (!Egyt.PAINT_OBJ_TICK_RATE)
 			return;
-		if (!this.inuse)
+		if (!this.used)
 			return;
 		this.flick = !this.flick;
 		this.material.color.set(new Color(this.flick ? 'red' : 'blue'));
 		if (this.struct.obj?.chunk)
 			this.struct.obj.chunk.changed = true;
 	}
-	public use() {
+	unuse() {
+		if (!this.used)
+			return;
+		this.used = false;
+		this.getgroup().remove(this.mesh);
+		Rekt.active--;
+		this.geometry.dispose();
+		this.material.dispose();
+	}
+	use() {
 
-		if (this.inuse)
+		if (this.used)
 			console.warn('rekt already inuse');
 
 		Rekt.active++;
 
-		this.inuse = true;
+		this.used = true;
 
 		this.geometry = new PlaneBufferGeometry(
 			this.struct.wh[0], this.struct.wh[1], 1, 1);
@@ -93,33 +105,19 @@ class Rekt {
 
 		this.now_update_pos();
 
-		let c;
-		if (c = this.struct.obj?.chunk)
-			if (this.struct.obj?.usesrtt && Egyt.USE_CHUNK_RT)
-				c.rttgroup.add(this.mesh);
-			else
-				c.group.add(this.mesh);
-		else
-			tq.scene.add(this.mesh);
+		this.getgroup().add(this.mesh);
+
 	}
-	public unuse() {
-		if (!this.inuse)
-			return;
-		this.inuse = false;
 
+	getgroup() {
 		let c;
 		if (c = this.struct.obj?.chunk)
-			if (this.struct.obj?.usesrtt && Egyt.USE_CHUNK_RT)
-				c.rttgroup.remove(this.mesh);
+			if (this.struct.obj?.rtt && Egyt.USE_CHUNK_RT)
+				return c.rttgroup;
 			else
-				c.group.add(this.mesh);
+				return c.group;
 		else
-			tq.scene.remove(this.mesh);
-
-		Rekt.active--;
-
-		this.geometry.dispose();
-		this.material.dispose();
+			return tq.scene;
 	}
 
 	now_update_pos() {
@@ -129,7 +127,7 @@ class Rekt {
 
 		let p = <zx>[...this.struct.xy];
 
-		if (this.pforpixels) { // todo phase out
+		if (this.pforpixels) { // hhehe
 			x = p[0];
 			y = p[1];
 		}
@@ -155,7 +153,12 @@ class Rekt {
 		this.actualpos = [x, y, 0];
 
 		if (this.mesh) {
-			this.mesh.renderOrder = -p[1] + p[0];
+			//let rorder;
+			//if (rorder = this.struct.obj?.order)
+			//	this.set_rorder(p);
+			//else
+			//	this.mesh.renderOrder = rorder;
+			this.rorder(p);
 			this.mesh.position.fromArray(this.actualpos);
 			this.mesh.updateMatrix();
 		}
@@ -167,6 +170,10 @@ namespace Rekt {
 	export let active = 0;
 
 	export type Struct = Rekt['struct']
+
+	export function Srorder(p: zx) {
+		return -p[1] + p[0];
+	}
 }
 
 export default Rekt;

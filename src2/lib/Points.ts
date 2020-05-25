@@ -2,6 +2,18 @@ import { aabb2 } from "./AABB";
 
 namespace points {
 
+	export function zx(p: zx): zx {
+		return <zx>[...p];
+	}
+
+	export function zxc(p: zxc): zxc {
+		return <zxc>[...p];
+	}
+
+	export function zxcv(p: zxcv): zxcv {
+		return <zxcv>[...p];
+	}
+
 	export function area_every(aabb: aabb2, callback: (pos: zx) => any) {
 		let y = aabb.min[1];
 		for (; y <= aabb.max[1]; y++) {
