@@ -9,7 +9,7 @@ import Agriculture from "./lod/gen/Agriculture";
 
 export namespace Egyt {
 
-	export var USE_CHUNK_RT = false;
+	export var USE_CHUNK_RT = true;
 	export var OFFSET_CHUNK_OBJ_REKT = true;
 	export var PAINT_OBJ_TICK_RATE = true;
 
@@ -34,6 +34,8 @@ export namespace Egyt {
 		WHEAT_ILI,
 		WHEAT_ILIL,
 		WHEAT_ILILI,
+		TREE_1,
+		TREE_2,
 		//FONT_YELLOW,
 		//FONT_MISSION,
 		//SPRITES,
@@ -96,6 +98,7 @@ export namespace Egyt {
 			USE_CHUNK_RT = false;
 
 		map.populate();
+		Forestation.populate();
 
 		//	Win.load_sheet('style95.css');
 		//else

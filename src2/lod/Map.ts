@@ -54,6 +54,9 @@ class Map {
 		tqlib.loadtexture('assets/egyt/farm/wheat_ili.png', undefined, () => Egyt.resourced('WHEAT_ILI'))
 		tqlib.loadtexture('assets/egyt/farm/wheat_ilil.png', undefined, () => Egyt.resourced('WHEAT_ILIL'))
 		tqlib.loadtexture('assets/egyt/farm/wheat_ilili.png', undefined, () => Egyt.resourced('WHEAT_ILILI'))
+
+		tqlib.loadtexture('assets/egyt/tree/oaktree3.png', undefined, () => Egyt.resourced('TREE_1'))
+		tqlib.loadtexture('assets/egyt/tree/oaktree4.png', undefined, () => Egyt.resourced('TREE_2'))
 	}
 
 	populate() {

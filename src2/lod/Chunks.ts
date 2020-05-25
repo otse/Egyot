@@ -60,15 +60,10 @@ class chunk {
 		let y = this.p[1];
 
 		let basest_tile = points.multp([x + 1, y], this.master.span * 24);
-		this.tile_s = points.zx(basest_tile);
 
-		// obsoleteh
-		let corrected_tile = <zx>points.subtract(points.zx(this.tile_s), [24, 0]);
-		this.mult = corrected_tile;
-
-		let middle = <zxc>[...basest_tile, 0];
-		middle = <zxc><unknown>points.twoone(middle);
-		middle[2] = 0;
+		let frightening = <zxc>[...basest_tile, 0];
+		frightening = <zxc><unknown>points.twoone(frightening);
+		frightening[2] = 0;
 
 		this.tile_n = [x - 3, y + 3];
 		points.multp(this.tile_n, this.master.span * 24);
@@ -77,8 +72,8 @@ class chunk {
 		this.rekt_offset = points.zx(basest_tile);
 
 		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
-			this.group.position.fromArray(middle);
-			this.grouprtt.position.fromArray(middle);
+			this.group.position.fromArray(frightening);
+			this.grouprtt.position.fromArray(frightening);
 
 			this.group.renderOrder = this.grouprtt.renderOrder = Rekt.Srorder(this.tile_n);
 		}
@@ -112,7 +107,7 @@ class chunk {
 		if (this.on)
 			return;
 		this.objs.comes();
-		tq.scene.add(this.group, this.group);
+		tq.scene.add(this.group, this.grouprtt);
 		this.comes_pt2();
 		this.on = true;
 	}
@@ -175,6 +170,7 @@ class chunk_objs2 {
 			let rate = this.rate(obj);
 			this.tuples.push([obj, rate]);
 			obj.chunk = this.chunk;
+			this.chunk.changed = true;
 			if (obj.rtt)
 				this.rtts++;
 		}
@@ -184,6 +180,7 @@ class chunk_objs2 {
 		if (i != undefined) {
 			this.tuples.splice(i, 1);
 			obj.chunk = null;
+			this.chunk.changed = true;
 			if (obj.rtt)
 				this.rtts++;
 		}
@@ -373,7 +370,7 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 }
 
 class chunk_rt {
-	readonly padding = 0 // Egyt.YUM * 2
+	readonly padding = Egyt.YUM * 4
 	readonly w: number
 	readonly h: number
 
@@ -390,7 +387,6 @@ class chunk_rt {
 
 		let p2 = <zx>[this.chunk.p[0] + 1, this.chunk.p[1]];
 		points.multp(p2, this.chunk.master.span);
-		// points.subtract(p2, [1, 0]); // nuh uh
 
 		this.rekt = new Rekt({
 			tiled: true,

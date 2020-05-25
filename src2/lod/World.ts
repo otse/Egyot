@@ -17,7 +17,7 @@ class World {
 	add(obj: Obj) {
 
 		let c = Egyt.map.get_chunk_at_tile(obj.struct.tile);
-		
+
 		c.objs.add(obj);
 
 		if (c.on)

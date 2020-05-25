@@ -473,9 +473,9 @@ void main() {
         }
         add(obj) {
             let c = Egyt$1.map.get_chunk_at_tile(obj.struct.tile);
+            c.objs.add(obj);
             if (c.on)
                 obj.comes();
-            c.objs.add(obj);
         }
         update() {
         }
@@ -537,6 +537,10 @@ void main() {
             goes() {
                 super.goes();
                 this.rekt.unuse();
+            }
+            unset() {
+                super.unset();
+                this.rekt.unset();
             }
         }
         Agriculture.Wheat = Wheat;
@@ -756,7 +760,7 @@ void main() {
             if (this.on)
                 return;
             this.objs.comes();
-            tq.scene.add(this.group, this.group);
+            tq.scene.add(this.group, this.grouprtt);
             this.comes_pt2();
             this.on = true;
         }
@@ -1048,6 +1052,8 @@ void main() {
             tqlib.loadtexture('assets/egyt/farm/wheat_ili.png', undefined, () => Egyt$1.resourced('WHEAT_ILI'));
             tqlib.loadtexture('assets/egyt/farm/wheat_ilil.png', undefined, () => Egyt$1.resourced('WHEAT_ILIL'));
             tqlib.loadtexture('assets/egyt/farm/wheat_ilili.png', undefined, () => Egyt$1.resourced('WHEAT_ILILI'));
+            tqlib.loadtexture('assets/egyt/tree/oaktree3.png', undefined, () => Egyt$1.resourced('TREE_1'));
+            tqlib.loadtexture('assets/egyt/tree/oaktree4.png', undefined, () => Egyt$1.resourced('TREE_2'));
         }
         populate() {
             let granary = new Rekt$1({
@@ -1303,7 +1309,7 @@ void main() {
         class Tree extends Obj$1 {
             constructor(struct) {
                 super(struct);
-                //this.rtt = true // false
+                //this.rtt = false
                 this.rekt = new Rekt$1({
                     obj: this,
                     asset: Egyt$1.sample(treez),
@@ -1313,6 +1319,10 @@ void main() {
                 });
                 this.rekt.offset = [1, -1];
                 trees.push(this);
+            }
+            update() {
+                if (Egyt$1.PAINT_OBJ_TICK_RATE)
+                    ; //this.rekt.paint_alternate();
             }
             comes() {
                 super.comes();
@@ -1326,12 +1336,14 @@ void main() {
                 super.unset();
                 this.rekt.unset();
             }
-            update() {
-            }
         }
         Forestation.Tree = Tree;
         function init() {
             console.log('forestation');
+            window.Forestation = Forestation;
+        }
+        Forestation.init = init;
+        function populate() {
             console.log(`add ${positions.length} trees from save`);
             for (let pos of positions) {
                 let tree = new Tree({
@@ -1339,9 +1351,8 @@ void main() {
                 });
                 Egyt$1.world.add(tree);
             }
-            window.Forestation = Forestation;
         }
-        Forestation.init = init;
+        Forestation.populate = populate;
         function update() {
             if (!plopping && App.map['t'] == 1) {
                 plopping = plop_tree();
@@ -1450,6 +1461,7 @@ void main() {
             if (window.location.href.indexOf("#nochunkrt") != -1)
                 Egyt.USE_CHUNK_RT = false;
             Egyt.map.populate();
+            Forestation$1.populate();
             //	Win.load_sheet('style95.css');
             //else
             //	Win.load_sheet('style2.css');

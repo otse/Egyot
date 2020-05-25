@@ -27,7 +27,7 @@ namespace Forestation {
 		constructor(struct: Obj.Struct) {
 			super(struct);
 
-			this.rtt = false;
+			//this.rtt = false
 
 			this.rekt = new Rekt({
 				obj: this,
@@ -41,6 +41,10 @@ namespace Forestation {
 
 			trees.push(this);
 		}
+		update() {
+			if (Egyt.PAINT_OBJ_TICK_RATE)
+				0;//this.rekt.paint_alternate();
+		}
 		comes() {
 			super.comes();
 			this.rekt.use();
@@ -53,24 +57,24 @@ namespace Forestation {
 			super.unset();
 			this.rekt.unset();
 		}
-		update() {
-		}
 	}
 
 	export function init() {
 		console.log('forestation');
+		
+		(window as any).Forestation = Forestation;
+	}
 
+	export function populate() {
 		console.log(`add ${positions.length} trees from save`);
+		
 		for (let pos of positions) {
 			let tree = new Tree({
 				tile: pos
 			});
 			Egyt.world.add(tree);
 		}
-
-		(window as any).Forestation = Forestation;
 	}
-
 
 	export function update() {
 		if (!plopping && App.map['t'] == 1) {

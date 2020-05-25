@@ -47,9 +47,9 @@ namespace Agriculture {
 					this.growth == 1 ? Egyt.sample(tillering) :
 					this.growth == 2 ? Egyt.sample(ripening) :
 					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-				tiled: true,
 				xy: this.struct.tile,
 				wh: [22, 22],
+				tiled: true,
 			});
 		}
 		update() {
@@ -63,6 +63,10 @@ namespace Agriculture {
 		goes() {
 			super.goes();
 			this.rekt.unuse();
+		}
+		unset() {
+			super.unset();
+			this.rekt.unset();
 		}
 	}
 
