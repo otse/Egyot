@@ -131,13 +131,13 @@ class Rekt {
 		let x, y;
 
 		let p = points.zx(this.struct.xy);
-		//let offset = points.zx(this.offset);
+		let offset = points.zx(this.offset);
 
 		if (this.struct.tiled) {
 			p = Rekt.Smult(p);
-		//	offset = Rekt.Smult(offset);
+			offset = Rekt.Smult(offset);
 		}
-		//points.add(p, offset);
+		points.add(p, offset);
 
 		if (this.plain) {
 			x = p[0];

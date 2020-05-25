@@ -390,12 +390,12 @@ void main() {
             const d = this.struct.wh;
             let x, y;
             let p = points$1.zx(this.struct.xy);
-            //let offset = points.zx(this.offset);
+            let offset = points$1.zx(this.offset);
             if (this.struct.tiled) {
                 p = Rekt.Smult(p);
-                //	offset = Rekt.Smult(offset);
+                offset = Rekt.Smult(offset);
             }
-            //points.add(p, offset);
+            points$1.add(p, offset);
             if (this.plain) {
                 x = p[0];
                 y = p[1];
@@ -1307,7 +1307,6 @@ void main() {
             constructor(struct) {
                 super(struct);
                 this.rtt = false;
-                //points.add(struct.tile, [1, -1]);
                 this.rekt = new Rekt$1({
                     obj: this,
                     asset: Egyt$1.sample(treez),
@@ -1391,7 +1390,7 @@ void main() {
 
     var Egyt;
     (function (Egyt) {
-        Egyt.USE_CHUNK_RT = true;
+        Egyt.USE_CHUNK_RT = false;
         Egyt.OFFSET_CHUNK_OBJ_REKT = true;
         Egyt.PAINT_OBJ_TICK_RATE = true;
         Egyt.YUM = 24; // evenly divisible

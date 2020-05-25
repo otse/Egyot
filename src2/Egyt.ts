@@ -9,7 +9,7 @@ import Agriculture from "./lod/gen/Agriculture";
 
 export namespace Egyt {
 
-	export var USE_CHUNK_RT = true;
+	export var USE_CHUNK_RT = false;
 	export var OFFSET_CHUNK_OBJ_REKT = true;
 	export var PAINT_OBJ_TICK_RATE = true;
 

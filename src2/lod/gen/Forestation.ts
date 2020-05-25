@@ -29,8 +29,6 @@ namespace Forestation {
 
 			this.rtt = false;
 
-			//points.add(struct.tile, [1, -1]);
-
 			this.rekt = new Rekt({
 				obj: this,
 				asset: Egyt.sample(treez),
