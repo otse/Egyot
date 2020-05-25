@@ -58,14 +58,14 @@ class Map {
 
 	populate() {
 		let granary = new Rekt({
-			istile: true,
+			tiled: true,
 			xy: [6, -1],
 			wh: [216, 168],
 			asset: 'egyt/building/granary'
 		});
 
 		let tobaccoshop = new Rekt({
-			istile: true,
+			tiled: true,
 			xy: [-13, 2],
 			wh: [144, 144],
 			asset: 'egyt/building/redstore'

@@ -5,13 +5,14 @@ import points from "../lib/Points";
 import Obj from "./Obj";
 import Egyt from "../Egyt";
 import { tqlib } from "../lib/tqlib";
+import { chunk } from "../lod/Chunks";
 
 class Rekt {
 
 	readonly struct: {
 		obj?: Obj
 		name?: string
-		istile?: boolean
+		tiled?: boolean
 		xy: zx
 		wh: zx
 		asset?: string
@@ -19,6 +20,8 @@ class Rekt {
 		opacity?: number,
 		color?: any
 	}
+
+	offset: zx = [0, 0]
 
 	mesh: Mesh
 	meshShadow: Mesh
@@ -31,25 +34,22 @@ class Rekt {
 
 	used = false
 	flick = false
-	pforpixels = false
+	plain = false
 
 	constructor(struct: Rekt.Struct) {
 		this.struct = struct;
 
 		Rekt.num++;
 
-		if (struct.istile)
-			this.mult();
-
 		this.actualpos = [0, 0, 0];
 		this.center = [0, 0];
 
-		if (this.struct.opacity == undefined) this.struct.opacity = 1;
+		if (undefined == this.struct.opacity) this.struct.opacity = 1;
 	}
-	mult() {
-		this.struct.xy = points.multp([...this.struct.xy], 24);
+	multNone() {
 	}
-	rorder(p: zx) {
+	rorder() {
+		let p = <zx>points.add(this.struct.xy, this.offset);
 		this.mesh.renderOrder = Rekt.Srorder(p);
 	}
 	paint_alternate() {
@@ -110,10 +110,10 @@ class Rekt {
 	}
 
 	getgroup() {
-		let c;
+		let c: chunk | null | undefined;
 		if (c = this.struct.obj?.chunk)
 			if (this.struct.obj?.rtt && Egyt.USE_CHUNK_RT)
-				return c.rttgroup;
+				return c.grouprtt;
 			else
 				return c.group;
 		else
@@ -125,9 +125,16 @@ class Rekt {
 
 		let x, y;
 
-		let p = <zx>[...this.struct.xy];
+		let p = this.struct.xy;
+		let offset = this.offset;
 
-		if (this.pforpixels) { // hhehe
+		if (this.struct.tiled) {
+			p = Rekt.Smult(p);
+			offset = Rekt.Smult(offset);
+		}
+		points.add(p, offset);
+
+		if (this.plain) {
 			x = p[0];
 			y = p[1];
 		}
@@ -153,12 +160,7 @@ class Rekt {
 		this.actualpos = [x, y, 0];
 
 		if (this.mesh) {
-			//let rorder;
-			//if (rorder = this.struct.obj?.order)
-			//	this.set_rorder(p);
-			//else
-			//	this.mesh.renderOrder = rorder;
-			this.rorder(p);
+			this.rorder();
 			this.mesh.position.fromArray(this.actualpos);
 			this.mesh.updateMatrix();
 		}
@@ -173,6 +175,10 @@ namespace Rekt {
 
 	export function Srorder(p: zx) {
 		return -p[1] + p[0];
+	}
+
+	export function Smult(p: zx) {
+		return points.multp(points.zx(p), 24);
 	}
 }
 

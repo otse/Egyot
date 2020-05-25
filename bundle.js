@@ -304,22 +304,21 @@ void main() {
 
     class Rekt {
         constructor(struct) {
+            this.offset = [0, 0];
             this.used = false;
             this.flick = false;
-            this.pforpixels = false;
+            this.plain = false;
             this.struct = struct;
             Rekt.num++;
-            if (struct.istile)
-                this.mult();
             this.actualpos = [0, 0, 0];
             this.center = [0, 0];
-            if (this.struct.opacity == undefined)
+            if (undefined == this.struct.opacity)
                 this.struct.opacity = 1;
         }
-        mult() {
-            this.struct.xy = points$1.multp([...this.struct.xy], 24);
+        multNone() {
         }
-        rorder(p) {
+        rorder() {
+            let p = points$1.add(this.struct.xy, this.offset);
             this.mesh.renderOrder = Rekt.Srorder(p);
         }
         paint_alternate() {
@@ -373,7 +372,7 @@ void main() {
             let c;
             if (c = (_a = this.struct.obj) === null || _a === void 0 ? void 0 : _a.chunk)
                 if (((_b = this.struct.obj) === null || _b === void 0 ? void 0 : _b.rtt) && Egyt$1.USE_CHUNK_RT)
-                    return c.rttgroup;
+                    return c.grouprtt;
                 else
                     return c.group;
             else
@@ -383,8 +382,14 @@ void main() {
             var _a;
             const d = this.struct.wh;
             let x, y;
-            let p = [...this.struct.xy];
-            if (this.pforpixels) { // hhehe
+            let p = this.struct.xy;
+            let offset = this.offset;
+            if (this.struct.tiled) {
+                p = Rekt.Smult(p);
+                offset = Rekt.Smult(offset);
+            }
+            points$1.add(p, offset);
+            if (this.plain) {
                 x = p[0];
                 y = p[1];
             }
@@ -405,12 +410,7 @@ void main() {
             }
             this.actualpos = [x, y, 0];
             if (this.mesh) {
-                //let rorder;
-                //if (rorder = this.struct.obj?.order)
-                //	this.set_rorder(p);
-                //else
-                //	this.mesh.renderOrder = rorder;
-                this.rorder(p);
+                this.rorder();
                 this.mesh.position.fromArray(this.actualpos);
                 this.mesh.updateMatrix();
             }
@@ -423,6 +423,10 @@ void main() {
             return -p[1] + p[0];
         }
         Rekt.Srorder = Srorder;
+        function Smult(p) {
+            return points$1.multp(points$1.zx(p), 24);
+        }
+        Rekt.Smult = Smult;
     })(Rekt || (Rekt = {}));
     var Rekt$1 = Rekt;
 
@@ -510,7 +514,7 @@ void main() {
                     asset: this.growth == 1 ? Egyt$1.sample(tillering) :
                         this.growth == 2 ? Egyt$1.sample(ripening) :
                             this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-                    istile: true,
+                    tiled: true,
                     xy: this.struct.tile,
                     wh: [22, 22],
                 });
@@ -645,7 +649,7 @@ void main() {
                 super(struct);
                 this.rekt = new Rekt$1({
                     asset: asset,
-                    istile: true,
+                    tiled: true,
                     xy: this.struct.tile,
                     wh: [24, 12],
                 });
@@ -704,7 +708,7 @@ void main() {
             //this.color = Egyt.sample(colors);
             this.p = [x, y];
             this.group = new THREE.Group;
-            this.rttgroup = new THREE.Group;
+            this.grouprtt = new THREE.Group;
             this.set_bounds();
         }
         set_bounds() {
@@ -723,8 +727,8 @@ void main() {
             this.rekt_offset = this.tile;
             if (Egyt$1.OFFSET_CHUNK_OBJ_REKT) {
                 this.group.position.fromArray(middle);
-                this.rttgroup.position.fromArray(middle);
-                this.group.renderOrder = Rekt$1.Srorder(this.tile);
+                this.grouprtt.position.fromArray(middle);
+                this.group.renderOrder = this.grouprtt.renderOrder = Rekt$1.Srorder(this.north);
             }
             this.bound = new aabb2([x * this.master.span, y * this.master.span], [(x + 1) * this.master.span, (y + 1) * this.master.span]);
             let real = [...points$1.twoone([...tile]), 0];
@@ -767,9 +771,9 @@ void main() {
             var _a;
             if (!this.on)
                 return;
-            tq.scene.remove(this.group, this.rttgroup);
+            tq.scene.remove(this.group, this.grouprtt);
             tqlib.erase_children(this.group);
-            tqlib.erase_children(this.rttgroup);
+            tqlib.erase_children(this.grouprtt);
             this.objs.goes();
             (_a = this.rt) === null || _a === void 0 ? void 0 : _a.goes();
             this.on = false;
@@ -985,7 +989,7 @@ void main() {
             points$1.multp(p2, this.chunk.master.span);
             points$1.subtract(p2, [1, 0]);
             this.rekt = new Rekt$1({
-                istile: true,
+                tiled: true,
                 xy: p2,
                 wh: [this.w, this.h],
                 asset: 'egyt/tenbyten'
@@ -994,7 +998,7 @@ void main() {
         // todo pool the rts?
         comes() {
             this.rekt.use();
-            this.rekt.rorder(this.chunk.north);
+            this.rekt.mesh.renderOrder = Rekt$1.Srorder(this.chunk.north);
             this.target = tqlib.rendertarget(this.w, this.h);
         }
         goes() {
@@ -1004,7 +1008,7 @@ void main() {
         render() {
             while (tq.rttscene.children.length > 0)
                 tq.rttscene.remove(tq.rttscene.children[0]);
-            const group = this.chunk.rttgroup;
+            const group = this.chunk.grouprtt;
             group.position.set(0, -this.h / 2, 0);
             tq.rttscene.add(group);
             tq.renderer.setRenderTarget(this.target);
@@ -1042,13 +1046,13 @@ void main() {
         }
         populate() {
             let granary = new Rekt$1({
-                istile: true,
+                tiled: true,
                 xy: [6, -1],
                 wh: [216, 168],
                 asset: 'egyt/building/granary'
             });
             let tobaccoshop = new Rekt$1({
-                istile: true,
+                tiled: true,
                 xy: [-13, 2],
                 wh: [144, 144],
                 asset: 'egyt/building/redstore'
@@ -1209,7 +1213,7 @@ void main() {
                 wh: [1, 1],
                 asset: 'egyt/128'
             });
-            this.frustumRekt.pforpixels = true; // dont 2:1
+            this.frustumRekt.plain = true; // dont 2:1
             this.frustumRekt.use();
             this.frustumRekt.mesh.renderOrder = 9999999;
             this.frustumRekt.material.wireframe = true;
@@ -1295,14 +1299,15 @@ void main() {
             constructor(struct) {
                 super(struct);
                 this.rtt = false;
-                points$1.add(struct.tile, [1, -1]);
+                //points.add(struct.tile, [1, -1]);
                 this.rekt = new Rekt$1({
                     obj: this,
                     asset: Egyt$1.sample(treez),
-                    istile: true,
                     xy: this.struct.tile,
                     wh: [120, 132],
+                    tiled: true,
                 });
+                this.rekt.offset = [1, -1];
                 trees.push(this);
             }
             comes() {
@@ -1335,11 +1340,9 @@ void main() {
             if (plopping) {
                 let tree = plopping;
                 let p = points$1.zx(Egyt$1.map.mouse_tile);
-                //points.add(p, [1, -1]);
                 tree.struct.tile = p;
                 tree.rekt.struct.xy = p;
-                tree.rekt.mult();
-                //tree.rekt.rorder();
+                tree.rekt.multNone();
                 tree.rekt.now_update_pos();
                 if (App.left)
                     plopping = null;
@@ -1368,7 +1371,7 @@ void main() {
 
     var Egyt;
     (function (Egyt) {
-        Egyt.USE_CHUNK_RT = true;
+        Egyt.USE_CHUNK_RT = false;
         Egyt.OFFSET_CHUNK_OBJ_REKT = true;
         Egyt.PAINT_OBJ_TICK_RATE = true;
         Egyt.YUM = 24; // evenly divisible

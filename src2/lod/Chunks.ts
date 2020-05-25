@@ -36,7 +36,7 @@ class chunk {
 
 	group: Group
 
-	rttgroup: Group
+	grouprtt: Group
 	rektcolor = 'white'
 
 	outline: Rekt
@@ -50,7 +50,7 @@ class chunk {
 		//this.color = Egyt.sample(colors);
 		this.p = [x, y];
 		this.group = new Group;
-		this.rttgroup = new Group;
+		this.grouprtt = new Group;
 
 		this.set_bounds();
 	}
@@ -77,8 +77,9 @@ class chunk {
 
 		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
 			this.group.position.fromArray(middle);
-			this.rttgroup.position.fromArray(middle);
-			this.group.renderOrder = Rekt.Srorder(this.tile);
+			this.grouprtt.position.fromArray(middle);
+
+			this.group.renderOrder = this.grouprtt.renderOrder = Rekt.Srorder(this.north);
 		}
 
 		this.bound = new aabb2(
@@ -128,9 +129,9 @@ class chunk {
 	goes() {
 		if (!this.on)
 			return;
-		tq.scene.remove(this.group, this.rttgroup);
+		tq.scene.remove(this.group, this.grouprtt);
 		tqlib.erase_children(this.group);
-		tqlib.erase_children(this.rttgroup);
+		tqlib.erase_children(this.grouprtt);
 		this.objs.goes();
 		this.rt?.goes();
 		this.on = false;
@@ -391,7 +392,7 @@ class chunk_rt {
 		points.subtract(p2, [1, 0]);
 
 		this.rekt = new Rekt({
-			istile: true,
+			tiled: true,
 			xy: p2,
 			wh: [this.w, this.h],
 			asset: 'egyt/tenbyten'
@@ -400,7 +401,7 @@ class chunk_rt {
 	// todo pool the rts?
 	comes() {
 		this.rekt.use();
-		this.rekt.rorder(this.chunk.north);
+		this.rekt.mesh.renderOrder = Rekt.Srorder(this.chunk.north);
 		this.target = tqlib.rendertarget(this.w, this.h);
 	}
 	goes() {
@@ -411,7 +412,7 @@ class chunk_rt {
 		while (tq.rttscene.children.length > 0)
 			tq.rttscene.remove(tq.rttscene.children[0]);
 
-		const group = this.chunk.rttgroup;
+		const group = this.chunk.grouprtt;
 
 		group.position.set(0, -this.h / 2, 0);
 		tq.rttscene.add(group);

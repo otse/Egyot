@@ -25,7 +25,7 @@ namespace Tilization {
 
 			this.rekt = new Rekt({
 				asset: asset,
-				istile: true,
+				tiled: true,
 				xy: this.struct.tile,
 				wh: [24, 12],
 			});

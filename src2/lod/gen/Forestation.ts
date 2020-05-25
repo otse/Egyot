@@ -29,15 +29,17 @@ namespace Forestation {
 
 			this.rtt = false;
 
-			points.add(struct.tile, [1, -1]);
+			//points.add(struct.tile, [1, -1]);
 
 			this.rekt = new Rekt({
 				obj: this,
 				asset: Egyt.sample(treez),
-				istile: true,
 				xy: this.struct.tile,
 				wh: [120, 132],
+				tiled: true,
 			});
+
+			this.rekt.offset = [1, -1];
 
 			trees.push(this);
 		}
@@ -77,12 +79,10 @@ namespace Forestation {
 
 			let p = points.zx(Egyt.map.mouse_tile);
 
-			//points.add(p, [1, -1]);
 			tree.struct.tile = p;
 			tree.rekt.struct.xy = p;
-			tree.rekt.mult();
-			//tree.rekt.rorder();
-
+			tree.rekt.multNone();
+			
 			tree.rekt.now_update_pos();
 
 			if (App.left)

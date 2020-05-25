@@ -47,7 +47,7 @@ namespace Agriculture {
 					this.growth == 1 ? Egyt.sample(tillering) :
 					this.growth == 2 ? Egyt.sample(ripening) :
 					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-				istile: true,
+				tiled: true,
 				xy: this.struct.tile,
 				wh: [22, 22],
 			});
