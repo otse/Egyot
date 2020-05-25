@@ -24,6 +24,9 @@ class Obj {
 		Obj.active--;
 		this.using = false;
 	}
+	unset() {
+		Obj.num--;
+	}
 }
 
 namespace Obj {

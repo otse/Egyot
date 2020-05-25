@@ -26,8 +26,8 @@ class chunk {
 	rt: chunk_rt | null
 	p: zx
 	rekt_offset: zx
-	north: zx
-	tile: zx
+	tile_n: zx
+	tile_s: zx
 	mult: zx
 	real: zx
 	opposite: zx
@@ -59,34 +59,35 @@ class chunk {
 		let x = this.p[0];
 		let y = this.p[1];
 
-		let tile = points.multp([x + 1, y], this.master.span * 24);
-		this.tile = <zx>[...tile];
+		let basest_tile = points.multp([x + 1, y], this.master.span * 24);
+		this.tile_s = points.zx(basest_tile);
 
-		points.subtract(tile, [24, 0]);
-		this.mult = tile;
+		// obsoleteh
+		let corrected_tile = <zx>points.subtract(points.zx(this.tile_s), [24, 0]);
+		this.mult = corrected_tile;
 
-		let middle = <zxc>[...tile, 0];
+		let middle = <zxc>[...basest_tile, 0];
 		middle = <zxc><unknown>points.twoone(middle);
 		middle[2] = 0;
 
-		this.north = [x - 3, y + 3];
-		points.multp(this.north, this.master.span * 24);
+		this.tile_n = [x - 3, y + 3];
+		points.multp(this.tile_n, this.master.span * 24);
 		//points.subtract(this.north, [-24, 24]);
 
-		this.rekt_offset = this.tile;
+		this.rekt_offset = points.zx(basest_tile);
 
 		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
 			this.group.position.fromArray(middle);
 			this.grouprtt.position.fromArray(middle);
 
-			this.group.renderOrder = this.grouprtt.renderOrder = Rekt.Srorder(this.north);
+			this.group.renderOrder = this.grouprtt.renderOrder = Rekt.Srorder(this.tile_n);
 		}
 
 		this.bound = new aabb2(
 			[x * this.master.span, y * this.master.span],
 			[(x + 1) * this.master.span, (y + 1) * this.master.span]);
 
-		let real = [...points.twoone(<zxc>[...tile]), 0] as zxc;
+		let real = [...points.twoone(<zxc>[...basest_tile]), 0] as zxc;
 		points.subtract(real, [0, -this.master.height / 2]);
 		this.real = <zx>[...real];
 
@@ -372,7 +373,7 @@ class chunk_fitter<T extends chunk> { // chunk-snake
 }
 
 class chunk_rt {
-	readonly padding = Egyt.YUM * 2
+	readonly padding = 0 // Egyt.YUM * 2
 	readonly w: number
 	readonly h: number
 
@@ -389,7 +390,7 @@ class chunk_rt {
 
 		let p2 = <zx>[this.chunk.p[0] + 1, this.chunk.p[1]];
 		points.multp(p2, this.chunk.master.span);
-		points.subtract(p2, [1, 0]);
+		// points.subtract(p2, [1, 0]); // nuh uh
 
 		this.rekt = new Rekt({
 			tiled: true,
@@ -401,7 +402,7 @@ class chunk_rt {
 	// todo pool the rts?
 	comes() {
 		this.rekt.use();
-		this.rekt.mesh.renderOrder = Rekt.Srorder(this.chunk.north);
+		this.rekt.mesh.renderOrder = Rekt.Srorder(this.chunk.tile_n);
 		this.target = tqlib.rendertarget(this.w, this.h);
 	}
 	goes() {

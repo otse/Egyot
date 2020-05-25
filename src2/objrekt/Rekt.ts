@@ -46,10 +46,15 @@ class Rekt {
 
 		if (undefined == this.struct.opacity) this.struct.opacity = 1;
 	}
+	unset() {
+		Rekt.num--;
+	}
 	multNone() {
 	}
 	rorder() {
-		let p = <zx>points.add(this.struct.xy, this.offset);
+		let p = <zx>points.zx(this.struct.xy);
+		
+		//let p = <zx>points.add(this.struct.xy, this.offset);
 		this.mesh.renderOrder = Rekt.Srorder(p);
 	}
 	paint_alternate() {
@@ -125,14 +130,14 @@ class Rekt {
 
 		let x, y;
 
-		let p = this.struct.xy;
-		let offset = this.offset;
+		let p = points.zx(this.struct.xy);
+		//let offset = points.zx(this.offset);
 
 		if (this.struct.tiled) {
 			p = Rekt.Smult(p);
-			offset = Rekt.Smult(offset);
+		//	offset = Rekt.Smult(offset);
 		}
-		points.add(p, offset);
+		//points.add(p, offset);
 
 		if (this.plain) {
 			x = p[0];
@@ -178,7 +183,7 @@ namespace Rekt {
 	}
 
 	export function Smult(p: zx) {
-		return points.multp(points.zx(p), 24);
+		return points.multp(p, 24);
 	}
 }
 

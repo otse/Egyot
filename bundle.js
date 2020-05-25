@@ -183,6 +183,9 @@ void main() {
             Obj.active--;
             this.using = false;
         }
+        unset() {
+            Obj.num--;
+        }
     }
     (function (Obj) {
         Obj.active = 0;
@@ -315,10 +318,14 @@ void main() {
             if (undefined == this.struct.opacity)
                 this.struct.opacity = 1;
         }
+        unset() {
+            Rekt.num--;
+        }
         multNone() {
         }
         rorder() {
-            let p = points$1.add(this.struct.xy, this.offset);
+            let p = points$1.zx(this.struct.xy);
+            //let p = <zx>points.add(this.struct.xy, this.offset);
             this.mesh.renderOrder = Rekt.Srorder(p);
         }
         paint_alternate() {
@@ -382,13 +389,13 @@ void main() {
             var _a;
             const d = this.struct.wh;
             let x, y;
-            let p = this.struct.xy;
-            let offset = this.offset;
+            let p = points$1.zx(this.struct.xy);
+            //let offset = points.zx(this.offset);
             if (this.struct.tiled) {
                 p = Rekt.Smult(p);
-                offset = Rekt.Smult(offset);
+                //	offset = Rekt.Smult(offset);
             }
-            points$1.add(p, offset);
+            //points.add(p, offset);
             if (this.plain) {
                 x = p[0];
                 y = p[1];
@@ -424,7 +431,7 @@ void main() {
         }
         Rekt.Srorder = Srorder;
         function Smult(p) {
-            return points$1.multp(points$1.zx(p), 24);
+            return points$1.multp(p, 24);
         }
         Rekt.Smult = Smult;
     })(Rekt || (Rekt = {}));
@@ -714,24 +721,25 @@ void main() {
         set_bounds() {
             let x = this.p[0];
             let y = this.p[1];
-            let tile = points$1.multp([x + 1, y], this.master.span * 24);
-            this.tile = [...tile];
-            points$1.subtract(tile, [24, 0]);
-            this.mult = tile;
-            let middle = [...tile, 0];
+            let basest_tile = points$1.multp([x + 1, y], this.master.span * 24);
+            this.tile_s = points$1.zx(basest_tile);
+            // obsoleteh
+            let corrected_tile = points$1.subtract(points$1.zx(this.tile_s), [24, 0]);
+            this.mult = corrected_tile;
+            let middle = [...basest_tile, 0];
             middle = points$1.twoone(middle);
             middle[2] = 0;
-            this.north = [x - 3, y + 3];
-            points$1.multp(this.north, this.master.span * 24);
+            this.tile_n = [x - 3, y + 3];
+            points$1.multp(this.tile_n, this.master.span * 24);
             //points.subtract(this.north, [-24, 24]);
-            this.rekt_offset = this.tile;
+            this.rekt_offset = points$1.zx(basest_tile);
             if (Egyt$1.OFFSET_CHUNK_OBJ_REKT) {
                 this.group.position.fromArray(middle);
                 this.grouprtt.position.fromArray(middle);
-                this.group.renderOrder = this.grouprtt.renderOrder = Rekt$1.Srorder(this.north);
+                this.group.renderOrder = this.grouprtt.renderOrder = Rekt$1.Srorder(this.tile_n);
             }
             this.bound = new aabb2([x * this.master.span, y * this.master.span], [(x + 1) * this.master.span, (y + 1) * this.master.span]);
-            let real = [...points$1.twoone([...tile]), 0];
+            let real = [...points$1.twoone([...basest_tile]), 0];
             points$1.subtract(real, [0, -this.master.height / 2]);
             this.real = [...real];
             this.boundscreen = new aabb2(points$1.add([...real], [-this.master.width / 2, -this.master.height / 2]), points$1.add([...real], [this.master.width / 2, this.master.height / 2]));
@@ -980,14 +988,14 @@ void main() {
     class chunk_rt {
         constructor(chunk) {
             this.chunk = chunk;
-            this.padding = Egyt$1.YUM * 2;
+            this.padding = 0; // Egyt.YUM * 2
             this.offset = [0, 0];
             this.w = this.chunk.master.width + this.padding;
             this.h = this.chunk.master.height + this.padding;
             this.camera = tqlib.ortographiccamera(this.w, this.h);
             let p2 = [this.chunk.p[0] + 1, this.chunk.p[1]];
             points$1.multp(p2, this.chunk.master.span);
-            points$1.subtract(p2, [1, 0]);
+            // points.subtract(p2, [1, 0]); // nuh uh
             this.rekt = new Rekt$1({
                 tiled: true,
                 xy: p2,
@@ -998,7 +1006,7 @@ void main() {
         // todo pool the rts?
         comes() {
             this.rekt.use();
-            this.rekt.mesh.renderOrder = Rekt$1.Srorder(this.chunk.north);
+            this.rekt.mesh.renderOrder = Rekt$1.Srorder(this.chunk.tile_n);
             this.target = tqlib.rendertarget(this.w, this.h);
         }
         goes() {
@@ -1311,10 +1319,16 @@ void main() {
                 trees.push(this);
             }
             comes() {
+                super.comes();
                 this.rekt.use();
             }
             goes() {
+                super.goes();
                 this.rekt.unuse();
+            }
+            unset() {
+                super.unset();
+                this.rekt.unset();
             }
             update() {
             }
@@ -1322,13 +1336,12 @@ void main() {
         Forestation.Tree = Tree;
         function init() {
             console.log('forestation');
+            console.log(`add ${positions.length} trees from save`);
             for (let pos of positions) {
                 let tree = new Tree({
                     tile: pos
                 });
                 Egyt$1.world.add(tree);
-                //tree.comes();
-                console.log('add tree from positions');
             }
             window.Forestation = Forestation;
         }
@@ -1342,10 +1355,16 @@ void main() {
                 let p = points$1.zx(Egyt$1.map.mouse_tile);
                 tree.struct.tile = p;
                 tree.rekt.struct.xy = p;
-                tree.rekt.multNone();
                 tree.rekt.now_update_pos();
-                if (App.left)
+                if (App.left) {
                     plopping = null;
+                    tree.goes();
+                    tree.unset();
+                    let tree2 = new Tree({
+                        tile: p
+                    });
+                    Egyt$1.world.add(tree2);
+                }
             }
         }
         Forestation.update = update;
@@ -1362,6 +1381,7 @@ void main() {
                 tile: [0, 0]
             });
             tree.comes();
+            // dont add to world yet
             //Egyt.world.add(plop);
             return tree;
         }
@@ -1371,7 +1391,7 @@ void main() {
 
     var Egyt;
     (function (Egyt) {
-        Egyt.USE_CHUNK_RT = false;
+        Egyt.USE_CHUNK_RT = true;
         Egyt.OFFSET_CHUNK_OBJ_REKT = true;
         Egyt.PAINT_OBJ_TICK_RATE = true;
         Egyt.YUM = 24; // evenly divisible
