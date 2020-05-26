@@ -193,9 +193,9 @@ void main() {
     })(Obj || (Obj = {}));
     var Obj$1 = Obj;
 
-    var points;
-    (function (points) {
-        points.clone = (zx) => [...zx];
+    var vecs;
+    (function (vecs) {
+        vecs.clone = (zx) => [...zx];
         function area_every(aabb, callback) {
             let y = aabb.min[1];
             for (; y <= aabb.max[1]; y++) {
@@ -205,25 +205,25 @@ void main() {
                 }
             }
         }
-        points.area_every = area_every;
+        vecs.area_every = area_every;
         function two_one(p) {
-            let copy = points.clone(p);
+            let copy = vecs.clone(p);
             copy[0] = p[0] / 2 + p[1] / 2;
             copy[1] = p[1] / 4 - p[0] / 4;
             return copy;
         }
-        points.two_one = two_one;
+        vecs.two_one = two_one;
         function un_two_one(p) {
             let x = p[0] - p[1] * 2;
             let y = p[1] * 2 + p[0];
             return [x, y];
         }
-        points.un_two_one = un_two_one;
+        vecs.un_two_one = un_two_one;
         function string(a) {
             const pr = (b) => b != undefined ? `, ${b}` : '';
             return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
         }
-        points.string = string;
+        vecs.string = string;
         function floor(a) {
             a[0] = Math.floor(a[0]);
             a[1] = Math.floor(a[1]);
@@ -231,7 +231,7 @@ void main() {
                 a[2] = Math.floor(a[2]);
             return a;
         }
-        points.floor = floor;
+        vecs.floor = floor;
         function ceil(a) {
             a[0] = Math.ceil(a[0]);
             a[1] = Math.ceil(a[1]);
@@ -239,56 +239,56 @@ void main() {
                 a[2] = Math.ceil(a[2]);
             return a;
         }
-        points.ceil = ceil;
+        vecs.ceil = ceil;
         function inv(a) {
             a[0] = -a[0];
             a[1] = -a[1];
             return a;
         }
-        points.inv = inv;
+        vecs.inv = inv;
         function multp(zx, n, n2) {
             zx[0] *= n;
             zx[1] *= n2 || n;
             return zx;
         }
-        points.multp = multp;
+        vecs.multp = multp;
         function divide(a, n, n2) {
             a[0] /= n;
             a[1] /= n2 || n;
             return a;
         }
-        points.divide = divide;
+        vecs.divide = divide;
         function multpClone(zx, n, n2) {
             let wen = [...zx];
             multp(wen, n, n2);
             return wen;
         }
-        points.multpClone = multpClone;
+        vecs.multpClone = multpClone;
         function subtract(a, b) {
             a[0] -= b[0];
             a[1] -= b[1];
             return a;
         }
-        points.subtract = subtract;
+        vecs.subtract = subtract;
         function add(a, b) {
             a[0] += b[0];
             a[1] += b[1];
             return a;
         }
-        points.add = add;
+        vecs.add = add;
         function abs(p) {
             p[0] = Math.abs(p[0]);
             p[1] = Math.abs(p[1]);
             return p;
         }
-        points.abs = abs;
+        vecs.abs = abs;
         function together(p) {
             //Abs(p);
             return p[0] + p[1];
         }
-        points.together = together;
-    })(points || (points = {}));
-    var points$1 = points;
+        vecs.together = together;
+    })(vecs || (vecs = {}));
+    var vecs$1 = vecs;
 
     class Rekt {
         constructor(struct) {
@@ -309,7 +309,7 @@ void main() {
         multNone() {
         }
         rorder() {
-            let p = points$1.clone(this.struct.xy);
+            let p = vecs$1.clone(this.struct.xy);
             //let p = <zx>points.add(this.struct.xy, this.offset);
             this.mesh.renderOrder = Rekt.Srorder(p);
         }
@@ -374,13 +374,13 @@ void main() {
             var _a;
             const d = this.struct.wh;
             let x, y;
-            let p = points$1.clone(this.struct.xy);
-            let offset = points$1.clone(this.offset);
+            let p = vecs$1.clone(this.struct.xy);
+            let offset = vecs$1.clone(this.offset);
             if (this.struct.tiled) {
                 p = Rekt.Smult(p);
                 offset = Rekt.Smult(offset);
             }
-            points$1.add(p, offset);
+            vecs$1.add(p, offset);
             if (this.plain) {
                 x = p[0];
                 y = p[1];
@@ -389,7 +389,7 @@ void main() {
                 if (Egyt$1.OFFSET_CHUNK_OBJ_REKT) {
                     let c = (_a = this.struct.obj) === null || _a === void 0 ? void 0 : _a.chunk;
                     if (c) {
-                        points$1.subtract(p, c.rekt_offset);
+                        vecs$1.subtract(p, c.rekt_offset);
                     }
                 }
                 x = p[0] / 2 + p[1] / 2;
@@ -416,7 +416,7 @@ void main() {
         }
         Rekt.Srorder = Srorder;
         function Smult(p) {
-            return points$1.multp(p, 24);
+            return vecs$1.multp(p, 24);
         }
         Rekt.Smult = Smult;
     })(Rekt || (Rekt = {}));
@@ -555,7 +555,7 @@ void main() {
         Agriculture.place_wheat = place_wheat;
         function area_wheat(growth, aabb) {
             const every = (pos) => place_wheat(growth, pos);
-            points$1.area_every(aabb, every);
+            vecs$1.area_every(aabb, every);
         }
         Agriculture.area_wheat = area_wheat;
     })(Agriculture || (Agriculture = {}));
@@ -623,25 +623,38 @@ void main() {
             add(this.min, v);
             add(this.max, v);
         }
-        intersect2(v) {
+        test(v) {
             if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
                 this.min[1] <= v.min[1] && this.max[1] >= v.max[1] //&&
             /*this.min[2] <= v.min[2] && this.max[2] >= v.max[2]*/ )
-                return aabb2.SEC.IN;
+                return aabb2.IN;
             if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
                 this.max[1] < v.min[1] || this.min[1] > v.max[1] //||
             /*this.max[2] < v.min[2] || this.min[2] > v.max[2]*/ )
-                return aabb2.SEC.OUT;
-            return aabb2.SEC.CROSS;
+                return aabb2.OOB;
+            return aabb2.CROSS;
+        }
+        test_oob(v) {
+            if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
+                this.max[1] < v.min[1] || this.min[1] > v.max[1] //||
+            /*this.max[2] < v.min[2] || this.min[2] > v.max[2]*/ )
+                return aabb2.OOB;
+            if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
+                this.min[1] <= v.min[1] && this.max[1] >= v.max[1] //&&
+            /*this.min[2] <= v.min[2] && this.max[2] >= v.max[2]*/ )
+                return aabb2.IN;
+            return aabb2.CROSS;
         }
     }
     (function (aabb2) {
-        let SEC;
-        (function (SEC) {
-            SEC[SEC["OUT"] = 0] = "OUT";
-            SEC[SEC["IN"] = 1] = "IN";
-            SEC[SEC["CROSS"] = 2] = "CROSS";
-        })(SEC = aabb2.SEC || (aabb2.SEC = {}));
+        aabb2.OOB = 0;
+        aabb2.IN = 1;
+        aabb2.CROSS = 2;
+        //export enum TEST {
+        //	OOB,
+        //	IN,
+        //	CROSS,
+        //}
     })(aabb2 || (aabb2 = {}));
 
     var Tilization;
@@ -688,12 +701,12 @@ void main() {
         Tilization.place_tile = place_tile;
         function area_sample(chance, assets, aabb) {
             const every = (pos) => place_tile(chance, Egyt$1.sample(assets), pos);
-            points$1.area_every(aabb, every);
+            vecs$1.area_every(aabb, every);
         }
         Tilization.area_sample = area_sample;
         function area(chance, asset, aabb) {
             const every = (pos) => place_tile(chance, asset, pos);
-            points$1.area_every(aabb, every);
+            vecs$1.area_every(aabb, every);
         }
         Tilization.area = area;
     })(Tilization || (Tilization = {}));
@@ -706,7 +719,7 @@ void main() {
             this.changed = true;
             this.rektcolor = 'white';
             this.master.total++;
-            this.objs = new Chunk_Objs2(this);
+            this.objs = new ChunkObjs2(this);
             //this.color = Egyt.sample(colors);
             this.p = [x, y];
             this.group = new THREE.Group;
@@ -716,13 +729,13 @@ void main() {
         set_bounds() {
             let x = this.p[0];
             let y = this.p[1];
-            let basest_tile = points$1.multp([x + 1, y], this.master.span * 24);
+            let basest_tile = vecs$1.multp([x + 1, y], this.master.span * 24);
             this.tile_n = [x - 3, y + 3];
-            points$1.multp(this.tile_n, this.master.span * 24);
-            this.rekt_offset = points$1.clone(basest_tile);
+            vecs$1.multp(this.tile_n, this.master.span * 24);
+            this.rekt_offset = vecs$1.clone(basest_tile);
             if (Egyt$1.OFFSET_CHUNK_OBJ_REKT) {
                 let frightening = [...basest_tile, 0];
-                frightening = points$1.two_one(frightening);
+                frightening = vecs$1.two_one(frightening);
                 frightening[2] = 0;
                 this.group.position.fromArray(frightening);
                 this.grouprt.position.fromArray(frightening);
@@ -762,7 +775,7 @@ void main() {
             if (!threshold)
                 return;
             if (!this.rt)
-                this.rt = new Chunk_Rt(this);
+                this.rt = new ChunkRt(this);
             this.rt.comes();
             this.rt.render();
         }
@@ -777,14 +790,11 @@ void main() {
             (_a = this.rt) === null || _a === void 0 ? void 0 : _a.goes();
             this.on = false;
         }
-        sec() {
-            return Egyt$1.game.view.intersect2(this.screen);
+        test() {
+            return Egyt$1.game.view.test(this.screen) != aabb2.OOB;
         }
-        see() {
-            return this.sec() != aabb2.SEC.OUT;
-        }
-        out() {
-            return this.sec() == aabb2.SEC.OUT;
+        oob() {
+            return Egyt$1.game.view.test_oob(this.screen) == aabb2.OOB;
         }
         update() {
             var _a;
@@ -796,14 +806,14 @@ void main() {
     }
     (function (Chunk) {
         function Sscreen(x, y, master) {
-            let basest_tile = points$1.multp([x + 1, y], master.span * 24);
-            let real = points$1.two_one(basest_tile);
-            points$1.subtract(real, [0, -master.height / 2]);
-            return new aabb2(points$1.add(points$1.clone(real), [-master.width / 2, -master.height / 2]), points$1.add(points$1.clone(real), [master.width / 2, master.height / 2]));
+            let basest_tile = vecs$1.multp([x + 1, y], master.span * 24);
+            let real = vecs$1.two_one(basest_tile);
+            vecs$1.subtract(real, [0, -master.height / 2]);
+            return new aabb2(vecs$1.add(vecs$1.clone(real), [-master.width / 2, -master.height / 2]), vecs$1.add(vecs$1.clone(real), [master.width / 2, master.height / 2]));
         }
         Chunk.Sscreen = Sscreen;
     })(Chunk || (Chunk = {}));
-    class Chunk_Objs2 {
+    class ChunkObjs2 {
         constructor(chunk) {
             this.chunk = chunk;
             this.rtts = 0;
@@ -821,7 +831,8 @@ void main() {
         add(obj) {
             let i = this.where(obj);
             if (i == undefined) {
-                this.tuples.push([obj, this.rate(obj)]);
+                const rate = this.rate(obj);
+                this.tuples.push([obj, rate]);
                 return true;
             }
         }
@@ -852,11 +863,7 @@ void main() {
             }
         }
     }
-    class statchunk extends Chunk {
-    }
-    class dynchunk extends Chunk {
-    }
-    class Chunk_Master {
+    class ChunkMaster {
         constructor(testType, span) {
             this.testType = testType;
             this.total = 0;
@@ -866,7 +873,7 @@ void main() {
             this.span2 = span * span;
             this.width = span * 24;
             this.height = span * 12;
-            this.fitter = new Chunk_Fitter(this);
+            this.fitter = new Tailorer(this);
         }
         update() {
             if (this.refit) {
@@ -874,7 +881,7 @@ void main() {
             }
         }
         big(t) {
-            return points$1.floor(points$1.divide([...t], this.span));
+            return vecs$1.floor(vecs$1.divide([...t], this.span));
         }
         at(x, y) {
             let c;
@@ -900,7 +907,7 @@ void main() {
             return this.at(x, y) || this.make(x, y);
         }
     }
-    class Chunk_Fitter {
+    class Tailorer {
         constructor(master) {
             this.master = master;
             this.shown = [];
@@ -909,22 +916,22 @@ void main() {
         off() {
             let i = this.shown.length;
             while (i--) {
-                let c = this.shown[i];
+                let c;
+                c = this.shown[i];
                 c.update();
-                if (c.out()) {
+                if (c.oob()) {
                     c.goes();
                     this.shown.splice(i, 1);
                 }
             }
         }
         update() {
-            let middle = Egyt$1.map.query_world_pixel(Egyt$1.game.view.center()).tile;
+            let middle = Egyt$1.map.ask_world_pixel(Egyt$1.game.view.center()).tile;
             let b = this.master.big(middle);
-            this.lines = 0;
-            this.total = 0;
+            this.lines = this.total = 0;
             this.off();
-            this.slither(b, 1);
-            this.slither(b, -1);
+            this.slither(b, Tailorer.forward);
+            this.slither(b, Tailorer.reverse);
         }
         slither(b, n) {
             let x = b[0], y = b[1];
@@ -933,7 +940,7 @@ void main() {
                 i++;
                 let c;
                 c = this.master.guarantee(x, y);
-                if (c.out()) {
+                if (c.oob()) {
                     if (s > 2) {
                         if (j == 0)
                             j = 1;
@@ -975,7 +982,9 @@ void main() {
             }
         }
     }
-    class Chunk_Rt {
+    Tailorer.forward = 1;
+    Tailorer.reverse = -1;
+    class ChunkRt {
         constructor(chunk) {
             this.chunk = chunk;
             this.padding = Egyt$1.YUM * 4;
@@ -984,7 +993,7 @@ void main() {
             this.h = this.chunk.master.height + this.padding;
             this.camera = tqlib.ortographiccamera(this.w, this.h);
             let p2 = [this.chunk.p[0] + 1, this.chunk.p[1]];
-            points$1.multp(p2, this.chunk.master.span);
+            vecs$1.multp(p2, this.chunk.master.span);
             this.rekt = new Rekt$1({
                 tiled: true,
                 xy: p2,
@@ -1018,8 +1027,8 @@ void main() {
     class Map {
         constructor() {
             window.Chunk = Chunk;
-            this.statmaster = new Chunk_Master(statchunk, 20);
-            this.dynmaster = new Chunk_Master(dynchunk, 20);
+            this.statmaster = new ChunkMaster(Chunk, 20);
+            this.dynmaster = new ChunkMaster(Chunk, 20);
             this.mouse_tile = [0, 0];
             this.mark = new Rekt$1({
                 xy: [0, 0],
@@ -1079,26 +1088,26 @@ void main() {
         get_chunk_at_tile(t) {
             return this.statmaster.which(t);
         }
-        query_world_pixel(query) {
+        ask_world_pixel(query) {
             let p = query;
-            let p1 = points$1.clone(p);
+            let p1 = vecs$1.clone(p);
             p1[0] = p[0] - p[1] * 2;
             p1[1] = p[1] * 2 + p[0];
-            let p2 = [...p1];
-            points$1.divide(p2, 24);
-            points$1.floor(p2);
+            let p2 = vecs$1.clone(p1);
+            vecs$1.divide(p2, 24);
+            vecs$1.floor(p2);
             p2[0] += 1; // necessary
-            let p3 = [...p2];
-            points$1.multp(p3, 24);
+            let p3 = vecs$1.clone(p2);
+            vecs$1.multp(p3, 24);
             return { tile: p2, mult: p3 };
         }
         mark_mouse() {
             let m = [...App.move];
             m[1] = -m[1];
-            points$1.divide(m, Egyt$1.game.scale);
+            vecs$1.divide(m, Egyt$1.game.scale);
             let p = [Egyt$1.game.view.min[0], Egyt$1.game.view.max[1]];
-            points$1.add(p, m);
-            const mouse = this.query_world_pixel(p);
+            vecs$1.add(p, m);
+            const mouse = this.ask_world_pixel(p);
             this.mouse_tile = mouse.tile;
             this.mark.struct.xy = mouse.mult;
             this.mark.now_update_pos();
@@ -1108,8 +1117,8 @@ void main() {
             this.statmaster.update();
             let worldPixelsLeftUpperCorner = [Egyt$1.game.view.min[0], Egyt$1.game.view.max[1]];
             let worldPixelsRightLowerCorner = [Egyt$1.game.view.max[0], Egyt$1.game.view.min[1]];
-            const x = this.query_world_pixel(worldPixelsLeftUpperCorner).tile;
-            const y = this.query_world_pixel(worldPixelsRightLowerCorner).tile;
+            const x = this.ask_world_pixel(worldPixelsLeftUpperCorner).tile;
+            const y = this.ask_world_pixel(worldPixelsRightLowerCorner).tile;
         }
     }
 
@@ -1178,8 +1187,8 @@ void main() {
                 Board.win.find('#numRekts').html(`Num rekts: ${Rekt$1.active} / ${Rekt$1.num}`);
                 let b = Egyt$1.map.statmaster.big(Egyt$1.map.mouse_tile);
                 let c = Egyt$1.map.statmaster.at(b[0], b[1]);
-                Board.win.find('#square').text(`Mouse: ${points$1.string(Egyt$1.map.mouse_tile)}`);
-                Board.win.find('#squareChunk').text(`Mouse chunk: ${points$1.string(b)}`);
+                Board.win.find('#square').text(`Mouse: ${vecs$1.string(Egyt$1.map.mouse_tile)}`);
+                Board.win.find('#squareChunk').text(`Mouse chunk: ${vecs$1.string(b)}`);
                 Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${(c === null || c === void 0 ? void 0 : c.rt) ? 'true' : 'false'}`);
                 Board.win.find('#snakeTurns').text(`CSnake turns: ${Egyt$1.map.statmaster.fitter.lines}`);
                 Board.win.find('#snakeTotal').text(`CSnake total: ${Egyt$1.map.statmaster.fitter.total}`);
@@ -1254,15 +1263,15 @@ void main() {
                 console.log('scale down', this.scale);
             }
             tq.scene.scale.set(this.scale, this.scale, 1);
-            let p2 = points$1.multpClone(p, this.scale);
+            let p2 = vecs$1.multpClone(p, this.scale);
             tq.scene.position.set(p2[0], p2[1], 0);
             let w = tq.target.width;
             let h = tq.target.height;
             let w2 = w / this.dpi / this.scale;
             let h2 = h / this.dpi / this.scale;
             this.view = new aabb2([-p[0] - w2 / 2, -p[1] - h2 / 2], [-p[0] + w2 / 2, -p[1] + h2 / 2]);
-            points$1.floor(this.view.min);
-            points$1.floor(this.view.max);
+            vecs$1.floor(this.view.min);
+            vecs$1.floor(this.view.max);
             this.focal = [-p[0], -p[1], 0];
             return;
         }
@@ -1348,7 +1357,7 @@ void main() {
             }
             if (plopping) {
                 let tree = plopping;
-                let p = points$1.clone(Egyt$1.map.mouse_tile);
+                let p = vecs$1.clone(Egyt$1.map.mouse_tile);
                 tree.struct.tile = p;
                 tree.rekt.struct.xy = p;
                 tree.rekt.now_update_pos();

@@ -1,7 +1,7 @@
 import { tq, THREE } from "../lib/tq";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3, Color } from "three";
-import points from "../lib/Points";
+import vecs from "../lib/Vecs";
 import Obj from "./Obj";
 import Egyt from "../Egyt";
 import { tqlib } from "../lib/tqlib";
@@ -52,7 +52,7 @@ class Rekt {
 	multNone() {
 	}
 	rorder() {
-		let p = <zx>points.clone(this.struct.xy);
+		let p = <zx>vecs.clone(this.struct.xy);
 		
 		//let p = <zx>points.add(this.struct.xy, this.offset);
 		this.mesh.renderOrder = Rekt.Srorder(p);
@@ -130,14 +130,14 @@ class Rekt {
 
 		let x, y;
 
-		let p = <zx>points.clone(this.struct.xy);
-		let offset = <zx>points.clone(this.offset);
+		let p = <zx>vecs.clone(this.struct.xy);
+		let offset = <zx>vecs.clone(this.offset);
 
 		if (this.struct.tiled) {
 			p = Rekt.Smult(p);
 			offset = Rekt.Smult(offset);
 		}
-		points.add(p, offset);
+		vecs.add(p, offset);
 
 		if (this.plain) {
 			x = p[0];
@@ -147,7 +147,7 @@ class Rekt {
 			if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
 				let c = this.struct.obj?.chunk;
 				if (c) {
-					points.subtract(p, c.rekt_offset);
+					vecs.subtract(p, c.rekt_offset);
 				}
 			}
 			x = p[0] / 2 + p[1] / 2;
@@ -183,7 +183,7 @@ namespace Rekt {
 	}
 
 	export function Smult(p: zx) {
-		return points.multp(p, 24);
+		return vecs.multp(p, 24);
 	}
 }
 

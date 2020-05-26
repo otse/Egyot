@@ -8,7 +8,7 @@ import Obj from "./objrekt/Obj";
 import Selection from "./nested/Selection";
 import { Object3D, Mesh, PlaneBufferGeometry, MeshBasicMaterial } from "three";
 import { aabb2 } from "./lib/AABB";
-import points from "./lib/Points";
+import vecs from "./lib/Vecs";
 import { Win } from "./lib/Board";
 
 class Game {
@@ -96,7 +96,7 @@ class Game {
 
 		tq.scene.scale.set(this.scale, this.scale, 1);
 
-		let p2 = points.multpClone(p, this.scale);
+		let p2 = vecs.multpClone(p, this.scale);
 
 		tq.scene.position.set(p2[0], p2[1], 0);
 
@@ -111,8 +111,8 @@ class Game {
 			[-p[0] - w2 / 2, -p[1] - h2 / 2],
 			[-p[0] + w2 / 2, -p[1] + h2 / 2]
 		);
-		points.floor(this.view.min);
-		points.floor(this.view.max);
+		vecs.floor(this.view.min);
+		vecs.floor(this.view.max);
 
 		this.focal = [-p[0], -p[1], 0];
 

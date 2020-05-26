@@ -1,7 +1,7 @@
 import Obj from "../objrekt/Obj";
 import Egyt from "../Egyt";
 import { Ply } from "../nested/char/Char";
-import points from "../lib/Points";
+import vecs from "../lib/Vecs";
 
 class World {
 	static rig() {

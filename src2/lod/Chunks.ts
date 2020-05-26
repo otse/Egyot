@@ -2,7 +2,7 @@ import Rekt from "../objrekt/Rekt";
 import { Win } from "../lib/Board";
 import Egyt from "../Egyt";
 import App from "../lib/App";
-import points from "../lib/Points";
+import vecs from "../lib/Vecs";
 import Forestation from "./gen/Forestation";
 import Agriculture from "./gen/Agriculture";
 import { aabb2 } from "../lib/AABB";
@@ -12,18 +12,13 @@ import { tq } from "../lib/tq";
 import Tilization from "./gen/Tilization";
 import { tqlib } from "../lib/tqlib";
 
-
-declare class sobj {
-
-}
-
 class Chunk {
 	on = false
 	changed = true
 	childobjscolor
 
-	readonly objs: Chunk_Objs2
-	rt: Chunk_Rt | null
+	readonly objs: ChunkObjs2
+	rt: ChunkRt | null
 	p: zx
 
 	tile_n: zx
@@ -41,12 +36,12 @@ class Chunk {
 
 	outline: Rekt
 
-	constructor(x, y, public master: Chunk_Master<Chunk>) {
+	constructor(x, y, public master: ChunkMaster<Chunk>) {
 		this.master.total++;
 
 		const colors = ['lightsalmon', 'khaki', 'lightgreen', 'paleturquoise', 'plum', 'pink'];
 
-		this.objs = new Chunk_Objs2(this);
+		this.objs = new ChunkObjs2(this);
 		//this.color = Egyt.sample(colors);
 
 		this.p = [x, y];
@@ -60,16 +55,16 @@ class Chunk {
 		let x = this.p[0];
 		let y = this.p[1];
 
-		let basest_tile = points.multp([x + 1, y], this.master.span * 24);
+		let basest_tile = vecs.multp([x + 1, y], this.master.span * 24);
 
 		this.tile_n = [x - 3, y + 3];
-		points.multp(this.tile_n, this.master.span * 24);
+		vecs.multp(this.tile_n, this.master.span * 24);
 
-		this.rekt_offset = <zx>points.clone(basest_tile);
+		this.rekt_offset = <zx>vecs.clone(basest_tile);
 
 		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
 			let frightening = <zxc>[...basest_tile, 0];
-			frightening = <zxc><unknown>points.two_one(frightening);
+			frightening = <zxc><unknown>vecs.two_one(frightening);
 			frightening[2] = 0;
 
 			this.group.position.fromArray(frightening);
@@ -115,7 +110,7 @@ class Chunk {
 		if (!threshold)
 			return;
 		if (!this.rt)
-			this.rt = new Chunk_Rt(this);
+			this.rt = new ChunkRt(this);
 		this.rt.comes();
 		this.rt.render();
 	}
@@ -129,14 +124,11 @@ class Chunk {
 		this.rt?.goes();
 		this.on = false;
 	}
-	sec() {
-		return Egyt.game.view.intersect2(this.screen);
+	test() {
+		return Egyt.game.view.test(this.screen) != aabb2.OOB;
 	}
-	see() {
-		return this.sec() != aabb2.SEC.OUT;
-	}
-	out() {
-		return this.sec() == aabb2.SEC.OUT;
+	oob() {
+		return Egyt.game.view.test_oob(this.screen) == aabb2.OOB;
 	}
 	update() {
 		this.objs.updates();
@@ -148,19 +140,19 @@ class Chunk {
 namespace Chunk {
 	export function Sscreen(x, y, master) {
 
-		let basest_tile = points.multp([x + 1, y], master.span * 24);
+		let basest_tile = vecs.multp([x + 1, y], master.span * 24);
 
-		let real = <vec2>points.two_one(basest_tile);
-		points.subtract(real, [0, -master.height / 2]);
+		let real = <vec2>vecs.two_one(basest_tile);
+		vecs.subtract(real, [0, -master.height / 2]);
 
 		return new aabb2(
-			points.add(<vec2>points.clone(real), [-master.width / 2, -master.height / 2]),
-			points.add(<vec2>points.clone(real), [master.width / 2, master.height / 2])
+			vecs.add(<vec2>vecs.clone(real), [-master.width / 2, -master.height / 2]),
+			vecs.add(<vec2>vecs.clone(real), [master.width / 2, master.height / 2])
 		)
 	}
 }
 
-class Chunk_Objs2 {
+class ChunkObjs2 {
 	public rtts = 0
 	public readonly tuples: [Obj, number][]
 	constructor(private chunk: Chunk) {
@@ -178,7 +170,8 @@ class Chunk_Objs2 {
 	add(obj: Obj) {
 		let i = this.where(obj);
 		if (i == undefined) {
-			this.tuples.push([obj, this.rate(obj)]);
+			const rate = this.rate(obj);
+			this.tuples.push([obj, rate]);
 			return true;
 		}
 	}
@@ -210,15 +203,7 @@ class Chunk_Objs2 {
 	}
 }
 
-class statchunk extends Chunk {
-
-}
-
-class dynchunk extends Chunk {
-
-}
-
-class Chunk_Master<T extends Chunk> {
+class ChunkMaster<T extends Chunk> {
 	readonly span: number
 	readonly span2: number
 	readonly width: number
@@ -228,7 +213,7 @@ class Chunk_Master<T extends Chunk> {
 	arrays: T | null[][] = []
 
 	refit = true
-	fitter: Chunk_Fitter<T>
+	fitter: Tailorer<T>
 
 	constructor(private testType: new (x, y, m) => T, span: number) {
 		this.span = span;
@@ -236,7 +221,7 @@ class Chunk_Master<T extends Chunk> {
 		this.width = span * 24;
 		this.height = span * 12;
 
-		this.fitter = new Chunk_Fitter<T>(this);
+		this.fitter = new Tailorer<T>(this);
 	}
 	update() {
 		if (this.refit) {
@@ -244,7 +229,7 @@ class Chunk_Master<T extends Chunk> {
 		}
 	}
 	big(t: zx | zxc): zx {
-		return <zx>points.floor(points.divide(<zx>[...t], this.span));
+		return <zx>vecs.floor(vecs.divide(<zx>[...t], this.span));
 	}
 	at(x, y): T | null {
 		let c;
@@ -254,7 +239,7 @@ class Chunk_Master<T extends Chunk> {
 		return c;
 	}
 	make(x, y): T {
-		let c;
+		let c: T | null;
 		c = this.at(x, y);
 		if (c)
 			return c;
@@ -274,52 +259,47 @@ class Chunk_Master<T extends Chunk> {
 	//}
 }
 
-class Chunk_Fitter<T extends Chunk> { // chunk-snake
+class Tailorer<T extends Chunk> { // chunk-snake
 
+	static readonly forward = 1
+	static readonly reverse = -1
 	lines: number
 	total: number
 
 	shown: T[] = []
 	colors: string[] = []
 
-	constructor(private master: Chunk_Master<T>) {
+	constructor(private master: ChunkMaster<T>) {
 	}
-
 	off() {
 		let i = this.shown.length;
 		while (i--) {
-			let c = this.shown[i];
+			let c: T;
+			c = this.shown[i];
 			c.update();
-			if (c.out()) {
+			if (c.oob()) {
 				c.goes();
 				this.shown.splice(i, 1);
 			}
 		}
 	}
 	update() {
-
-		let middle = Egyt.map.query_world_pixel(Egyt.game.view.center()).tile;
-
+		let middle = Egyt.map.ask_world_pixel(
+			Egyt.game.view.center()).tile;
 		let b = this.master.big(middle);
-
-		this.lines = 0;
-		this.total = 0;
-
+		this.lines = this.total = 0;
 		this.off();
-
-		this.slither(b, 1);
-		this.slither(b, -1);
+		this.slither(b, Tailorer.forward);
+		this.slither(b, Tailorer.reverse);
 	}
-
 	slither(b: zx, n: number) {
 		let x = b[0], y = b[1];
 		let i = 0, j = 0, s = 0, u = 0;
-
 		while (true) {
 			i++;
 			let c: T;
 			c = this.master.guarantee(x, y);
-			if (c.out()) {
+			if (c.oob()) {
 				if (s > 2) {
 					if (j == 0) j = 1;
 					if (j == 2) j = 3;
@@ -361,7 +341,7 @@ class Chunk_Fitter<T extends Chunk> { // chunk-snake
 
 }
 
-class Chunk_Rt {
+class ChunkRt {
 	readonly padding = Egyt.YUM * 4
 	readonly w: number
 	readonly h: number
@@ -378,7 +358,7 @@ class Chunk_Rt {
 		this.camera = tqlib.ortographiccamera(this.w, this.h);
 
 		let p2 = <zx>[this.chunk.p[0] + 1, this.chunk.p[1]];
-		points.multp(p2, this.chunk.master.span);
+		vecs.multp(p2, this.chunk.master.span);
 
 		this.rekt = new Rekt({
 			tiled: true,
@@ -414,4 +394,4 @@ class Chunk_Rt {
 	}
 }
 
-export { Chunk, Chunk_Master, Chunk_Fitter, Chunk_Objs2, statchunk, dynchunk }
+export { Chunk, ChunkMaster as ChunkMaster, Tailorer, ChunkObjs2 as ChunkObjs2 }

@@ -3,7 +3,7 @@ import Egyt from "../../Egyt";
 import { aabb2 } from "../../lib/aabb";
 import Obj from "../../objrekt/Obj";
 import App from "../../lib/App";
-import points from "../../lib/Points";
+import vecs from "../../lib/Vecs";
 
 namespace Forestation {
 
@@ -85,7 +85,7 @@ namespace Forestation {
 		if (plopping) {
 			let tree = plopping;
 
-			let p = <zx>points.clone(Egyt.map.mouse_tile);
+			let p = <zx>vecs.clone(Egyt.map.mouse_tile);
 
 			tree.struct.tile = p;
 			tree.rekt.struct.xy = p;

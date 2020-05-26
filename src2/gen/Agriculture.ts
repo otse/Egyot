@@ -3,8 +3,8 @@ import Egyt from "../Egyt";
 import { aabb2 } from "../lib/aabb";
 import Obj from "../objrekt/Obj";
 import App from "../lib/App";
-import Points from "../lib/Points";
-import points from "../lib/Points";
+import Points from "../lib/Vecs";
+import vecs from "../lib/Vecs";
 
 namespace Agriculture {
 

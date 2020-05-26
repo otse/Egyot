@@ -59,26 +59,41 @@ class aabb2 {
 		add(this.min, v);
 		add(this.max, v);
 	}
-	intersect2(v: aabb2) {
+	test(v: aabb2) {
 		if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
 			this.min[1] <= v.min[1] && this.max[1] >= v.max[1] //&&
 			/*this.min[2] <= v.min[2] && this.max[2] >= v.max[2]*/)
-			return aabb2.SEC.IN;
+			return aabb2.IN;
 		if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
 			this.max[1] < v.min[1] || this.min[1] > v.max[1] //||
-			/*this.max[2] < v.min[2] || this.min[2] > v.max[2]*/)
-			return aabb2.SEC.OUT;
-		return aabb2.SEC.CROSS;
+				/*this.max[2] < v.min[2] || this.min[2] > v.max[2]*/)
+			return aabb2.OOB;
+		return aabb2.CROSS;
+	}
+	test_oob(v: aabb2) {
+		if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
+			this.max[1] < v.min[1] || this.min[1] > v.max[1] //||
+														/*this.max[2] < v.min[2] || this.min[2] > v.max[2]*/)
+			return aabb2.OOB;
+		if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
+			this.min[1] <= v.min[1] && this.max[1] >= v.max[1] //&&
+														/*this.min[2] <= v.min[2] && this.max[2] >= v.max[2]*/)
+			return aabb2.IN;
+		return aabb2.CROSS;
 	}
 }
 
 namespace aabb2 {
 
-	export enum SEC {
-		OUT,
-		IN,
-		CROSS,
-	}
+	export const OOB = 0;
+	export const IN = 1;
+	export const CROSS = 2;
+
+	//export enum TEST {
+	//	OOB,
+	//	IN,
+	//	CROSS,
+	//}
 
 }
 

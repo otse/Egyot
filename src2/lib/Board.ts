@@ -1,6 +1,6 @@
 import Rekt from "../objrekt/Rekt";
 import Obj from "../objrekt/Obj";
-import points from "./Points";
+import vecs from "./Vecs";
 import { tq } from "./tq";
 import Egyt from "../Egyt";
 
@@ -86,8 +86,8 @@ namespace Board {
 			let b = Egyt.map.statmaster.big(Egyt.map.mouse_tile);
 			let c = Egyt.map.statmaster.at(b[0], b[1]);
 				
-			Board.win.find('#square').text(`Mouse: ${points.string(Egyt.map.mouse_tile)}`);
-			Board.win.find('#squareChunk').text(`Mouse chunk: ${points.string(b)}`);
+			Board.win.find('#square').text(`Mouse: ${vecs.string(Egyt.map.mouse_tile)}`);
+			Board.win.find('#squareChunk').text(`Mouse chunk: ${vecs.string(b)}`);
 			Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${c?.rt ? 'true' : 'false'}`);
 			Board.win.find('#snakeTurns').text(`CSnake turns: ${Egyt.map.statmaster.fitter.lines}`);
 			Board.win.find('#snakeTotal').text(`CSnake total: ${Egyt.map.statmaster.fitter.total}`);

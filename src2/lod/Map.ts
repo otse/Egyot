@@ -2,7 +2,7 @@ import Rekt from "../objrekt/Rekt";
 import { Win } from "../lib/Board";
 import Egyt from "../Egyt";
 import App from "../lib/App";
-import points from "../lib/Points";
+import vecs from "../lib/Vecs";
 import Forestation from "./gen/Forestation";
 import Agriculture from "./gen/Agriculture";
 import { aabb2 } from "../lib/AABB";
@@ -11,7 +11,7 @@ import { Color, Group, WebGLRenderTarget, Int8Attribute, RGBFormat, NearestFilte
 import { tq } from "../lib/tq";
 import Tilization from "./gen/Tilization";
 import { tqlib } from "../lib/tqlib";
-import { Chunk_Master, Chunk, statchunk, dynchunk } from "./Chunks";
+import { ChunkMaster, Chunk } from "./Chunks";
 
 
 class Map {
@@ -19,20 +19,18 @@ class Map {
 		return new Map;
 	}
 
-	statmaster: Chunk_Master<statchunk>
-	dynmaster: Chunk_Master<dynchunk>
+	statmaster: ChunkMaster<Chunk>
+	dynmaster: ChunkMaster<Chunk>
 
-	statchunk: statchunk
-	mouse_tile: zx
+	mouse_tile: vec2
 	mark: Rekt
 
 	constructor() {
 
 		(window as any).Chunk = Chunk;
 
-		this.statmaster = new Chunk_Master<statchunk>(statchunk, 20);
-
-		this.dynmaster = new Chunk_Master<dynchunk>(dynchunk, 20);
+		this.statmaster = new ChunkMaster<Chunk>(Chunk, 20);
+		this.dynmaster = new ChunkMaster<Chunk>(Chunk, 20);
 
 		this.mouse_tile = [0, 0];
 
@@ -114,20 +112,20 @@ class Map {
 		return this.statmaster.which(<zx>t);
 	}
 
-	query_world_pixel(query: zx): { tile: zx, mult: zx } {
+	ask_world_pixel(query: zx): { tile: zx, mult: zx } {
 		let p = query;
 
-		let p1 = <zx>points.clone(p);
+		let p1 = <vec2>vecs.clone(p);
 		p1[0] = p[0] - p[1] * 2;
 		p1[1] = p[1] * 2 + p[0];
 
-		let p2 = <zx>[...p1];
-		points.divide(p2, 24);
-		points.floor(p2);
+		let p2 = <vec2>vecs.clone(p1);
+		vecs.divide(p2, 24);
+		vecs.floor(p2);
 		p2[0] += 1; // necessary
 
-		let p3 = <zx>[...p2];
-		points.multp(p3, 24);
+		let p3 = <vec2>vecs.clone(p2);
+		vecs.multp(p3, 24);
 
 		return { tile: p2, mult: p3 };
 	}
@@ -136,12 +134,12 @@ class Map {
 
 		let m = <zx>[...App.move];
 		m[1] = -m[1];
-		points.divide(m, Egyt.game.scale);
+		vecs.divide(m, Egyt.game.scale);
 
 		let p = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
-		points.add(p, m);
+		vecs.add(p, m);
 
-		const mouse = this.query_world_pixel(p);
+		const mouse = this.ask_world_pixel(p);
 
 		this.mouse_tile = mouse.tile;
 
@@ -158,8 +156,8 @@ class Map {
 		let worldPixelsLeftUpperCorner = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
 		let worldPixelsRightLowerCorner = [Egyt.game.view.max[0], Egyt.game.view.min[1]] as zx;
 
-		const x = this.query_world_pixel(worldPixelsLeftUpperCorner).tile;
-		const y = this.query_world_pixel(worldPixelsRightLowerCorner).tile;
+		const x = this.ask_world_pixel(worldPixelsLeftUpperCorner).tile;
+		const y = this.ask_world_pixel(worldPixelsRightLowerCorner).tile;
 
 	}
 }

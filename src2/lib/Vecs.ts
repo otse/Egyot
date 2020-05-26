@@ -1,6 +1,6 @@
 import { aabb2 } from "./AABB";
 
-namespace points {
+namespace vecs {
 
 	export const clone = (zx) => [...zx];
 
@@ -98,4 +98,4 @@ namespace points {
 
 }
 
-export default points;
+export default vecs;
