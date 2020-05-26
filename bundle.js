@@ -195,18 +195,7 @@ void main() {
 
     var points;
     (function (points) {
-        function zx(p) {
-            return [...p];
-        }
-        points.zx = zx;
-        function zxc(p) {
-            return [...p];
-        }
-        points.zxc = zxc;
-        function zxcv(p) {
-            return [...p];
-        }
-        points.zxcv = zxcv;
+        points.clone = (zx) => [...zx];
         function area_every(aabb, callback) {
             let y = aabb.min[1];
             for (; y <= aabb.max[1]; y++) {
@@ -217,19 +206,19 @@ void main() {
             }
         }
         points.area_every = area_every;
-        function twoone(p) {
-            let copy = [...p];
+        function two_one(p) {
+            let copy = points.clone(p);
             copy[0] = p[0] / 2 + p[1] / 2;
             copy[1] = p[1] / 4 - p[0] / 4;
             return copy;
         }
-        points.twoone = twoone;
-        function untwoone(p) {
+        points.two_one = two_one;
+        function un_two_one(p) {
             let x = p[0] - p[1] * 2;
             let y = p[1] * 2 + p[0];
             return [x, y];
         }
-        points.untwoone = untwoone;
+        points.un_two_one = un_two_one;
         function string(a) {
             const pr = (b) => b != undefined ? `, ${b}` : '';
             return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
@@ -269,10 +258,6 @@ void main() {
             return a;
         }
         points.divide = divide;
-        function clone(zx) {
-            return [...zx];
-        }
-        points.clone = clone;
         function multpClone(zx, n, n2) {
             let wen = [...zx];
             multp(wen, n, n2);
@@ -324,7 +309,7 @@ void main() {
         multNone() {
         }
         rorder() {
-            let p = points$1.zx(this.struct.xy);
+            let p = points$1.clone(this.struct.xy);
             //let p = <zx>points.add(this.struct.xy, this.offset);
             this.mesh.renderOrder = Rekt.Srorder(p);
         }
@@ -379,7 +364,7 @@ void main() {
             let c;
             if (c = (_a = this.struct.obj) === null || _a === void 0 ? void 0 : _a.chunk)
                 if (((_b = this.struct.obj) === null || _b === void 0 ? void 0 : _b.rtt) && Egyt$1.USE_CHUNK_RT)
-                    return c.grouprtt;
+                    return c.grouprt;
                 else
                     return c.group;
             else
@@ -389,8 +374,8 @@ void main() {
             var _a;
             const d = this.struct.wh;
             let x, y;
-            let p = points$1.zx(this.struct.xy);
-            let offset = points$1.zx(this.offset);
+            let p = points$1.clone(this.struct.xy);
+            let offset = points$1.clone(this.offset);
             if (this.struct.tiled) {
                 p = Rekt.Smult(p);
                 offset = Rekt.Smult(offset);
@@ -473,9 +458,15 @@ void main() {
         }
         add(obj) {
             let c = Egyt$1.map.get_chunk_at_tile(obj.struct.tile);
-            c.objs.add(obj);
+            let succeed = c.objs.add(obj);
+            if (succeed) {
+                obj.chunk = c;
+                c.changed = true;
+            }
             if (c.on)
                 obj.comes();
+        }
+        remove(obj) {
         }
         update() {
         }
@@ -719,7 +710,7 @@ void main() {
             //this.color = Egyt.sample(colors);
             this.p = [x, y];
             this.group = new THREE.Group;
-            this.grouprtt = new THREE.Group;
+            this.grouprt = new THREE.Group;
             this.set_bounds();
         }
         set_bounds() {
@@ -728,14 +719,14 @@ void main() {
             let basest_tile = points$1.multp([x + 1, y], this.master.span * 24);
             this.tile_n = [x - 3, y + 3];
             points$1.multp(this.tile_n, this.master.span * 24);
-            this.rekt_offset = points$1.zx(basest_tile);
+            this.rekt_offset = points$1.clone(basest_tile);
             if (Egyt$1.OFFSET_CHUNK_OBJ_REKT) {
                 let frightening = [...basest_tile, 0];
-                frightening = points$1.twoone(frightening);
+                frightening = points$1.two_one(frightening);
                 frightening[2] = 0;
                 this.group.position.fromArray(frightening);
-                this.grouprtt.position.fromArray(frightening);
-                this.group.renderOrder = this.grouprtt.renderOrder = Rekt$1.Srorder(this.tile_n);
+                this.grouprt.position.fromArray(frightening);
+                this.group.renderOrder = this.grouprt.renderOrder = Rekt$1.Srorder(this.tile_n);
             }
             // non screen bound not used anymore
             this.bound = new aabb2([x * this.master.span, y * this.master.span], [(x + 1) * this.master.span, (y + 1) * this.master.span]);
@@ -752,20 +743,23 @@ void main() {
             return this.objs.tuples.length < 1;
         }
         comes() {
-            if (this.empty())
-                return;
-            if (this.on)
+            if (this.on || this.empty())
                 return;
             this.objs.comes();
-            tq.scene.add(this.group, this.grouprtt);
+            tq.scene.add(this.group, this.grouprt);
             this.comes_pt2();
             this.on = true;
+            return true;
         }
         comes_pt2() {
             if (!Egyt$1.USE_CHUNK_RT)
                 return;
-            const treshold = this.objs.rtts >= 10;
-            if (!treshold)
+            let rtt = 0;
+            for (let tuple of this.objs.tuples)
+                if (tuple[0].rtt)
+                    rtt++;
+            const threshold = rtt >= 10;
+            if (!threshold)
                 return;
             if (!this.rt)
                 this.rt = new Chunk_Rt(this);
@@ -776,9 +770,9 @@ void main() {
             var _a;
             if (!this.on)
                 return;
-            tq.scene.remove(this.group, this.grouprtt);
+            tq.scene.remove(this.group, this.grouprt);
             tqlib.erase_children(this.group);
-            tqlib.erase_children(this.grouprtt);
+            tqlib.erase_children(this.grouprt);
             this.objs.goes();
             (_a = this.rt) === null || _a === void 0 ? void 0 : _a.goes();
             this.on = false;
@@ -803,7 +797,7 @@ void main() {
     (function (Chunk) {
         function Sscreen(x, y, master) {
             let basest_tile = points$1.multp([x + 1, y], master.span * 24);
-            let real = points$1.twoone(basest_tile);
+            let real = points$1.two_one(basest_tile);
             points$1.subtract(real, [0, -master.height / 2]);
             return new aabb2(points$1.add(points$1.clone(real), [-master.width / 2, -master.height / 2]), points$1.add(points$1.clone(real), [master.width / 2, master.height / 2]));
         }
@@ -827,22 +821,15 @@ void main() {
         add(obj) {
             let i = this.where(obj);
             if (i == undefined) {
-                let rate = this.rate(obj);
-                this.tuples.push([obj, rate]);
-                obj.chunk = this.chunk;
-                this.chunk.changed = true;
-                if (obj.rtt)
-                    this.rtts++;
+                this.tuples.push([obj, this.rate(obj)]);
+                return true;
             }
         }
         remove(obj) {
             let i = this.where(obj);
             if (i != undefined) {
                 this.tuples.splice(i, 1);
-                obj.chunk = null;
-                this.chunk.changed = true;
-                if (obj.rtt)
-                    this.rtts++;
+                return true;
             }
         }
         updates() {
@@ -874,6 +861,7 @@ void main() {
             this.testType = testType;
             this.total = 0;
             this.arrays = [];
+            this.refit = true;
             this.span = span;
             this.span2 = span * span;
             this.width = span * 24;
@@ -881,7 +869,9 @@ void main() {
             this.fitter = new Chunk_Fitter(this);
         }
         update() {
-            this.fitter.update();
+            if (this.refit) {
+                this.fitter.update();
+            }
         }
         big(t) {
             return points$1.floor(points$1.divide([...t], this.span));
@@ -916,13 +906,7 @@ void main() {
             this.shown = [];
             this.colors = [];
         }
-        update() {
-            let middle = Egyt$1.map.query_world_pixel(Egyt$1.game.view.center()).tile;
-            let b = this.master.big(middle);
-            this.lines = 0;
-            this.total = 0;
-            this.snake(b, 1);
-            this.snake(b, -1);
+        off() {
             let i = this.shown.length;
             while (i--) {
                 let c = this.shown[i];
@@ -933,7 +917,16 @@ void main() {
                 }
             }
         }
-        snake(b, n) {
+        update() {
+            let middle = Egyt$1.map.query_world_pixel(Egyt$1.game.view.center()).tile;
+            let b = this.master.big(middle);
+            this.lines = 0;
+            this.total = 0;
+            this.off();
+            this.slither(b, 1);
+            this.slither(b, -1);
+        }
+        slither(b, n) {
             let x = b[0], y = b[1];
             let i = 0, j = 0, s = 0, u = 0;
             while (true) {
@@ -951,10 +944,9 @@ void main() {
                 }
                 else {
                     u = 0;
-                    const on = c.on;
-                    c.comes();
-                    if (!on && c.on)
+                    if (c.comes()) {
                         this.shown.push(c);
+                    }
                 }
                 if (j == 0) {
                     y += n;
@@ -1013,7 +1005,7 @@ void main() {
         render() {
             while (tq.rttscene.children.length > 0)
                 tq.rttscene.remove(tq.rttscene.children[0]);
-            const group = this.chunk.grouprtt;
+            const group = this.chunk.grouprt;
             group.position.set(0, -this.h / 2, 0);
             tq.rttscene.add(group);
             tq.renderer.setRenderTarget(this.target);
@@ -1356,7 +1348,7 @@ void main() {
             }
             if (plopping) {
                 let tree = plopping;
-                let p = points$1.zx(Egyt$1.map.mouse_tile);
+                let p = points$1.clone(Egyt$1.map.mouse_tile);
                 tree.struct.tile = p;
                 tree.rekt.struct.xy = p;
                 tree.rekt.now_update_pos();

@@ -52,7 +52,7 @@ class Rekt {
 	multNone() {
 	}
 	rorder() {
-		let p = <zx>points.zx(this.struct.xy);
+		let p = <zx>points.clone(this.struct.xy);
 		
 		//let p = <zx>points.add(this.struct.xy, this.offset);
 		this.mesh.renderOrder = Rekt.Srorder(p);
@@ -118,7 +118,7 @@ class Rekt {
 		let c: Chunk | null | undefined;
 		if (c = this.struct.obj?.chunk)
 			if (this.struct.obj?.rtt && Egyt.USE_CHUNK_RT)
-				return c.grouprtt;
+				return c.grouprt;
 			else
 				return c.group;
 		else
@@ -130,8 +130,8 @@ class Rekt {
 
 		let x, y;
 
-		let p = points.zx(this.struct.xy);
-		let offset = points.zx(this.offset);
+		let p = <zx>points.clone(this.struct.xy);
+		let offset = <zx>points.clone(this.offset);
 
 		if (this.struct.tiled) {
 			p = Rekt.Smult(p);

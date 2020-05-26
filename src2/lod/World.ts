@@ -18,14 +18,24 @@ class World {
 
 		let c = Egyt.map.get_chunk_at_tile(obj.struct.tile);
 
-		c.objs.add(obj);
+		let succeed = c.objs.add(obj);
+
+		if (succeed) {
+			obj.chunk = c;
+
+			c.changed = true;
+		}
 
 		if (c.on)
 			obj.comes();
 	}
 
+	remove(obj: Obj) {
+
+	}
+
 	update() {
-		
+
 	}
 
 	init() {

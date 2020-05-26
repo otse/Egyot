@@ -2,17 +2,7 @@ import { aabb2 } from "./AABB";
 
 namespace points {
 
-	export function zx(p: zx): zx {
-		return <zx>[...p];
-	}
-
-	export function zxc(p: zxc): zxc {
-		return <zxc>[...p];
-	}
-
-	export function zxcv(p: zxcv): zxcv {
-		return <zxcv>[...p];
-	}
+	export const clone = (zx) => [...zx];
 
 	export function area_every(aabb: aabb2, callback: (pos: zx) => any) {
 		let y = aabb.min[1];
@@ -24,14 +14,14 @@ namespace points {
 		}
 	}
 
-	export function twoone(p: zx | zxc) {
-		let copy = <zx>[...p];
+	export function two_one(p: zx | zxc) {
+		let copy = clone(p);
 		copy[0] = p[0] / 2 + p[1] / 2;
 		copy[1] = p[1] / 4 - p[0] / 4;
 		return copy;
 	}
 
-	export function untwoone(p: zx | zxc): zx {
+	export function un_two_one(p: zx | zxc): zx {
 		let x = p[0] - p[1] * 2;
 		let y = p[1] * 2 + p[0];
 		return [x, y];
@@ -75,10 +65,6 @@ namespace points {
 		return a;
 	}
 
-	export function clone(zx) {
-		return [...zx];
-	}
-
 	export function multpClone(zx: zx | zxc, n: number, n2?: number): number[] {
 		let wen = [...zx] as zx;
 
@@ -93,7 +79,7 @@ namespace points {
 		return a;
 	}
 
-	export function add(a: zx | zxc, b: zx | zxc) {
+	export function add(a: zx, b: zx) {
 		a[0] += b[0];
 		a[1] += b[1];
 		return a;

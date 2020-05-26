@@ -25,17 +25,18 @@ class Chunk {
 	readonly objs: Chunk_Objs2
 	rt: Chunk_Rt | null
 	p: zx
-	rekt_offset: zx
+
 	tile_n: zx
 	tile_s: zx
 	mult: zx
-	opposite: zx
+
 	bound: aabb2
 	screen: aabb2
+	rekt_offset: zx
 
 	group: Group
+	grouprt: Group
 
-	grouprtt: Group
 	rektcolor = 'white'
 
 	outline: Rekt
@@ -47,9 +48,10 @@ class Chunk {
 
 		this.objs = new Chunk_Objs2(this);
 		//this.color = Egyt.sample(colors);
+
 		this.p = [x, y];
 		this.group = new Group;
-		this.grouprtt = new Group;
+		this.grouprt = new Group;
 
 		this.set_bounds();
 	}
@@ -62,18 +64,18 @@ class Chunk {
 
 		this.tile_n = [x - 3, y + 3];
 		points.multp(this.tile_n, this.master.span * 24);
-		
-		this.rekt_offset = points.zx(basest_tile);
-		
+
+		this.rekt_offset = <zx>points.clone(basest_tile);
+
 		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
 			let frightening = <zxc>[...basest_tile, 0];
-			frightening = <zxc><unknown>points.twoone(frightening);
+			frightening = <zxc><unknown>points.two_one(frightening);
 			frightening[2] = 0;
 
 			this.group.position.fromArray(frightening);
-			this.grouprtt.position.fromArray(frightening);
+			this.grouprt.position.fromArray(frightening);
 
-			this.group.renderOrder = this.grouprtt.renderOrder = Rekt.Srorder(this.tile_n);
+			this.group.renderOrder = this.grouprt.renderOrder = Rekt.Srorder(this.tile_n);
 		}
 
 		// non screen bound not used anymore
@@ -94,20 +96,23 @@ class Chunk {
 		return this.objs.tuples.length < 1;
 	}
 	comes() {
-		if (this.empty())
-			return;
-		if (this.on)
+		if (this.on || this.empty())
 			return;
 		this.objs.comes();
-		tq.scene.add(this.group, this.grouprtt);
+		tq.scene.add(this.group, this.grouprt);
 		this.comes_pt2();
 		this.on = true;
+		return true;
 	}
 	comes_pt2() {
 		if (!Egyt.USE_CHUNK_RT)
 			return;
-		const treshold = this.objs.rtts >= 10;
-		if (!treshold)
+		let rtt = 0;
+		for (let tuple of this.objs.tuples)
+			if (tuple[0].rtt)
+				rtt++;
+		const threshold = rtt >= 10;
+		if (!threshold)
 			return;
 		if (!this.rt)
 			this.rt = new Chunk_Rt(this);
@@ -117,9 +122,9 @@ class Chunk {
 	goes() {
 		if (!this.on)
 			return;
-		tq.scene.remove(this.group, this.grouprtt);
+		tq.scene.remove(this.group, this.grouprt);
 		tqlib.erase_children(this.group);
-		tqlib.erase_children(this.grouprtt);
+		tqlib.erase_children(this.grouprt);
 		this.objs.goes();
 		this.rt?.goes();
 		this.on = false;
@@ -145,12 +150,12 @@ namespace Chunk {
 
 		let basest_tile = points.multp([x + 1, y], master.span * 24);
 
-		let real = points.twoone(basest_tile);
+		let real = <vec2>points.two_one(basest_tile);
 		points.subtract(real, [0, -master.height / 2]);
 
 		return new aabb2(
-			<zx>points.add(<zx>points.clone(real), [-master.width / 2, -master.height / 2]),
-			<zx>points.add(<zx>points.clone(real), [master.width / 2, master.height / 2])
+			points.add(<vec2>points.clone(real), [-master.width / 2, -master.height / 2]),
+			points.add(<vec2>points.clone(real), [master.width / 2, master.height / 2])
 		)
 	}
 }
@@ -173,22 +178,15 @@ class Chunk_Objs2 {
 	add(obj: Obj) {
 		let i = this.where(obj);
 		if (i == undefined) {
-			let rate = this.rate(obj);
-			this.tuples.push([obj, rate]);
-			obj.chunk = this.chunk;
-			this.chunk.changed = true;
-			if (obj.rtt)
-				this.rtts++;
+			this.tuples.push([obj, this.rate(obj)]);
+			return true;
 		}
 	}
 	remove(obj: Obj) {
 		let i = this.where(obj);
 		if (i != undefined) {
 			this.tuples.splice(i, 1);
-			obj.chunk = null;
-			this.chunk.changed = true;
-			if (obj.rtt)
-				this.rtts++;
+			return true;
 		}
 	}
 	updates() {
@@ -229,6 +227,7 @@ class Chunk_Master<T extends Chunk> {
 	total: number = 0
 	arrays: T | null[][] = []
 
+	refit = true
 	fitter: Chunk_Fitter<T>
 
 	constructor(private testType: new (x, y, m) => T, span: number) {
@@ -240,7 +239,9 @@ class Chunk_Master<T extends Chunk> {
 		this.fitter = new Chunk_Fitter<T>(this);
 	}
 	update() {
-		this.fitter.update();
+		if (this.refit) {
+			this.fitter.update();
+		}
 	}
 	big(t: zx | zxc): zx {
 		return <zx>points.floor(points.divide(<zx>[...t], this.span));
@@ -284,17 +285,7 @@ class Chunk_Fitter<T extends Chunk> { // chunk-snake
 	constructor(private master: Chunk_Master<T>) {
 	}
 
-	update() {
-		let middle = Egyt.map.query_world_pixel(Egyt.game.view.center()).tile;
-
-		let b = this.master.big(middle);
-
-		this.lines = 0;
-		this.total = 0;
-
-		this.snake(b, 1);
-		this.snake(b, -1);
-
+	off() {
 		let i = this.shown.length;
 		while (i--) {
 			let c = this.shown[i];
@@ -305,7 +296,22 @@ class Chunk_Fitter<T extends Chunk> { // chunk-snake
 			}
 		}
 	}
-	snake(b: zx, n: number) {
+	update() {
+
+		let middle = Egyt.map.query_world_pixel(Egyt.game.view.center()).tile;
+
+		let b = this.master.big(middle);
+
+		this.lines = 0;
+		this.total = 0;
+
+		this.off();
+
+		this.slither(b, 1);
+		this.slither(b, -1);
+	}
+
+	slither(b: zx, n: number) {
 		let x = b[0], y = b[1];
 		let i = 0, j = 0, s = 0, u = 0;
 
@@ -322,10 +328,9 @@ class Chunk_Fitter<T extends Chunk> { // chunk-snake
 			}
 			else {
 				u = 0;
-				const on = c.on;
-				c.comes();
-				if (!on && c.on)
+				if (c.comes()) {
 					this.shown.push(c);
+				}
 			}
 			if (j == 0) {
 				y += n;
@@ -396,7 +401,7 @@ class Chunk_Rt {
 		while (tq.rttscene.children.length > 0)
 			tq.rttscene.remove(tq.rttscene.children[0]);
 
-		const group = this.chunk.grouprtt;
+		const group = this.chunk.grouprt;
 
 		group.position.set(0, -this.h / 2, 0);
 		tq.rttscene.add(group);
