@@ -5,7 +5,7 @@ import points from "../lib/Points";
 import Obj from "./Obj";
 import Egyt from "../Egyt";
 import { tqlib } from "../lib/tqlib";
-import { chunk } from "../lod/Chunks";
+import { Chunk } from "../lod/Chunks";
 
 class Rekt {
 
@@ -115,7 +115,7 @@ class Rekt {
 	}
 
 	getgroup() {
-		let c: chunk | null | undefined;
+		let c: Chunk | null | undefined;
 		if (c = this.struct.obj?.chunk)
 			if (this.struct.obj?.rtt && Egyt.USE_CHUNK_RT)
 				return c.grouprtt;

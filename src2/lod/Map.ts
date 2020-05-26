@@ -11,7 +11,7 @@ import { Color, Group, WebGLRenderTarget, Int8Attribute, RGBFormat, NearestFilte
 import { tq } from "../lib/tq";
 import Tilization from "./gen/Tilization";
 import { tqlib } from "../lib/tqlib";
-import { chunk_master, chunk, statchunk, dynchunk } from "./Chunks";
+import { Chunk_Master, Chunk, statchunk, dynchunk } from "./Chunks";
 
 
 class Map {
@@ -19,8 +19,8 @@ class Map {
 		return new Map;
 	}
 
-	statmaster: chunk_master<statchunk>
-	dynmaster: chunk_master<dynchunk>
+	statmaster: Chunk_Master<statchunk>
+	dynmaster: Chunk_Master<dynchunk>
 
 	statchunk: statchunk
 	mouse_tile: zx
@@ -28,11 +28,11 @@ class Map {
 
 	constructor() {
 
-		(window as any).Chunk = chunk;
+		(window as any).Chunk = Chunk;
 
-		this.statmaster = new chunk_master<statchunk>(statchunk, 20);
+		this.statmaster = new Chunk_Master<statchunk>(statchunk, 20);
 
-		this.dynmaster = new chunk_master<dynchunk>(dynchunk, 20);
+		this.dynmaster = new Chunk_Master<dynchunk>(dynchunk, 20);
 
 		this.mouse_tile = [0, 0];
 

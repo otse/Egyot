@@ -1,11 +1,11 @@
-import { chunk } from "../lod/Chunks";
+import { Chunk } from "../lod/Chunks";
 
 class Obj {
 	order = 0
 	rate = 1
 	using = false
 	rtt = true
-	chunk: chunk | null = null
+	chunk: Chunk | null = null
 
 	readonly struct: {
 		tile: zx

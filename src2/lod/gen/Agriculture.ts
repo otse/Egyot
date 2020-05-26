@@ -54,7 +54,7 @@ namespace Agriculture {
 		}
 		update() {
 			if (Egyt.PAINT_OBJ_TICK_RATE)
-				0;//this.rekt.paint_alternate();
+				this.rekt.paint_alternate();
 		}
 		comes() {
 			super.comes();

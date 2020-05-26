@@ -28,6 +28,7 @@ namespace Forestation {
 			super(struct);
 
 			//this.rtt = false
+			this.rate = 10;
 
 			this.rekt = new Rekt({
 				obj: this,
@@ -43,7 +44,7 @@ namespace Forestation {
 		}
 		update() {
 			if (Egyt.PAINT_OBJ_TICK_RATE)
-				0;//this.rekt.paint_alternate();
+				this.rekt.paint_alternate();
 		}
 		comes() {
 			super.comes();

@@ -528,7 +528,7 @@ void main() {
             }
             update() {
                 if (Egyt$1.PAINT_OBJ_TICK_RATE)
-                    ; //this.rekt.paint_alternate();
+                    this.rekt.paint_alternate();
             }
             comes() {
                 super.comes();
@@ -708,14 +708,14 @@ void main() {
     })(Tilization || (Tilization = {}));
     var Tilization$1 = Tilization;
 
-    class chunk {
+    class Chunk {
         constructor(x, y, master) {
             this.master = master;
             this.on = false;
             this.changed = true;
             this.rektcolor = 'white';
             this.master.total++;
-            this.objs = new chunk_objs2(this);
+            this.objs = new Chunk_Objs2(this);
             //this.color = Egyt.sample(colors);
             this.p = [x, y];
             this.group = new THREE.Group;
@@ -726,23 +726,20 @@ void main() {
             let x = this.p[0];
             let y = this.p[1];
             let basest_tile = points$1.multp([x + 1, y], this.master.span * 24);
-            let frightening = [...basest_tile, 0];
-            frightening = points$1.twoone(frightening);
-            frightening[2] = 0;
             this.tile_n = [x - 3, y + 3];
             points$1.multp(this.tile_n, this.master.span * 24);
-            //points.subtract(this.north, [-24, 24]);
             this.rekt_offset = points$1.zx(basest_tile);
             if (Egyt$1.OFFSET_CHUNK_OBJ_REKT) {
+                let frightening = [...basest_tile, 0];
+                frightening = points$1.twoone(frightening);
+                frightening[2] = 0;
                 this.group.position.fromArray(frightening);
                 this.grouprtt.position.fromArray(frightening);
                 this.group.renderOrder = this.grouprtt.renderOrder = Rekt$1.Srorder(this.tile_n);
             }
+            // non screen bound not used anymore
             this.bound = new aabb2([x * this.master.span, y * this.master.span], [(x + 1) * this.master.span, (y + 1) * this.master.span]);
-            let real = [...points$1.twoone([...basest_tile]), 0];
-            points$1.subtract(real, [0, -this.master.height / 2]);
-            this.real = [...real];
-            this.boundscreen = new aabb2(points$1.add([...real], [-this.master.width / 2, -this.master.height / 2]), points$1.add([...real], [this.master.width / 2, this.master.height / 2]));
+            this.screen = Chunk.Sscreen(x, y, this.master);
         }
         update_color() {
             return;
@@ -771,7 +768,7 @@ void main() {
             if (!treshold)
                 return;
             if (!this.rt)
-                this.rt = new chunk_rt(this);
+                this.rt = new Chunk_Rt(this);
             this.rt.comes();
             this.rt.render();
         }
@@ -787,7 +784,7 @@ void main() {
             this.on = false;
         }
         sec() {
-            return Egyt$1.game.view.intersect2(this.boundscreen);
+            return Egyt$1.game.view.intersect2(this.screen);
         }
         see() {
             return this.sec() != aabb2.SEC.OUT;
@@ -803,7 +800,16 @@ void main() {
             this.changed = false;
         }
     }
-    class chunk_objs2 {
+    (function (Chunk) {
+        function Sscreen(x, y, master) {
+            let basest_tile = points$1.multp([x + 1, y], master.span * 24);
+            let real = points$1.twoone(basest_tile);
+            points$1.subtract(real, [0, -master.height / 2]);
+            return new aabb2(points$1.add(points$1.clone(real), [-master.width / 2, -master.height / 2]), points$1.add(points$1.clone(real), [master.width / 2, master.height / 2]));
+        }
+        Chunk.Sscreen = Sscreen;
+    })(Chunk || (Chunk = {}));
+    class Chunk_Objs2 {
         constructor(chunk) {
             this.chunk = chunk;
             this.rtts = 0;
@@ -859,11 +865,11 @@ void main() {
             }
         }
     }
-    class statchunk extends chunk {
+    class statchunk extends Chunk {
     }
-    class dynchunk extends chunk {
+    class dynchunk extends Chunk {
     }
-    class chunk_master {
+    class Chunk_Master {
         constructor(testType, span) {
             this.testType = testType;
             this.total = 0;
@@ -872,7 +878,7 @@ void main() {
             this.span2 = span * span;
             this.width = span * 24;
             this.height = span * 12;
-            this.fitter = new chunk_fitter(this);
+            this.fitter = new Chunk_Fitter(this);
         }
         update() {
             this.fitter.update();
@@ -904,14 +910,14 @@ void main() {
             return this.at(x, y) || this.make(x, y);
         }
     }
-    class chunk_fitter {
+    class Chunk_Fitter {
         constructor(master) {
             this.master = master;
             this.shown = [];
             this.colors = [];
         }
         update() {
-            let middle = Egyt$1.map.query_world_pixel([...Egyt$1.game.view.center()]).tile;
+            let middle = Egyt$1.map.query_world_pixel(Egyt$1.game.view.center()).tile;
             let b = this.master.big(middle);
             this.lines = 0;
             this.total = 0;
@@ -922,33 +928,24 @@ void main() {
                 let c = this.shown[i];
                 c.update();
                 if (c.out()) {
-                    console.log('goes');
                     c.goes();
                     this.shown.splice(i, 1);
                 }
             }
         }
-        snake_re(b, n) {
-            let x = b[0];
-            let y = b[1];
-        }
         snake(b, n) {
-            let i, s, u;
             let x = b[0], y = b[1];
-            let soo = 0;
-            i = 0;
-            s = 0;
-            u = 0;
+            let i = 0, j = 0, s = 0, u = 0;
             while (true) {
                 i++;
                 let c;
                 c = this.master.guarantee(x, y);
                 if (c.out()) {
                     if (s > 2) {
-                        if (soo == 0)
-                            soo = 1;
-                        if (soo == 2)
-                            soo = 3;
+                        if (j == 0)
+                            j = 1;
+                        if (j == 2)
+                            j = 3;
                     }
                     u++;
                 }
@@ -959,35 +956,34 @@ void main() {
                     if (!on && c.on)
                         this.shown.push(c);
                 }
-                if (soo == 0) {
+                if (j == 0) {
                     y += n;
                     s++;
                 }
-                else if (soo == 1) {
+                else if (j == 1) {
                     x -= n;
-                    soo = 2;
+                    j = 2;
                     s = 0;
                 }
-                else if (soo == 2) {
+                else if (j == 2) {
                     y -= n;
                     s++;
                 }
-                else if (soo == 3) {
+                else if (j == 3) {
                     x -= n;
-                    soo = 0;
+                    j = 0;
                     s = 0;
                 }
                 if (!s)
                     this.lines++;
                 this.total++;
                 if (u > 5 || i >= 350) {
-                    //console.log('break at iteration', i);
                     break;
                 }
             }
         }
     }
-    class chunk_rt {
+    class Chunk_Rt {
         constructor(chunk) {
             this.chunk = chunk;
             this.padding = Egyt$1.YUM * 4;
@@ -1029,9 +1025,9 @@ void main() {
 
     class Map {
         constructor() {
-            window.Chunk = chunk;
-            this.statmaster = new chunk_master(statchunk, 20);
-            this.dynmaster = new chunk_master(dynchunk, 20);
+            window.Chunk = Chunk;
+            this.statmaster = new Chunk_Master(statchunk, 20);
+            this.dynmaster = new Chunk_Master(dynchunk, 20);
             this.mouse_tile = [0, 0];
             this.mark = new Rekt$1({
                 xy: [0, 0],
@@ -1310,6 +1306,7 @@ void main() {
             constructor(struct) {
                 super(struct);
                 //this.rtt = false
+                this.rate = 10;
                 this.rekt = new Rekt$1({
                     obj: this,
                     asset: Egyt$1.sample(treez),
@@ -1322,7 +1319,7 @@ void main() {
             }
             update() {
                 if (Egyt$1.PAINT_OBJ_TICK_RATE)
-                    ; //this.rekt.paint_alternate();
+                    this.rekt.paint_alternate();
             }
             comes() {
                 super.comes();
@@ -1400,7 +1397,7 @@ void main() {
     (function (Egyt) {
         Egyt.USE_CHUNK_RT = true;
         Egyt.OFFSET_CHUNK_OBJ_REKT = true;
-        Egyt.PAINT_OBJ_TICK_RATE = true;
+        Egyt.PAINT_OBJ_TICK_RATE = false;
         Egyt.YUM = 24; // evenly divisible
         var started = false;
         function sample(a) {
