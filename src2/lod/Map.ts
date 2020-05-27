@@ -108,18 +108,17 @@ class Map {
 		Agriculture.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
 	}
 
-	get_chunk_at_tile(t: zx | zxc) {
-		return this.statmaster.which(<zx>t);
+	get_chunk_at_tile(zx: vec2 | vec3) {
+		return this.statmaster.which(<vec2>zx);
 	}
 
-	ask_world_pixel(query: zx): { tile: zx, mult: zx } {
+	unproject(query: zx): { tile: vec2, mult: vec2 } {
 		let p = query;
 
-		let p1 = <vec2>vecs.clone(p);
-		p1[0] = p[0] - p[1] * 2;
-		p1[1] = p[1] * 2 + p[0];
+		let un = <vec2>vecs.clone(p);
+		vecs.unproject(un);
 
-		let p2 = <vec2>vecs.clone(p1);
+		let p2 = <vec2>vecs.clone(un);
 		vecs.divide(p2, 24);
 		vecs.floor(p2);
 		p2[0] += 1; // necessary
@@ -139,7 +138,7 @@ class Map {
 		let p = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
 		vecs.add(p, m);
 
-		const mouse = this.ask_world_pixel(p);
+		const mouse = this.unproject(p);
 
 		this.mouse_tile = mouse.tile;
 
@@ -156,8 +155,8 @@ class Map {
 		let worldPixelsLeftUpperCorner = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
 		let worldPixelsRightLowerCorner = [Egyt.game.view.max[0], Egyt.game.view.min[1]] as zx;
 
-		const x = this.ask_world_pixel(worldPixelsLeftUpperCorner).tile;
-		const y = this.ask_world_pixel(worldPixelsRightLowerCorner).tile;
+		const x = this.unproject(worldPixelsLeftUpperCorner).tile;
+		const y = this.unproject(worldPixelsRightLowerCorner).tile;
 
 	}
 }

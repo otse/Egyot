@@ -23,7 +23,6 @@ class Chunk {
 
 	tile_n: zx
 	tile_s: zx
-	mult: zx
 
 	bound: aabb2
 	screen: aabb2
@@ -57,18 +56,16 @@ class Chunk {
 
 		let basest_tile = vecs.multp([x + 1, y], this.master.span * 24);
 
-		this.tile_n = [x - 3, y + 3];
-		vecs.multp(this.tile_n, this.master.span * 24);
+		this.tile_n = vecs.multp([x, y], this.master.span * 24);
 
-		this.rekt_offset = <zx>vecs.clone(basest_tile);
+		this.rekt_offset = <vec2>vecs.clone(basest_tile);
 
 		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
-			let frightening = <zxc>[...basest_tile, 0];
-			frightening = <zxc><unknown>vecs.two_one(frightening);
-			frightening[2] = 0;
+			const zx = vecs.two_one(vecs.clone(basest_tile));
+			const zxc = <vec3>[...zx, 0];
 
-			this.group.position.fromArray(frightening);
-			this.grouprt.position.fromArray(frightening);
+			this.group.position.fromArray(zxc);
+			this.grouprt.position.fromArray(zxc);
 
 			this.group.renderOrder = this.grouprt.renderOrder = Rekt.Srorder(this.tile_n);
 		}
@@ -124,7 +121,7 @@ class Chunk {
 		this.rt?.goes();
 		this.on = false;
 	}
-	test() {
+	noob() {
 		return Egyt.game.view.test(this.screen) != aabb2.OOB;
 	}
 	oob() {
@@ -142,12 +139,12 @@ namespace Chunk {
 
 		let basest_tile = vecs.multp([x + 1, y], master.span * 24);
 
-		let real = <vec2>vecs.two_one(basest_tile);
+		let real = vecs.two_one(vecs.clone(basest_tile));
 		vecs.subtract(real, [0, -master.height / 2]);
 
 		return new aabb2(
-			vecs.add(<vec2>vecs.clone(real), [-master.width / 2, -master.height / 2]),
-			vecs.add(<vec2>vecs.clone(real), [master.width / 2, master.height / 2])
+			vecs.add(vecs.clone(real), [-master.width / 2, -master.height / 2]),
+			vecs.add(vecs.clone(real), [master.width / 2, master.height / 2])
 		)
 	}
 }
@@ -228,8 +225,8 @@ class ChunkMaster<T extends Chunk> {
 			this.fitter.update();
 		}
 	}
-	big(t: zx | zxc): zx {
-		return <zx>vecs.floor(vecs.divide(<zx>[...t], this.span));
+	big(zx: vec2): vec2 {
+		return vecs.floor(vecs.divide(vecs.clone(zx), this.span));
 	}
 	at(x, y): T | null {
 		let c;
@@ -284,8 +281,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 		}
 	}
 	update() {
-		let middle = Egyt.map.ask_world_pixel(
-			Egyt.game.view.center()).tile;
+		let middle = Egyt.map.unproject(Egyt.game.view.center()).tile;
 		let b = this.master.big(middle);
 		this.lines = this.total = 0;
 		this.off();
@@ -299,7 +295,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 			i++;
 			let c: T;
 			c = this.master.guarantee(x, y);
-			if (c.oob()) {
+			if (!c.on && c.oob()) {
 				if (s > 2) {
 					if (j == 0) j = 1;
 					if (j == 2) j = 3;

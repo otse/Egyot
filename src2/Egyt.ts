@@ -123,6 +123,7 @@ export namespace Egyt {
 				<br/><br/>
 				<key>T</key> tree<br/>
 				<key>Y</key> tile<br/>
+				<key>U</key> tile area<br/>
 				<key>X</key> delete<br/>
 				<key>Esc</key> cancel<br/>
 			</div>

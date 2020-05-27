@@ -19,7 +19,7 @@ type Char = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k'
 
 export namespace App {
 
-	export var version = '0.05';
+	export var version = '0.06?';
 	export var map = {};
 	export var wheel = 0;
 
@@ -27,9 +27,9 @@ export namespace App {
 	export var left = false;
 
 	function onkeys(event) {
-		const key = event.key;
+		const key = event.key.toLowerCase();
 
-		//console.log(event);
+		// console.log(event);
 
 		if ('keydown' == event.type)
 			map[key] = (undefined == map[key])
@@ -39,7 +39,7 @@ export namespace App {
 		else if ('keyup' == event.type)
 			map[key] = KEY.UP;
 
-		if (key == 114) // Zoeken op pagina
+		if (key == 114)
 			event.preventDefault();
 
 		return;

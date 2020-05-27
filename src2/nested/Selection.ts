@@ -66,8 +66,7 @@ class Selection {
 	}
 
 	View(mouse: zx) {
-		vecs.subtract(
-			mouse, Egyt.game.pos);
+		vecs.subtract(mouse, Egyt.game.pos);
 
 		vecs.subtract(
 			mouse, vecs.divide(

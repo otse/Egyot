@@ -196,29 +196,30 @@ void main() {
     var vecs;
     (function (vecs) {
         vecs.clone = (zx) => [...zx];
-        function area_every(aabb, callback) {
-            let y = aabb.min[1];
-            for (; y <= aabb.max[1]; y++) {
-                let x = aabb.max[0];
-                for (; x >= aabb.min[0]; x--) {
+        function area_every(bb, callback) {
+            let y = bb.min[1];
+            for (; y <= bb.max[1]; y++) {
+                let x = bb.max[0];
+                for (; x >= bb.min[0]; x--) {
                     callback([x, y]);
                 }
             }
         }
         vecs.area_every = area_every;
         function two_one(p) {
-            let copy = vecs.clone(p);
-            copy[0] = p[0] / 2 + p[1] / 2;
-            copy[1] = p[1] / 4 - p[0] / 4;
-            return copy;
+            let copy = [...p];
+            p[0] = copy[0] / 2 + copy[1] / 2;
+            p[1] = copy[1] / 4 - copy[0] / 4;
+            return p;
         }
         vecs.two_one = two_one;
-        function un_two_one(p) {
-            let x = p[0] - p[1] * 2;
-            let y = p[1] * 2 + p[0];
-            return [x, y];
+        function unproject(p) {
+            let copy = [...p];
+            p[0] = copy[0] - copy[1] * 2;
+            p[1] = copy[1] * 2 + copy[0];
+            return p;
         }
-        vecs.un_two_one = un_two_one;
+        vecs.unproject = unproject;
         function string(a) {
             const pr = (b) => b != undefined ? `, ${b}` : '';
             return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
@@ -227,16 +228,12 @@ void main() {
         function floor(a) {
             a[0] = Math.floor(a[0]);
             a[1] = Math.floor(a[1]);
-            if (a[2] != undefined)
-                a[2] = Math.floor(a[2]);
             return a;
         }
         vecs.floor = floor;
         function ceil(a) {
             a[0] = Math.ceil(a[0]);
             a[1] = Math.ceil(a[1]);
-            if (a[2] != undefined)
-                a[2] = Math.ceil(a[2]);
             return a;
         }
         vecs.ceil = ceil;
@@ -258,12 +255,6 @@ void main() {
             return a;
         }
         vecs.divide = divide;
-        function multpClone(zx, n, n2) {
-            let wen = [...zx];
-            multp(wen, n, n2);
-            return wen;
-        }
-        vecs.multpClone = multpClone;
         function subtract(a, b) {
             a[0] -= b[0];
             a[1] -= b[1];
@@ -276,15 +267,15 @@ void main() {
             return a;
         }
         vecs.add = add;
-        function abs(p) {
-            p[0] = Math.abs(p[0]);
-            p[1] = Math.abs(p[1]);
-            return p;
+        function abs(zx) {
+            zx[0] = Math.abs(zx[0]);
+            zx[1] = Math.abs(zx[1]);
+            return zx;
         }
         vecs.abs = abs;
-        function together(p) {
+        function together(zx) {
             //Abs(p);
-            return p[0] + p[1];
+            return zx[0] + zx[1];
         }
         vecs.together = together;
     })(vecs || (vecs = {}));
@@ -687,6 +678,12 @@ void main() {
         }
         Tilization.init = init;
         function update() {
+            if (App.map['escape'] == 1) ;
+            if (App.map['u'] == 1) {
+                let middle = Egyt$1.map.unproject(Egyt$1.game.view.center()).tile;
+                let b = this.master.big(middle);
+                console.log('woo');
+            }
         }
         Tilization.update = update;
         function place_tile(chance, asset, pos) {
@@ -695,10 +692,13 @@ void main() {
             let tile = new Tile(asset, {
                 tile: pos
             });
-            Egyt$1.world.add(tile);
+            //Egyt.world.add(tile);
             return tile;
         }
         Tilization.place_tile = place_tile;
+        function click_area(asset, pos) {
+        }
+        Tilization.click_area = click_area;
         function area_sample(chance, assets, aabb) {
             const every = (pos) => place_tile(chance, Egyt$1.sample(assets), pos);
             vecs$1.area_every(aabb, every);
@@ -730,15 +730,13 @@ void main() {
             let x = this.p[0];
             let y = this.p[1];
             let basest_tile = vecs$1.multp([x + 1, y], this.master.span * 24);
-            this.tile_n = [x - 3, y + 3];
-            vecs$1.multp(this.tile_n, this.master.span * 24);
+            this.tile_n = vecs$1.multp([x, y], this.master.span * 24);
             this.rekt_offset = vecs$1.clone(basest_tile);
             if (Egyt$1.OFFSET_CHUNK_OBJ_REKT) {
-                let frightening = [...basest_tile, 0];
-                frightening = vecs$1.two_one(frightening);
-                frightening[2] = 0;
-                this.group.position.fromArray(frightening);
-                this.grouprt.position.fromArray(frightening);
+                const zx = vecs$1.two_one(vecs$1.clone(basest_tile));
+                const zxc = [...zx, 0];
+                this.group.position.fromArray(zxc);
+                this.grouprt.position.fromArray(zxc);
                 this.group.renderOrder = this.grouprt.renderOrder = Rekt$1.Srorder(this.tile_n);
             }
             // non screen bound not used anymore
@@ -790,7 +788,7 @@ void main() {
             (_a = this.rt) === null || _a === void 0 ? void 0 : _a.goes();
             this.on = false;
         }
-        test() {
+        noob() {
             return Egyt$1.game.view.test(this.screen) != aabb2.OOB;
         }
         oob() {
@@ -807,7 +805,7 @@ void main() {
     (function (Chunk) {
         function Sscreen(x, y, master) {
             let basest_tile = vecs$1.multp([x + 1, y], master.span * 24);
-            let real = vecs$1.two_one(basest_tile);
+            let real = vecs$1.two_one(vecs$1.clone(basest_tile));
             vecs$1.subtract(real, [0, -master.height / 2]);
             return new aabb2(vecs$1.add(vecs$1.clone(real), [-master.width / 2, -master.height / 2]), vecs$1.add(vecs$1.clone(real), [master.width / 2, master.height / 2]));
         }
@@ -880,8 +878,8 @@ void main() {
                 this.fitter.update();
             }
         }
-        big(t) {
-            return vecs$1.floor(vecs$1.divide([...t], this.span));
+        big(zx) {
+            return vecs$1.floor(vecs$1.divide(vecs$1.clone(zx), this.span));
         }
         at(x, y) {
             let c;
@@ -926,7 +924,7 @@ void main() {
             }
         }
         update() {
-            let middle = Egyt$1.map.ask_world_pixel(Egyt$1.game.view.center()).tile;
+            let middle = Egyt$1.map.unproject(Egyt$1.game.view.center()).tile;
             let b = this.master.big(middle);
             this.lines = this.total = 0;
             this.off();
@@ -940,7 +938,7 @@ void main() {
                 i++;
                 let c;
                 c = this.master.guarantee(x, y);
-                if (c.oob()) {
+                if (!c.on && c.oob()) {
                     if (s > 2) {
                         if (j == 0)
                             j = 1;
@@ -1085,15 +1083,14 @@ void main() {
             Agriculture$1.area_wheat(1, new aabb2([-15, 21], [-40, 101]));
             Agriculture$1.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
         }
-        get_chunk_at_tile(t) {
-            return this.statmaster.which(t);
+        get_chunk_at_tile(zx) {
+            return this.statmaster.which(zx);
         }
-        ask_world_pixel(query) {
+        unproject(query) {
             let p = query;
-            let p1 = vecs$1.clone(p);
-            p1[0] = p[0] - p[1] * 2;
-            p1[1] = p[1] * 2 + p[0];
-            let p2 = vecs$1.clone(p1);
+            let un = vecs$1.clone(p);
+            vecs$1.unproject(un);
+            let p2 = vecs$1.clone(un);
             vecs$1.divide(p2, 24);
             vecs$1.floor(p2);
             p2[0] += 1; // necessary
@@ -1107,7 +1104,7 @@ void main() {
             vecs$1.divide(m, Egyt$1.game.scale);
             let p = [Egyt$1.game.view.min[0], Egyt$1.game.view.max[1]];
             vecs$1.add(p, m);
-            const mouse = this.ask_world_pixel(p);
+            const mouse = this.unproject(p);
             this.mouse_tile = mouse.tile;
             this.mark.struct.xy = mouse.mult;
             this.mark.now_update_pos();
@@ -1117,8 +1114,8 @@ void main() {
             this.statmaster.update();
             let worldPixelsLeftUpperCorner = [Egyt$1.game.view.min[0], Egyt$1.game.view.max[1]];
             let worldPixelsRightLowerCorner = [Egyt$1.game.view.max[0], Egyt$1.game.view.min[1]];
-            const x = this.ask_world_pixel(worldPixelsLeftUpperCorner).tile;
-            const y = this.ask_world_pixel(worldPixelsRightLowerCorner).tile;
+            const x = this.unproject(worldPixelsLeftUpperCorner).tile;
+            const y = this.unproject(worldPixelsRightLowerCorner).tile;
         }
     }
 
@@ -1211,7 +1208,7 @@ void main() {
             console.log('Game');
             this.rekts = [];
             this.objs = [];
-            this.pos = [0, 0, 0]; //[-1665, 3585, 0];
+            this.pos = [0, 0]; //[-1665, 3585, 0];
             this.dpi = window.devicePixelRatio;
             this.scale = 1 / this.dpi;
             this.view = new aabb2([0, 0]);
@@ -1236,13 +1233,13 @@ void main() {
             let p = [...this.pos];
             if (App.map['x'])
                 speed *= 10;
-            if (App.map['w'] || App.map['W'])
+            if (App.map['w'])
                 p[1] -= speed;
-            if (App.map['s'] || App.map['S'])
+            if (App.map['s'])
                 p[1] += speed;
-            if (App.map['a'] || App.map['A'])
+            if (App.map['a'])
                 p[0] += speed;
-            if (App.map['d'] || App.map['D'])
+            if (App.map['d'])
                 p[0] -= speed;
             this.pos = [...p];
             if (App.wheel > 0) {
@@ -1263,7 +1260,7 @@ void main() {
                 console.log('scale down', this.scale);
             }
             tq.scene.scale.set(this.scale, this.scale, 1);
-            let p2 = vecs$1.multpClone(p, this.scale);
+            let p2 = vecs$1.multp([...this.pos], this.scale);
             tq.scene.position.set(p2[0], p2[1], 0);
             let w = tq.target.width;
             let h = tq.target.height;
@@ -1480,6 +1477,7 @@ void main() {
 				<br/><br/>
 				<key>T</key> tree<br/>
 				<key>Y</key> tile<br/>
+				<key>U</key> tile area<br/>
 				<key>X</key> delete<br/>
 				<key>Esc</key> cancel<br/>
 			</div>
@@ -1541,21 +1539,21 @@ void main() {
     var Egyt$1 = Egyt;
 
     (function (App) {
-        App.version = '0.05';
+        App.version = '0.06?';
         App.map = {};
         App.wheel = 0;
         App.move = [0, 0];
         App.left = false;
         function onkeys(event) {
-            const key = event.key;
-            //console.log(event);
+            const key = event.key.toLowerCase();
+            // console.log(event);
             if ('keydown' == event.type)
                 App.map[key] = (undefined == App.map[key])
                     ? 1 /* PRESSED */
                     : 3 /* AGAIN */;
             else if ('keyup' == event.type)
                 App.map[key] = 0 /* UP */;
-            if (key == 114) // Zoeken op pagina
+            if (key == 114)
                 event.preventDefault();
             return;
         }

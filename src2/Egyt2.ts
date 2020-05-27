@@ -17,7 +17,7 @@ class Game {
 
 	selection: Selection | null
 
-	pos: zxc
+	pos: vec2
 	scale: number
 	dpi: number
 
@@ -35,7 +35,7 @@ class Game {
 		this.rekts = [];
 		this.objs = [];
 
-		this.pos = [0, 0, 0]; //[-1665, 3585, 0];
+		this.pos = [0, 0]; //[-1665, 3585, 0];
 		this.dpi = window.devicePixelRatio;
 		this.scale = 1 / this.dpi;
 
@@ -62,16 +62,16 @@ class Game {
 		let speed = 5;
 		const factor = 1 / this.dpi;
 
-		let p = [...this.pos] as zxc;
+		let p = [...this.pos];
 
 		if (App.map['x']) speed *= 10;
 
-		if (App.map['w'] || App.map['W']) p[1] -= speed;
-		if (App.map['s'] || App.map['S']) p[1] += speed;
-		if (App.map['a'] || App.map['A']) p[0] += speed;
-		if (App.map['d'] || App.map['D']) p[0] -= speed;
+		if (App.map['w']) p[1] -= speed;
+		if (App.map['s']) p[1] += speed;
+		if (App.map['a']) p[0] += speed;
+		if (App.map['d']) p[0] -= speed;
 
-		this.pos = [...p] as zxc;
+		this.pos = <vec2>[...p];
 
 		if (App.wheel > 0) {
 			if (this.scale < 1) {
@@ -96,7 +96,7 @@ class Game {
 
 		tq.scene.scale.set(this.scale, this.scale, 1);
 
-		let p2 = vecs.multpClone(p, this.scale);
+		let p2 = vecs.multp(<vec2>[...this.pos], this.scale);
 
 		tq.scene.position.set(p2[0], p2[1], 0);
 

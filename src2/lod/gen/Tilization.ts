@@ -39,7 +39,7 @@ namespace Tilization {
 			this.rekt.unuse();
 		}
 		update() {
-			
+
 		}
 	}
 
@@ -49,8 +49,24 @@ namespace Tilization {
 		(window as any).Tilization = Tilization;
 	}
 
+	let press;
+	let release;
+
 	export function update() {
-		
+
+		if (App.map['escape'] == 1) {
+			press = undefined;
+		}
+
+		if (App.map['u'] == 1) {
+			let middle = Egyt.map.unproject(Egyt.game.view.center()).tile;
+
+			let b = this.master.big(middle);
+
+			press = 1;
+
+			console.log('woo');
+		}
 	}
 
 	export function place_tile(chance: number, asset: string, pos) {
@@ -62,9 +78,13 @@ namespace Tilization {
 			tile: pos
 		});
 
-		Egyt.world.add(tile);
+		//Egyt.world.add(tile);
 
 		return tile;
+	}
+
+	export function click_area(asset: string, pos) {
+
 	}
 
 	export function area_sample(chance: number, assets: string[], aabb: aabb2) {
