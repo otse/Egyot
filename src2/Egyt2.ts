@@ -43,7 +43,7 @@ class Game {
 
 		let rekt = this.frustumRekt = new Rekt;
 		rekt.name = 'Frustum';
-		rekt.xy = [0, 0];
+		rekt.tile = [0, 0];
 		rekt.wh = [1, 1];
 		rekt.asset = 'egyt/128';
 
@@ -118,7 +118,7 @@ class Game {
 		return;
 
 		this.frustumRekt.mesh.scale.set(w2, h2, 1);
-		this.frustumRekt.xy = <zx>[...this.focal];
+		this.frustumRekt.tile = <zx>[...this.focal];
 		this.frustumRekt.now_update_pos();
 	}
 

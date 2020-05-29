@@ -31,7 +31,8 @@ class Chunk {
 	p: zx
 
 	basest_tile: vec2
-	tile_n: vec2
+	order_tile: vec2
+	north: vec2
 	tile_s: vec2
 
 	bound: aabb2
@@ -65,9 +66,12 @@ class Chunk {
 		let y = this.p[1];
 
 		let basest_tile = vecs.mult([x + 1, y], this.master.span * 24);
-		this.basest_tile = basest_tile;
+		this.basest_tile = <vec2>vecs.clone(basest_tile);
+		
+		let north = vecs.mult([x + 1, y], this.master.span * 24);
+		this.north = north;
 
-		this.tile_n = vecs.mult([x - 3, y + 3], this.master.span * 24);
+		this.order_tile = north;
 
 		this.rekt_offset = <vec2>vecs.clone(basest_tile);
 
@@ -78,7 +82,7 @@ class Chunk {
 			this.group.position.fromArray(zxc);
 			this.grouprt.position.fromArray(zxc);
 
-			const depth = Rekt.depth(Rekt.mult(this.basest_tile));
+			const depth = Rekt.depth(this.order_tile);
 			
 			this.group.renderOrder = depth;
 			this.grouprt.renderOrder = depth;
@@ -354,7 +358,7 @@ class ChunkRt {
 	readonly w: number
 	readonly h: number
 
-	offset: zx = [0, 0]
+	offset: vec2 = [0, 0]
 
 	rekt: Rekt
 	target: WebGLRenderTarget
@@ -365,18 +369,18 @@ class ChunkRt {
 		this.h = this.chunk.master.height + this.padding;
 		this.camera = tqlib.ortographiccamera(this.w, this.h);
 
-		let p2 = <zx>[this.chunk.p[0] + 1, this.chunk.p[1]];
+		let p2 = <vec2>[this.chunk.p[0] + 1, this.chunk.p[1]];
 		vecs.mult(p2, this.chunk.master.span);
 
 		let rekt = this.rekt = new Rekt;
-		rekt.xy = p2;
+		rekt.tile = p2;
 		rekt.wh = [this.w, this.h];
 		rekt.asset = 'egyt/tenbyten';
 	}
 	// todo pool the rts?
 	comes() {
 		this.rekt.use();
-		this.rekt.mesh.renderOrder = Rekt.depth(Rekt.mult(this.chunk.basest_tile));
+		this.rekt.mesh.renderOrder = Rekt.depth(this.chunk.order_tile);
 		this.target = tqlib.rendertarget(this.w, this.h);
 	}
 	goes() {

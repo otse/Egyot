@@ -36,8 +36,8 @@ namespace Forestation {
 			let rekt = this.rekt = new Rekt;
 			rekt.obj = this;
 			rekt.asset = Egyt.sample(treez);
-			rekt.xy = this.tile;
-			rekt.of = [1, -1];
+			rekt.tile = this.tile;
+			rekt.offset = [1, -1];
 			rekt.wh = [120, 132];
 		}
 		update() {
@@ -71,6 +71,7 @@ namespace Forestation {
 			let tree = new Tree;
 			tree.tile = pos;
 			tree.post();
+			
 			Egyt.world.add(tree);
 		}
 	}
@@ -86,7 +87,7 @@ namespace Forestation {
 			let p = <vec2>vecs.clone(Egyt.map.mouse_tiled);
 
 			tree.tile = p;
-			tree.rekt.xy = p;
+			tree.rekt.tile = p;
 			tree.rekt.now_update_pos();
 
 			if (App.left) {

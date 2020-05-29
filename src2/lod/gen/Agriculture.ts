@@ -48,7 +48,7 @@ namespace Agriculture {
 				this.growth == 1 ? Egyt.sample(tillering) :
 				this.growth == 2 ? Egyt.sample(ripening) :
 				this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
-			rekt.xy = this.tile;
+			rekt.tile = this.tile;
 			rekt.wh = [22, 22];
 		}
 		update() {
@@ -79,7 +79,7 @@ namespace Agriculture {
 
 	}
 
-	export function place_wheat(growth, tile: zx) {
+	export function place_wheat(growth, tile: vec2) {
 
 		if (Math.random() > .99)
 			return;
@@ -94,7 +94,7 @@ namespace Agriculture {
 	}
 
 	export function area_wheat(growth: number, aabb: aabb2) {
-		const every = (pos: zx) => place_wheat(growth, pos);
+		const every = (pos: vec2) => place_wheat(growth, pos);
 
 		Points.area_every(aabb, every);
 	}

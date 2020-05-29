@@ -27,7 +27,7 @@ namespace Tilization {
 
 			let rekt = this.rekt = new Rekt;
 			rekt.asset = asset;
-			rekt.xy = this.tile;
+			rekt.tile = this.tile;
 			rekt.wh = [24, 12];
 		}
 		comes() {

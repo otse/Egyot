@@ -6,7 +6,7 @@ class Obj {
 	using = false
 	rtt = true
 	chunk: Chunk | null = null
-	tile: vec2
+	tile: vec2 = [0, 0]
 
 	constructor() {
 		Obj.num++;

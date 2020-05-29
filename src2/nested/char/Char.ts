@@ -12,7 +12,7 @@ class Man extends Obj {
     produce() {
         return;
         this.rekt = new Rekt;
-        this.rekt.xy = this.tile;
+        this.rekt.tile = this.tile;
         this.rekt.wh = [22, 25];
         this.rekt.asset = 'egyt/pumpkin'
 

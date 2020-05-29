@@ -11,8 +11,8 @@ class Rekt {
 
 	name: string
 	tiled: boolean = true
-	xy: vec2 = [0, 0]
-	of: vec2 = [0, 0]
+	tile: vec2 = [0, 0]
+	offset: vec2 = [0, 0]
 	wh: vec2 = [1, 1]
 	obj?: Obj
 	asset?: string
@@ -27,8 +27,8 @@ class Rekt {
 	material: MeshBasicMaterial
 	geometry: PlaneBufferGeometry
 
-	center: vec2
-	position: vec3
+	center: vec2 = [0, 0]
+	position: vec3 = [0, 0, 0]
 
 	used = false
 	flick = false
@@ -36,13 +36,9 @@ class Rekt {
 
 	constructor() {
 		Rekt.num++;
-
-		this.center = [0, 0];
 	}
 	unset() {
 		Rekt.num--;
-	}
-	multNone() {
 	}
 	paint_alternate() {
 		if (!Egyt.PAINT_OBJ_TICK_RATE)
@@ -109,14 +105,9 @@ class Rekt {
 			return tq.scene;
 	}
 	dual() {
-		let xy = <vec2>vecs.clone(this.xy);
-		let offset = <vec2>vecs.clone(this.of);
+		let xy = <vec2>vecs.clone(this.tile);
 
-		vecs.add(xy, offset);
-
-		if (this.tiled) {
-			xy = Rekt.mult(xy);
-		}
+		vecs.add(xy, this.offset);
 
 		return xy;
 	}
@@ -125,7 +116,15 @@ class Rekt {
 
 		let x, y;
 
-		let xy = this.dual();
+		let xy = <vec2>vecs.clone(this.tile);
+
+		const depth = Rekt.depth(xy); // ignore offset!
+
+		vecs.add(xy, this.offset);
+
+		if (this.tiled) {
+			xy = Rekt.mult(xy);
+		}
 
 		if (this.plain) {
 			x = xy[0];
@@ -152,8 +151,8 @@ class Rekt {
 
 		this.position = [x, y, 0];
 
-		if (this.mesh) {
-			this.mesh.renderOrder = Rekt.depth(xy);
+		if (this.mesh) {			
+			this.mesh.renderOrder = depth;
 			this.mesh.position.fromArray(this.position);
 			this.mesh.updateMatrix();
 		}
@@ -166,12 +165,12 @@ namespace Rekt {
 
 	//export type Struct = Rekt['struct']
 
-	export function depth(p: vec2) {
-		return -p[1] + p[0];
+	export function depth(t: vec2) {
+		return -t[1] + t[0];
 	}
 
-	export function mult(p: vec2) {
-		return vecs.mult(p, 24);
+	export function mult(t: vec2) {
+		return vecs.mult(t, 24);
 	}
 }
 

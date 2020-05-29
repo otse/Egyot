@@ -36,7 +36,7 @@ class Map {
 		this.mouse_tiled = [0, 0];
 
 		let rekt = this.mark = new Rekt;
-		rekt.xy = [0, 0];
+		rekt.tile = [0, 0];
 		rekt.wh = [22, 25];
 		rekt.asset = 'egyt/iceblock';
 
@@ -59,12 +59,12 @@ class Map {
 
 	populate() {
 		let granary = new Rekt;
-		granary.xy = [6, -1];
+		granary.tile = [6, -1];
 		granary.wh = [216, 168];
 		granary.asset = 'egyt/building/granary';
 
 		let tobaccoshop = new Rekt;
-		tobaccoshop.xy = [-13, 2];
+		tobaccoshop.tile = [-13, 2];
 		tobaccoshop.wh = [144, 144];
 		tobaccoshop.asset = 'egyt/building/redstore';
 
@@ -121,7 +121,7 @@ class Map {
 
 		this.mouse_tiled = un.tiled;
 
-		this.mark.xy = un.mult;
+		this.mark.tile = un.mult;
 		this.mark.now_update_pos();
 
 	}

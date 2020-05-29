@@ -170,6 +170,7 @@ void main() {
             this.using = false;
             this.rtt = true;
             this.chunk = null;
+            this.tile = [0, 0];
             Obj.num++;
         }
         update() {
@@ -284,20 +285,19 @@ void main() {
     class Rekt {
         constructor() {
             this.tiled = true;
-            this.xy = [0, 0];
-            this.of = [0, 0];
+            this.tile = [0, 0];
+            this.offset = [0, 0];
             this.wh = [1, 1];
             this.opacity = 1;
+            this.center = [0, 0];
+            this.position = [0, 0, 0];
             this.used = false;
             this.flick = false;
             this.plain = false;
             Rekt.num++;
-            this.center = [0, 0];
         }
         unset() {
             Rekt.num--;
-        }
-        multNone() {
         }
         paint_alternate() {
             var _a;
@@ -357,19 +357,20 @@ void main() {
                 return tq.scene;
         }
         dual() {
-            let xy = vecs$1.clone(this.xy);
-            let offset = vecs$1.clone(this.of);
-            vecs$1.add(xy, offset);
-            if (this.tiled) {
-                xy = Rekt.mult(xy);
-            }
+            let xy = vecs$1.clone(this.tile);
+            vecs$1.add(xy, this.offset);
             return xy;
         }
         now_update_pos() {
             var _a;
             const d = this.wh;
             let x, y;
-            let xy = this.dual();
+            let xy = vecs$1.clone(this.tile);
+            const depth = Rekt.depth(xy); // ignore offset!
+            vecs$1.add(xy, this.offset);
+            if (this.tiled) {
+                xy = Rekt.mult(xy);
+            }
             if (this.plain) {
                 x = xy[0];
                 y = xy[1];
@@ -391,7 +392,7 @@ void main() {
             }
             this.position = [x, y, 0];
             if (this.mesh) {
-                this.mesh.renderOrder = Rekt.depth(xy);
+                this.mesh.renderOrder = depth;
                 this.mesh.position.fromArray(this.position);
                 this.mesh.updateMatrix();
             }
@@ -401,12 +402,12 @@ void main() {
         Rekt.num = 0;
         Rekt.active = 0;
         //export type Struct = Rekt['struct']
-        function depth(p) {
-            return -p[1] + p[0];
+        function depth(t) {
+            return -t[1] + t[0];
         }
         Rekt.depth = depth;
-        function mult(p) {
-            return vecs$1.mult(p, 24);
+        function mult(t) {
+            return vecs$1.mult(t, 24);
         }
         Rekt.mult = mult;
     })(Rekt || (Rekt = {}));
@@ -519,7 +520,7 @@ void main() {
                     this.growth == 1 ? Egyt$1.sample(tillering) :
                         this.growth == 2 ? Egyt$1.sample(ripening) :
                             this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
-                rekt.xy = this.tile;
+                rekt.tile = this.tile;
                 rekt.wh = [22, 22];
             }
             update() {
@@ -669,7 +670,7 @@ void main() {
                 super();
                 let rekt = this.rekt = new Rekt$1;
                 rekt.asset = asset;
-                rekt.xy = this.tile;
+                rekt.tile = this.tile;
                 rekt.wh = [24, 12];
             }
             comes() {
@@ -748,15 +749,17 @@ void main() {
             let x = this.p[0];
             let y = this.p[1];
             let basest_tile = vecs$1.mult([x + 1, y], this.master.span * 24);
-            this.basest_tile = basest_tile;
-            this.tile_n = vecs$1.mult([x - 3, y + 3], this.master.span * 24);
+            this.basest_tile = vecs$1.clone(basest_tile);
+            let north = vecs$1.mult([x + 1, y], this.master.span * 24);
+            this.north = north;
+            this.order_tile = north;
             this.rekt_offset = vecs$1.clone(basest_tile);
             if (Egyt$1.OFFSET_CHUNK_OBJ_REKT) {
                 const zx = vecs$1.project(vecs$1.clone(basest_tile));
                 const zxc = [...zx, 0];
                 this.group.position.fromArray(zxc);
                 this.grouprt.position.fromArray(zxc);
-                const depth = Rekt$1.depth(Rekt$1.mult(this.basest_tile));
+                const depth = Rekt$1.depth(this.order_tile);
                 this.group.renderOrder = depth;
                 this.grouprt.renderOrder = depth;
             }
@@ -1014,14 +1017,14 @@ void main() {
             let p2 = [this.chunk.p[0] + 1, this.chunk.p[1]];
             vecs$1.mult(p2, this.chunk.master.span);
             let rekt = this.rekt = new Rekt$1;
-            rekt.xy = p2;
+            rekt.tile = p2;
             rekt.wh = [this.w, this.h];
             rekt.asset = 'egyt/tenbyten';
         }
         // todo pool the rts?
         comes() {
             this.rekt.use();
-            this.rekt.mesh.renderOrder = Rekt$1.depth(Rekt$1.mult(this.chunk.basest_tile));
+            this.rekt.mesh.renderOrder = Rekt$1.depth(this.chunk.order_tile);
             this.target = tqlib.rendertarget(this.w, this.h);
         }
         goes() {
@@ -1048,7 +1051,7 @@ void main() {
             this.dynmaster = new ChunkMaster(Chunk, 20);
             this.mouse_tiled = [0, 0];
             let rekt = this.mark = new Rekt$1;
-            rekt.xy = [0, 0];
+            rekt.tile = [0, 0];
             rekt.wh = [22, 25];
             rekt.asset = 'egyt/iceblock';
             //this.mark.use();
@@ -1070,11 +1073,11 @@ void main() {
         }
         populate() {
             let granary = new Rekt$1;
-            granary.xy = [6, -1];
+            granary.tile = [6, -1];
             granary.wh = [216, 168];
             granary.asset = 'egyt/building/granary';
             let tobaccoshop = new Rekt$1;
-            tobaccoshop.xy = [-13, 2];
+            tobaccoshop.tile = [-13, 2];
             tobaccoshop.wh = [144, 144];
             tobaccoshop.asset = 'egyt/building/redstore';
             granary.use();
@@ -1108,7 +1111,7 @@ void main() {
             vecs$1.add(p, m);
             const un = World.unproject(p);
             this.mouse_tiled = un.tiled;
-            this.mark.xy = un.mult;
+            this.mark.tile = un.mult;
             this.mark.now_update_pos();
         }
         update() {
@@ -1216,7 +1219,7 @@ void main() {
             this.view = new aabb2([0, 0]);
             let rekt = this.frustumRekt = new Rekt$1;
             rekt.name = 'Frustum';
-            rekt.xy = [0, 0];
+            rekt.tile = [0, 0];
             rekt.wh = [1, 1];
             rekt.asset = 'egyt/128';
             this.frustumRekt.plain = true; // dont 2:1
@@ -1312,8 +1315,8 @@ void main() {
                 let rekt = this.rekt = new Rekt$1;
                 rekt.obj = this;
                 rekt.asset = Egyt$1.sample(treez);
-                rekt.xy = this.tile;
-                rekt.of = [1, -1];
+                rekt.tile = this.tile;
+                rekt.offset = [1, -1];
                 rekt.wh = [120, 132];
             }
             update() {
@@ -1357,7 +1360,7 @@ void main() {
                 let tree = plopping;
                 let p = vecs$1.clone(Egyt$1.map.mouse_tiled);
                 tree.tile = p;
-                tree.rekt.xy = p;
+                tree.rekt.tile = p;
                 tree.rekt.now_update_pos();
                 if (App.left) {
                     plopping = null;
@@ -1396,7 +1399,7 @@ void main() {
     (function (Egyt) {
         Egyt.USE_CHUNK_RT = true;
         Egyt.OFFSET_CHUNK_OBJ_REKT = true;
-        Egyt.PAINT_OBJ_TICK_RATE = false;
+        Egyt.PAINT_OBJ_TICK_RATE = true;
         Egyt.YUM = 24; // evenly divisible
         var started = false;
         function sample(a) {
