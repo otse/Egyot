@@ -368,12 +368,10 @@ class ChunkRt {
 		let p2 = <zx>[this.chunk.p[0] + 1, this.chunk.p[1]];
 		vecs.mult(p2, this.chunk.master.span);
 
-		this.rekt = new Rekt({
-			tiled: true,
-			xy: p2,
-			wh: [this.w, this.h],
-			asset: 'egyt/tenbyten'
-		});
+		let rekt = this.rekt = new Rekt;
+		rekt.xy = p2;
+		rekt.wh = [this.w, this.h];
+		rekt.asset = 'egyt/tenbyten';
 	}
 	// todo pool the rts?
 	comes() {

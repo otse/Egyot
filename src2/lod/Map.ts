@@ -35,11 +35,10 @@ class Map {
 
 		this.mouse_tiled = [0, 0];
 
-		this.mark = new Rekt({
-			xy: [0, 0],
-			wh: [22, 25],
-			asset: 'egyt/iceblock'
-		});
+		let rekt = this.mark = new Rekt;
+		rekt.xy = [0, 0];
+		rekt.wh = [22, 25];
+		rekt.asset = 'egyt/iceblock';
 
 		//this.mark.use();
 		//this.mark.mesh.renderOrder = 999;
@@ -59,19 +58,15 @@ class Map {
 	}
 
 	populate() {
-		let granary = new Rekt({
-			tiled: true,
-			xy: [6, -1],
-			wh: [216, 168],
-			asset: 'egyt/building/granary'
-		});
+		let granary = new Rekt;
+		granary.xy = [6, -1];
+		granary.wh = [216, 168];
+		granary.asset = 'egyt/building/granary';
 
-		let tobaccoshop = new Rekt({
-			tiled: true,
-			xy: [-13, 2],
-			wh: [144, 144],
-			asset: 'egyt/building/redstore'
-		});
+		let tobaccoshop = new Rekt;
+		tobaccoshop.xy = [-13, 2];
+		tobaccoshop.wh = [144, 144];
+		tobaccoshop.asset = 'egyt/building/redstore';
 
 		granary.use();
 		//tobaccoshop.initiate();
@@ -126,7 +121,7 @@ class Map {
 
 		this.mouse_tiled = un.tiled;
 
-		this.mark.struct.xy = un.mult;
+		this.mark.xy = un.mult;
 		this.mark.now_update_pos();
 
 	}

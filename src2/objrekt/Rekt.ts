@@ -9,19 +9,17 @@ import { Chunk } from "../lod/Chunks";
 
 class Rekt {
 
-	readonly struct: {
-		obj?: Obj
-		name?: string
-		tiled?: boolean
-		xy: vec2
-		wh: vec2
-		asset?: string
-		flip?: boolean
-		opacity?: number,
-		color?: any
-	}
+	name: string
+	tiled: boolean = true
+	xy: vec2 = [0, 0]
+	of: vec2 = [0, 0]
+	wh: vec2 = [1, 1]
+	obj?: Obj
+	asset?: string
+	color?: string
+	opacity?: number = 1
+	flip?: boolean
 
-	offset: zx = [0, 0]
 
 	mesh: Mesh
 	meshShadow: Mesh
@@ -36,22 +34,15 @@ class Rekt {
 	flick = false
 	plain = false
 
-	constructor(struct: Rekt.Struct) {
-		this.struct = struct;
-
+	constructor() {
 		Rekt.num++;
 
 		this.center = [0, 0];
-
-		if (undefined == this.struct.opacity) this.struct.opacity = 1;
 	}
 	unset() {
 		Rekt.num--;
 	}
 	multNone() {
-	}
-	rorder(xy?: vec2) {
-		this.mesh.renderOrder = Rekt.depth(xy || this.dual());
 	}
 	paint_alternate() {
 		if (!Egyt.PAINT_OBJ_TICK_RATE)
@@ -60,8 +51,8 @@ class Rekt {
 			return;
 		this.flick = !this.flick;
 		this.material.color.set(new Color(this.flick ? 'red' : 'blue'));
-		if (this.struct.obj?.chunk)
-			this.struct.obj.chunk.changed = true;
+		if (this.obj?.chunk)
+			this.obj.chunk.changed = true;
 	}
 	unuse() {
 		if (!this.used)
@@ -81,24 +72,24 @@ class Rekt {
 		this.used = true;
 
 		this.geometry = new PlaneBufferGeometry(
-			this.struct.wh[0], this.struct.wh[1], 1, 1);
+			this.wh[0], this.wh[1], 1, 1);
 
 		let map;
-		if (this.struct.asset)
-			map = tqlib.loadtexture(`assets/${this.struct.asset}.png`);
+		if (this.asset)
+			map = tqlib.loadtexture(`assets/${this.asset}.png`);
 
 		this.material = new MeshBasicMaterial({
 			map: map,
 			transparent: true,
-			opacity: this.struct.opacity,
-			color: this.struct.obj?.chunk?.childobjscolor || this.struct.color || 0xffffff
+			opacity: this.opacity,
+			color: this.obj?.chunk?.childobjscolor || this.color || 0xffffff
 		});
 		this.mesh = new Mesh(this.geometry, this.material);
 		this.mesh.frustumCulled = false;
 		this.mesh.matrixAutoUpdate = false;
 		this.mesh.scale.set(1, 1, 1);
 
-		if (this.struct.flip)
+		if (this.flip)
 			this.mesh.scale.x = -this.mesh.scale.x;
 
 		//UV.FlipPlane(this.geometry, 0, true);
@@ -109,8 +100,8 @@ class Rekt {
 	}
 	getgroup() {
 		let c: Chunk | null | undefined;
-		if (c = this.struct.obj?.chunk)
-			if (this.struct.obj?.rtt && Egyt.USE_CHUNK_RT)
+		if (c = this.obj?.chunk)
+			if (this.obj?.rtt && Egyt.USE_CHUNK_RT)
 				return c.grouprt;
 			else
 				return c.group;
@@ -118,19 +109,19 @@ class Rekt {
 			return tq.scene;
 	}
 	dual() {
-		let p = <vec2>vecs.clone(this.struct.xy);
-		let offset = <vec2>vecs.clone(this.offset);
+		let xy = <vec2>vecs.clone(this.xy);
+		let offset = <vec2>vecs.clone(this.of);
 
-		if (this.struct.tiled) {
-			p = Rekt.mult(p);
-			offset = Rekt.mult(offset);
+		vecs.add(xy, offset);
+
+		if (this.tiled) {
+			xy = Rekt.mult(xy);
 		}
-		vecs.add(p, offset);
 
-		return p;
+		return xy;
 	}
 	now_update_pos() {
-		const d = this.struct.wh;
+		const d = this.wh;
 
 		let x, y;
 
@@ -142,7 +133,7 @@ class Rekt {
 		}
 		else {
 			if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
-				let c = this.struct.obj?.chunk;
+				let c = this.obj?.chunk;
 				if (c) {
 					vecs.subtract(xy, c.rekt_offset);
 				}
@@ -162,7 +153,7 @@ class Rekt {
 		this.position = [x, y, 0];
 
 		if (this.mesh) {
-			this.rorder(xy);
+			this.mesh.renderOrder = Rekt.depth(xy);
 			this.mesh.position.fromArray(this.position);
 			this.mesh.updateMatrix();
 		}
@@ -173,7 +164,7 @@ namespace Rekt {
 	export let num = 0;
 	export let active = 0;
 
-	export type Struct = Rekt['struct']
+	//export type Struct = Rekt['struct']
 
 	export function depth(p: vec2) {
 		return -p[1] + p[0];

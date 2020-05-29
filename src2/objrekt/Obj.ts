@@ -6,13 +6,10 @@ class Obj {
 	using = false
 	rtt = true
 	chunk: Chunk | null = null
+	tile: vec2
 
-	readonly struct: {
-		tile: zx
-	}
-	constructor(struct: Obj['struct']) {
+	constructor() {
 		Obj.num++;
-		this.struct = struct;
 	}
 	update() {
 	}
@@ -33,7 +30,7 @@ namespace Obj {
 	export var active = 0;
 	export var num = 0;
 
-	export type Struct = Obj['struct']
+	//export type Struct = Obj['struct']
 }
 
 export default Obj;

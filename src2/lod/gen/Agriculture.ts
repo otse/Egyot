@@ -27,8 +27,8 @@ namespace Agriculture {
 	]
 
 	export class Crop extends Obj {
-		constructor(protected growth: number, struct: Obj.Struct) {
-			super(struct);
+		constructor(protected growth: number) {
+			super();
 		}
 	}
 
@@ -36,21 +36,20 @@ namespace Agriculture {
 		rekt: Rekt
 		flick = false
 
-		constructor(growth: number, struct: Obj.Struct) {
-			super(growth, struct);
+		constructor(growth: number) {
+			super(growth);
 
 			this.rate = 2.0;
-
-			this.rekt = new Rekt({
-				obj: this,
-				asset:
-					this.growth == 1 ? Egyt.sample(tillering) :
-					this.growth == 2 ? Egyt.sample(ripening) :
-					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-				xy: this.struct.tile,
-				wh: [22, 22],
-				tiled: true,
-			});
+		}
+		post() {
+			let rekt = this.rekt = new Rekt;
+			rekt.obj = this;
+			rekt.asset =
+				this.growth == 1 ? Egyt.sample(tillering) :
+				this.growth == 2 ? Egyt.sample(ripening) :
+				this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
+			rekt.xy = this.tile;
+			rekt.wh = [22, 22];
 		}
 		update() {
 			if (Egyt.PAINT_OBJ_TICK_RATE)
@@ -85,13 +84,13 @@ namespace Agriculture {
 		if (Math.random() > .99)
 			return;
 
-		let wheat = new Wheat(growth, {
-			tile: tile
-		});
+		let crop = new Wheat(growth);
+		crop.tile = tile;
+		crop.post();
 
-		Egyt.world.add(wheat);
+		Egyt.world.add(crop);
 
-		return wheat;
+		return crop;
 	}
 
 	export function area_wheat(growth: number, aabb: aabb2) {

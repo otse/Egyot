@@ -24,23 +24,21 @@ namespace Forestation {
 
 		rekt: Rekt
 
-		constructor(struct: Obj.Struct) {
-			super(struct);
+		constructor() {
+			super();
 
 			//this.rtt = false
 			this.rate = 10;
 
-			this.rekt = new Rekt({
-				obj: this,
-				asset: Egyt.sample(treez),
-				xy: this.struct.tile,
-				wh: [120, 132],
-				tiled: true,
-			});
-
-			this.rekt.offset = [1, -1];
-
 			trees.push(this);
+		}
+		post() {
+			let rekt = this.rekt = new Rekt;
+			rekt.obj = this;
+			rekt.asset = Egyt.sample(treez);
+			rekt.xy = this.tile;
+			rekt.of = [1, -1];
+			rekt.wh = [120, 132];
 		}
 		update() {
 			if (Egyt.PAINT_OBJ_TICK_RATE)
@@ -70,9 +68,9 @@ namespace Forestation {
 		console.log(`add ${positions.length} trees from save`);
 		
 		for (let pos of positions) {
-			let tree = new Tree({
-				tile: pos
-			});
+			let tree = new Tree;
+			tree.tile = pos;
+			tree.post();
 			Egyt.world.add(tree);
 		}
 	}
@@ -85,10 +83,10 @@ namespace Forestation {
 		if (plopping) {
 			let tree = plopping;
 
-			let p = <zx>vecs.clone(Egyt.map.mouse_tiled);
+			let p = <vec2>vecs.clone(Egyt.map.mouse_tiled);
 
-			tree.struct.tile = p;
-			tree.rekt.struct.xy = p;
+			tree.tile = p;
+			tree.rekt.xy = p;
 			tree.rekt.now_update_pos();
 
 			if (App.left) {
@@ -96,27 +94,28 @@ namespace Forestation {
 				tree.goes();
 				tree.unset();
 
-				let tree2 = new Tree({
-					tile: p
-				});
+				let tree2 = new Tree;
+				tree2.tile = p;
+				tree2.post();
+
 				Egyt.world.add(tree2);
 			}
 		}
 	}
 
 	export function get_positions() {
-		let a: zx[] = [];
+		let a: vec2[] = [];
 		for (let tree of trees) {
-			a.push(tree.struct.tile);
+			a.push(tree.tile);
 		}
 		return JSON.stringify(a);
 	}
 
 	export function plop_tree() {
 
-		let tree = new Tree({
-			tile: [0, 0]
-		});
+		let tree = new Tree;
+		tree.tile = [0, 0];
+		tree.post();
 
 		tree.comes();
 

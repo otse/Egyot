@@ -21,16 +21,14 @@ namespace Tilization {
 
 		rekt: Rekt
 
-		constructor(asset, struct: Obj.Struct) {
+		constructor(asset) {
 
-			super(struct);
+			super();
 
-			this.rekt = new Rekt({
-				asset: asset,
-				tiled: true,
-				xy: this.struct.tile,
-				wh: [24, 12],
-			});
+			let rekt = this.rekt = new Rekt;
+			rekt.asset = asset;
+			rekt.xy = this.tile;
+			rekt.wh = [24, 12];
 		}
 		comes() {
 			super.comes();
@@ -76,9 +74,8 @@ namespace Tilization {
 		if (Math.random() > chance / 100)
 			return;
 
-		let tile = new Tile(asset, {
-			tile: pos
-		});
+		let tile = new Tile(asset);
+		tile.tile = pos;
 
 		//Egyt.world.add(tile);
 

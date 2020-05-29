@@ -16,7 +16,7 @@ class World {
 
 	add(obj: Obj) {
 
-		let c = Egyt.map.get_chunk_at_tile(obj.struct.tile);
+		let c = Egyt.map.get_chunk_at_tile(obj.tile);
 
 		let succeed = c.objs.add(obj);
 
@@ -40,9 +40,8 @@ class World {
 
 	init() {
 
-		Egyt.ply = new Ply({
-			tile: [0, 0]
-		});
+		Egyt.ply = new Ply;
+		Egyt.ply.tile = [0, 0]
 
 		Egyt.ply.comes();
 	}

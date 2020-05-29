@@ -164,14 +164,13 @@ void main() {
     })(tq || (tq = {}));
 
     class Obj {
-        constructor(struct) {
+        constructor() {
             this.order = 0;
             this.rate = 1;
             this.using = false;
             this.rtt = true;
             this.chunk = null;
             Obj.num++;
-            this.struct = struct;
         }
         update() {
         }
@@ -190,6 +189,7 @@ void main() {
     (function (Obj) {
         Obj.active = 0;
         Obj.num = 0;
+        //export type Struct = Obj['struct']
     })(Obj || (Obj = {}));
     var Obj$1 = Obj;
 
@@ -282,24 +282,22 @@ void main() {
     var vecs$1 = vecs;
 
     class Rekt {
-        constructor(struct) {
-            this.offset = [0, 0];
+        constructor() {
+            this.tiled = true;
+            this.xy = [0, 0];
+            this.of = [0, 0];
+            this.wh = [1, 1];
+            this.opacity = 1;
             this.used = false;
             this.flick = false;
             this.plain = false;
-            this.struct = struct;
             Rekt.num++;
             this.center = [0, 0];
-            if (undefined == this.struct.opacity)
-                this.struct.opacity = 1;
         }
         unset() {
             Rekt.num--;
         }
         multNone() {
-        }
-        rorder(xy) {
-            this.mesh.renderOrder = Rekt.depth(xy || this.dual());
         }
         paint_alternate() {
             var _a;
@@ -309,8 +307,8 @@ void main() {
                 return;
             this.flick = !this.flick;
             this.material.color.set(new THREE.Color(this.flick ? 'red' : 'blue'));
-            if ((_a = this.struct.obj) === null || _a === void 0 ? void 0 : _a.chunk)
-                this.struct.obj.chunk.changed = true;
+            if ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk)
+                this.obj.chunk.changed = true;
         }
         unuse() {
             if (!this.used)
@@ -327,21 +325,21 @@ void main() {
                 console.warn('rekt already inuse');
             Rekt.active++;
             this.used = true;
-            this.geometry = new THREE.PlaneBufferGeometry(this.struct.wh[0], this.struct.wh[1], 1, 1);
+            this.geometry = new THREE.PlaneBufferGeometry(this.wh[0], this.wh[1], 1, 1);
             let map;
-            if (this.struct.asset)
-                map = tqlib.loadtexture(`assets/${this.struct.asset}.png`);
+            if (this.asset)
+                map = tqlib.loadtexture(`assets/${this.asset}.png`);
             this.material = new THREE.MeshBasicMaterial({
                 map: map,
                 transparent: true,
-                opacity: this.struct.opacity,
-                color: ((_b = (_a = this.struct.obj) === null || _a === void 0 ? void 0 : _a.chunk) === null || _b === void 0 ? void 0 : _b.childobjscolor) || this.struct.color || 0xffffff
+                opacity: this.opacity,
+                color: ((_b = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk) === null || _b === void 0 ? void 0 : _b.childobjscolor) || this.color || 0xffffff
             });
             this.mesh = new THREE.Mesh(this.geometry, this.material);
             this.mesh.frustumCulled = false;
             this.mesh.matrixAutoUpdate = false;
             this.mesh.scale.set(1, 1, 1);
-            if (this.struct.flip)
+            if (this.flip)
                 this.mesh.scale.x = -this.mesh.scale.x;
             //UV.FlipPlane(this.geometry, 0, true);
             this.now_update_pos();
@@ -350,8 +348,8 @@ void main() {
         getgroup() {
             var _a, _b;
             let c;
-            if (c = (_a = this.struct.obj) === null || _a === void 0 ? void 0 : _a.chunk)
-                if (((_b = this.struct.obj) === null || _b === void 0 ? void 0 : _b.rtt) && Egyt$1.USE_CHUNK_RT)
+            if (c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk)
+                if (((_b = this.obj) === null || _b === void 0 ? void 0 : _b.rtt) && Egyt$1.USE_CHUNK_RT)
                     return c.grouprt;
                 else
                     return c.group;
@@ -359,18 +357,17 @@ void main() {
                 return tq.scene;
         }
         dual() {
-            let p = vecs$1.clone(this.struct.xy);
-            let offset = vecs$1.clone(this.offset);
-            if (this.struct.tiled) {
-                p = Rekt.mult(p);
-                offset = Rekt.mult(offset);
+            let xy = vecs$1.clone(this.xy);
+            let offset = vecs$1.clone(this.of);
+            vecs$1.add(xy, offset);
+            if (this.tiled) {
+                xy = Rekt.mult(xy);
             }
-            vecs$1.add(p, offset);
-            return p;
+            return xy;
         }
         now_update_pos() {
             var _a;
-            const d = this.struct.wh;
+            const d = this.wh;
             let x, y;
             let xy = this.dual();
             if (this.plain) {
@@ -379,7 +376,7 @@ void main() {
             }
             else {
                 if (Egyt$1.OFFSET_CHUNK_OBJ_REKT) {
-                    let c = (_a = this.struct.obj) === null || _a === void 0 ? void 0 : _a.chunk;
+                    let c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk;
                     if (c) {
                         vecs$1.subtract(xy, c.rekt_offset);
                     }
@@ -394,7 +391,7 @@ void main() {
             }
             this.position = [x, y, 0];
             if (this.mesh) {
-                this.rorder(xy);
+                this.mesh.renderOrder = Rekt.depth(xy);
                 this.mesh.position.fromArray(this.position);
                 this.mesh.updateMatrix();
             }
@@ -403,6 +400,7 @@ void main() {
     (function (Rekt) {
         Rekt.num = 0;
         Rekt.active = 0;
+        //export type Struct = Rekt['struct']
         function depth(p) {
             return -p[1] + p[0];
         }
@@ -415,8 +413,8 @@ void main() {
     var Rekt$1 = Rekt;
 
     class Man extends Obj$1 {
-        constructor(stats) {
-            super(stats);
+        constructor() {
+            super();
         }
         produce() {
             return;
@@ -427,8 +425,8 @@ void main() {
         }
     }
     class Ply extends Man {
-        constructor(stats) {
-            super(stats);
+        constructor() {
+            super();
             this.order = 9;
         }
         produce() {
@@ -449,7 +447,7 @@ void main() {
             console.log('world');
         }
         add(obj) {
-            let c = Egyt$1.map.get_chunk_at_tile(obj.struct.tile);
+            let c = Egyt$1.map.get_chunk_at_tile(obj.tile);
             let succeed = c.objs.add(obj);
             if (succeed) {
                 obj.chunk = c;
@@ -463,9 +461,8 @@ void main() {
         update() {
         }
         init() {
-            Egyt$1.ply = new Ply({
-                tile: [0, 0]
-            });
+            Egyt$1.ply = new Ply;
+            Egyt$1.ply.tile = [0, 0];
             Egyt$1.ply.comes();
         }
     }
@@ -503,26 +500,27 @@ void main() {
             'egyt/farm/wheat_ilil',
         ];
         class Crop extends Obj$1 {
-            constructor(growth, struct) {
-                super(struct);
+            constructor(growth) {
+                super();
                 this.growth = growth;
             }
         }
         Agriculture.Crop = Crop;
         class Wheat extends Crop {
-            constructor(growth, struct) {
-                super(growth, struct);
+            constructor(growth) {
+                super(growth);
                 this.flick = false;
                 this.rate = 2.0;
-                this.rekt = new Rekt$1({
-                    obj: this,
-                    asset: this.growth == 1 ? Egyt$1.sample(tillering) :
+            }
+            post() {
+                let rekt = this.rekt = new Rekt$1;
+                rekt.obj = this;
+                rekt.asset =
+                    this.growth == 1 ? Egyt$1.sample(tillering) :
                         this.growth == 2 ? Egyt$1.sample(ripening) :
-                            this.growth == 3 ? 'egyt/farm/wheat_ilili' : '',
-                    xy: this.struct.tile,
-                    wh: [22, 22],
-                    tiled: true,
-                });
+                            this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
+                rekt.xy = this.tile;
+                rekt.wh = [22, 22];
             }
             update() {
                 if (Egyt$1.PAINT_OBJ_TICK_RATE)
@@ -553,11 +551,11 @@ void main() {
         function place_wheat(growth, tile) {
             if (Math.random() > .99)
                 return;
-            let wheat = new Wheat(growth, {
-                tile: tile
-            });
-            Egyt$1.world.add(wheat);
-            return wheat;
+            let crop = new Wheat(growth);
+            crop.tile = tile;
+            crop.post();
+            Egyt$1.world.add(crop);
+            return crop;
         }
         Agriculture.place_wheat = place_wheat;
         function area_wheat(growth, aabb) {
@@ -667,14 +665,12 @@ void main() {
     var Tilization;
     (function (Tilization) {
         class Tile extends Obj$1 {
-            constructor(asset, struct) {
-                super(struct);
-                this.rekt = new Rekt$1({
-                    asset: asset,
-                    tiled: true,
-                    xy: this.struct.tile,
-                    wh: [24, 12],
-                });
+            constructor(asset) {
+                super();
+                let rekt = this.rekt = new Rekt$1;
+                rekt.asset = asset;
+                rekt.xy = this.tile;
+                rekt.wh = [24, 12];
             }
             comes() {
                 super.comes();
@@ -705,9 +701,8 @@ void main() {
         function place_tile(chance, asset, pos) {
             if (Math.random() > chance / 100)
                 return;
-            let tile = new Tile(asset, {
-                tile: pos
-            });
+            let tile = new Tile(asset);
+            tile.tile = pos;
             //Egyt.world.add(tile);
             return tile;
         }
@@ -1018,12 +1013,10 @@ void main() {
             this.camera = tqlib.ortographiccamera(this.w, this.h);
             let p2 = [this.chunk.p[0] + 1, this.chunk.p[1]];
             vecs$1.mult(p2, this.chunk.master.span);
-            this.rekt = new Rekt$1({
-                tiled: true,
-                xy: p2,
-                wh: [this.w, this.h],
-                asset: 'egyt/tenbyten'
-            });
+            let rekt = this.rekt = new Rekt$1;
+            rekt.xy = p2;
+            rekt.wh = [this.w, this.h];
+            rekt.asset = 'egyt/tenbyten';
         }
         // todo pool the rts?
         comes() {
@@ -1054,11 +1047,10 @@ void main() {
             this.statmaster = new ChunkMaster(Chunk, 20);
             this.dynmaster = new ChunkMaster(Chunk, 20);
             this.mouse_tiled = [0, 0];
-            this.mark = new Rekt$1({
-                xy: [0, 0],
-                wh: [22, 25],
-                asset: 'egyt/iceblock'
-            });
+            let rekt = this.mark = new Rekt$1;
+            rekt.xy = [0, 0];
+            rekt.wh = [22, 25];
+            rekt.asset = 'egyt/iceblock';
             //this.mark.use();
             //this.mark.mesh.renderOrder = 999;
             //this.mark.dontOrder = true;
@@ -1077,18 +1069,14 @@ void main() {
             tqlib.loadtexture('assets/egyt/tree/oaktree4.png', undefined, () => Egyt$1.resourced('TREE_2'));
         }
         populate() {
-            let granary = new Rekt$1({
-                tiled: true,
-                xy: [6, -1],
-                wh: [216, 168],
-                asset: 'egyt/building/granary'
-            });
-            let tobaccoshop = new Rekt$1({
-                tiled: true,
-                xy: [-13, 2],
-                wh: [144, 144],
-                asset: 'egyt/building/redstore'
-            });
+            let granary = new Rekt$1;
+            granary.xy = [6, -1];
+            granary.wh = [216, 168];
+            granary.asset = 'egyt/building/granary';
+            let tobaccoshop = new Rekt$1;
+            tobaccoshop.xy = [-13, 2];
+            tobaccoshop.wh = [144, 144];
+            tobaccoshop.asset = 'egyt/building/redstore';
             granary.use();
             //tobaccoshop.initiate();
             //Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));
@@ -1120,7 +1108,7 @@ void main() {
             vecs$1.add(p, m);
             const un = World.unproject(p);
             this.mouse_tiled = un.tiled;
-            this.mark.struct.xy = un.mult;
+            this.mark.xy = un.mult;
             this.mark.now_update_pos();
         }
         update() {
@@ -1226,12 +1214,11 @@ void main() {
             this.dpi = window.devicePixelRatio;
             this.scale = 1 / this.dpi;
             this.view = new aabb2([0, 0]);
-            this.frustumRekt = new Rekt$1({
-                name: 'Frustum',
-                xy: [0, 0],
-                wh: [1, 1],
-                asset: 'egyt/128'
-            });
+            let rekt = this.frustumRekt = new Rekt$1;
+            rekt.name = 'Frustum';
+            rekt.xy = [0, 0];
+            rekt.wh = [1, 1];
+            rekt.asset = 'egyt/128';
             this.frustumRekt.plain = true; // dont 2:1
             this.frustumRekt.use();
             this.frustumRekt.mesh.renderOrder = 9999999;
@@ -1315,19 +1302,19 @@ void main() {
             'egyt/tree/oaktree4',
         ];
         class Tree extends Obj$1 {
-            constructor(struct) {
-                super(struct);
+            constructor() {
+                super();
                 //this.rtt = false
                 this.rate = 10;
-                this.rekt = new Rekt$1({
-                    obj: this,
-                    asset: Egyt$1.sample(treez),
-                    xy: this.struct.tile,
-                    wh: [120, 132],
-                    tiled: true,
-                });
-                this.rekt.offset = [1, -1];
                 trees.push(this);
+            }
+            post() {
+                let rekt = this.rekt = new Rekt$1;
+                rekt.obj = this;
+                rekt.asset = Egyt$1.sample(treez);
+                rekt.xy = this.tile;
+                rekt.of = [1, -1];
+                rekt.wh = [120, 132];
             }
             update() {
                 if (Egyt$1.PAINT_OBJ_TICK_RATE)
@@ -1355,9 +1342,9 @@ void main() {
         function populate() {
             console.log(`add ${positions.length} trees from save`);
             for (let pos of positions) {
-                let tree = new Tree({
-                    tile: pos
-                });
+                let tree = new Tree;
+                tree.tile = pos;
+                tree.post();
                 Egyt$1.world.add(tree);
             }
         }
@@ -1369,16 +1356,16 @@ void main() {
             if (plopping) {
                 let tree = plopping;
                 let p = vecs$1.clone(Egyt$1.map.mouse_tiled);
-                tree.struct.tile = p;
-                tree.rekt.struct.xy = p;
+                tree.tile = p;
+                tree.rekt.xy = p;
                 tree.rekt.now_update_pos();
                 if (App.left) {
                     plopping = null;
                     tree.goes();
                     tree.unset();
-                    let tree2 = new Tree({
-                        tile: p
-                    });
+                    let tree2 = new Tree;
+                    tree2.tile = p;
+                    tree2.post();
                     Egyt$1.world.add(tree2);
                 }
             }
@@ -1387,15 +1374,15 @@ void main() {
         function get_positions() {
             let a = [];
             for (let tree of trees) {
-                a.push(tree.struct.tile);
+                a.push(tree.tile);
             }
             return JSON.stringify(a);
         }
         Forestation.get_positions = get_positions;
         function plop_tree() {
-            let tree = new Tree({
-                tile: [0, 0]
-            });
+            let tree = new Tree;
+            tree.tile = [0, 0];
+            tree.post();
             tree.comes();
             // dont add to world yet
             //Egyt.world.add(plop);

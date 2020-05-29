@@ -41,12 +41,11 @@ class Game {
 
 		this.view = new aabb2([0, 0]);
 
-		this.frustumRekt = new Rekt({
-			name: 'Frustum',
-			xy: [0, 0],
-			wh: [1, 1],
-			asset: 'egyt/128'
-		});
+		let rekt = this.frustumRekt = new Rekt;
+		rekt.name = 'Frustum';
+		rekt.xy = [0, 0];
+		rekt.wh = [1, 1];
+		rekt.asset = 'egyt/128';
 
 		this.frustumRekt.plain = true; // dont 2:1
 
@@ -119,7 +118,7 @@ class Game {
 		return;
 
 		this.frustumRekt.mesh.scale.set(w2, h2, 1);
-		this.frustumRekt.struct.xy = <zx>[...this.focal];
+		this.frustumRekt.xy = <zx>[...this.focal];
 		this.frustumRekt.now_update_pos();
 	}
 
