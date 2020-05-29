@@ -96,7 +96,7 @@ class Game {
 
 		tq.scene.scale.set(this.scale, this.scale, 1);
 
-		let p2 = vecs.multp(<vec2>[...this.pos], this.scale);
+		let p2 = vecs.mult(<vec2>[...this.pos], this.scale);
 
 		tq.scene.position.set(p2[0], p2[1], 0);
 

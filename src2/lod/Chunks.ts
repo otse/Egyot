@@ -11,18 +11,28 @@ import { Color, Group, WebGLRenderTarget, Int8Attribute, RGBFormat, NearestFilte
 import { tq } from "../lib/tq";
 import Tilization from "./gen/Tilization";
 import { tqlib } from "../lib/tqlib";
+import { Map } from "./Map";
+import { World } from "./World";
 
+const count = (c: Chunk, prop: string) => {
+	let num = 0;
+	for (let tuple of c.objs.tuples)
+		if (tuple[0][prop])
+			num++;
+	return num;
+}
 class Chunk {
 	on = false
 	changed = true
 	childobjscolor
 
-	readonly objs: ChunkObjs2
+	readonly objs: ChunkObjs
 	rt: ChunkRt | null
 	p: zx
 
-	tile_n: zx
-	tile_s: zx
+	basest_tile: vec2
+	tile_n: vec2
+	tile_s: vec2
 
 	bound: aabb2
 	screen: aabb2
@@ -40,7 +50,7 @@ class Chunk {
 
 		const colors = ['lightsalmon', 'khaki', 'lightgreen', 'paleturquoise', 'plum', 'pink'];
 
-		this.objs = new ChunkObjs2(this);
+		this.objs = new ChunkObjs(this);
 		//this.color = Egyt.sample(colors);
 
 		this.p = [x, y];
@@ -54,20 +64,24 @@ class Chunk {
 		let x = this.p[0];
 		let y = this.p[1];
 
-		let basest_tile = vecs.multp([x + 1, y], this.master.span * 24);
+		let basest_tile = vecs.mult([x + 1, y], this.master.span * 24);
+		this.basest_tile = basest_tile;
 
-		this.tile_n = vecs.multp([x, y], this.master.span * 24);
+		this.tile_n = vecs.mult([x - 3, y + 3], this.master.span * 24);
 
 		this.rekt_offset = <vec2>vecs.clone(basest_tile);
 
 		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
-			const zx = vecs.two_one(vecs.clone(basest_tile));
+			const zx = vecs.project(vecs.clone(basest_tile));
 			const zxc = <vec3>[...zx, 0];
 
 			this.group.position.fromArray(zxc);
 			this.grouprt.position.fromArray(zxc);
 
-			this.group.renderOrder = this.grouprt.renderOrder = Rekt.Srorder(this.tile_n);
+			const depth = Rekt.depth(Rekt.mult(this.basest_tile));
+			
+			this.group.renderOrder = depth;
+			this.grouprt.renderOrder = depth;
 		}
 
 		// non screen bound not used anymore
@@ -99,10 +113,7 @@ class Chunk {
 	comes_pt2() {
 		if (!Egyt.USE_CHUNK_RT)
 			return;
-		let rtt = 0;
-		for (let tuple of this.objs.tuples)
-			if (tuple[0].rtt)
-				rtt++;
+		let rtt = count(this, 'rtt');
 		const threshold = rtt >= 10;
 		if (!threshold)
 			return;
@@ -137,9 +148,9 @@ class Chunk {
 namespace Chunk {
 	export function Sscreen(x, y, master) {
 
-		let basest_tile = vecs.multp([x + 1, y], master.span * 24);
+		let basest_tile = vecs.mult([x + 1, y], master.span * 24);
 
-		let real = vecs.two_one(vecs.clone(basest_tile));
+		let real = vecs.project(vecs.clone(basest_tile));
 		vecs.subtract(real, [0, -master.height / 2]);
 
 		return new aabb2(
@@ -149,7 +160,7 @@ namespace Chunk {
 	}
 }
 
-class ChunkObjs2 {
+class ChunkObjs {
 	public rtts = 0
 	public readonly tuples: [Obj, number][]
 	constructor(private chunk: Chunk) {
@@ -281,7 +292,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 		}
 	}
 	update() {
-		let middle = Egyt.map.unproject(Egyt.game.view.center()).tile;
+		let middle = World.unproject(Egyt.game.view.center()).tiled;
 		let b = this.master.big(middle);
 		this.lines = this.total = 0;
 		this.off();
@@ -297,8 +308,8 @@ class Tailorer<T extends Chunk> { // chunk-snake
 			c = this.master.guarantee(x, y);
 			if (!c.on && c.oob()) {
 				if (s > 2) {
-					if (j == 0) j = 1;
-					if (j == 2) j = 3;
+					if (j == 0) { j = 1; }
+					if (j == 2) { j = 3; }
 				}
 				u++;
 			}
@@ -326,8 +337,9 @@ class Tailorer<T extends Chunk> { // chunk-snake
 				j = 0;
 				s = 0;
 			}
-			if (!s)
+			if (!s) {
 				this.lines++;
+			}
 			this.total++;
 			if (u > 5 || i >= 350) {
 				break;
@@ -354,7 +366,7 @@ class ChunkRt {
 		this.camera = tqlib.ortographiccamera(this.w, this.h);
 
 		let p2 = <zx>[this.chunk.p[0] + 1, this.chunk.p[1]];
-		vecs.multp(p2, this.chunk.master.span);
+		vecs.mult(p2, this.chunk.master.span);
 
 		this.rekt = new Rekt({
 			tiled: true,
@@ -366,7 +378,7 @@ class ChunkRt {
 	// todo pool the rts?
 	comes() {
 		this.rekt.use();
-		this.rekt.mesh.renderOrder = Rekt.Srorder(this.chunk.tile_n);
+		this.rekt.mesh.renderOrder = Rekt.depth(Rekt.mult(this.chunk.basest_tile));
 		this.target = tqlib.rendertarget(this.w, this.h);
 	}
 	goes() {
@@ -390,4 +402,4 @@ class ChunkRt {
 	}
 }
 
-export { Chunk, ChunkMaster as ChunkMaster, Tailorer, ChunkObjs2 as ChunkObjs2 }
+export { Chunk, ChunkMaster, Tailorer, ChunkObjs }

@@ -4,6 +4,8 @@ import { aabb2 } from "../../lib/aabb";
 import Obj from "../../objrekt/Obj";
 import App from "../../lib/App";
 import vecs from "../../lib/Vecs";
+import { Map } from "../Map";
+import { World } from "../World";
 
 namespace Tilization {
 
@@ -59,7 +61,7 @@ namespace Tilization {
 		}
 
 		if (App.map['u'] == 1) {
-			let middle = Egyt.map.unproject(Egyt.game.view.center()).tile;
+			let middle = World.unproject(Egyt.game.view.center()).tiled;
 
 			let b = this.master.big(middle);
 

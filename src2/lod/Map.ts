@@ -12,6 +12,7 @@ import { tq } from "../lib/tq";
 import Tilization from "./gen/Tilization";
 import { tqlib } from "../lib/tqlib";
 import { ChunkMaster, Chunk } from "./Chunks";
+import { World } from "./World";
 
 
 class Map {
@@ -22,7 +23,7 @@ class Map {
 	statmaster: ChunkMaster<Chunk>
 	dynmaster: ChunkMaster<Chunk>
 
-	mouse_tile: vec2
+	mouse_tiled: vec2
 	mark: Rekt
 
 	constructor() {
@@ -32,7 +33,7 @@ class Map {
 		this.statmaster = new ChunkMaster<Chunk>(Chunk, 20);
 		this.dynmaster = new ChunkMaster<Chunk>(Chunk, 20);
 
-		this.mouse_tile = [0, 0];
+		this.mouse_tiled = [0, 0];
 
 		this.mark = new Rekt({
 			xy: [0, 0],
@@ -112,23 +113,6 @@ class Map {
 		return this.statmaster.which(<vec2>zx);
 	}
 
-	unproject(query: zx): { tile: vec2, mult: vec2 } {
-		let p = query;
-
-		let un = <vec2>vecs.clone(p);
-		vecs.unproject(un);
-
-		let p2 = <vec2>vecs.clone(un);
-		vecs.divide(p2, 24);
-		vecs.floor(p2);
-		p2[0] += 1; // necessary
-
-		let p3 = <vec2>vecs.clone(p2);
-		vecs.multp(p3, 24);
-
-		return { tile: p2, mult: p3 };
-	}
-
 	mark_mouse() {
 
 		let m = <zx>[...App.move];
@@ -138,11 +122,11 @@ class Map {
 		let p = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
 		vecs.add(p, m);
 
-		const mouse = this.unproject(p);
+		const un = World.unproject(p);
 
-		this.mouse_tile = mouse.tile;
+		this.mouse_tiled = un.tiled;
 
-		this.mark.struct.xy = mouse.mult;
+		this.mark.struct.xy = un.mult;
 		this.mark.now_update_pos();
 
 	}
@@ -155,10 +139,13 @@ class Map {
 		let worldPixelsLeftUpperCorner = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
 		let worldPixelsRightLowerCorner = [Egyt.game.view.max[0], Egyt.game.view.min[1]] as zx;
 
-		const x = this.unproject(worldPixelsLeftUpperCorner).tile;
-		const y = this.unproject(worldPixelsRightLowerCorner).tile;
-
+		const x = World.unproject(worldPixelsLeftUpperCorner).tiled;
+		const y = World.unproject(worldPixelsRightLowerCorner).tiled;
 	}
+}
+
+namespace Map {
+
 }
 
 export { Map }

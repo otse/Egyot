@@ -13,8 +13,8 @@ class Rekt {
 		obj?: Obj
 		name?: string
 		tiled?: boolean
-		xy: zx
-		wh: zx
+		xy: vec2
+		wh: vec2
 		asset?: string
 		flip?: boolean
 		opacity?: number,
@@ -29,8 +29,8 @@ class Rekt {
 	material: MeshBasicMaterial
 	geometry: PlaneBufferGeometry
 
-	actualpos: zxc
-	center: zx
+	center: vec2
+	position: vec3
 
 	used = false
 	flick = false
@@ -41,7 +41,6 @@ class Rekt {
 
 		Rekt.num++;
 
-		this.actualpos = [0, 0, 0];
 		this.center = [0, 0];
 
 		if (undefined == this.struct.opacity) this.struct.opacity = 1;
@@ -51,11 +50,8 @@ class Rekt {
 	}
 	multNone() {
 	}
-	rorder() {
-		let p = <zx>vecs.clone(this.struct.xy);
-		
-		//let p = <zx>points.add(this.struct.xy, this.offset);
-		this.mesh.renderOrder = Rekt.Srorder(p);
+	rorder(xy?: vec2) {
+		this.mesh.renderOrder = Rekt.depth(xy || this.dual());
 	}
 	paint_alternate() {
 		if (!Egyt.PAINT_OBJ_TICK_RATE)
@@ -77,7 +73,6 @@ class Rekt {
 		this.material.dispose();
 	}
 	use() {
-
 		if (this.used)
 			console.warn('rekt already inuse');
 
@@ -111,9 +106,7 @@ class Rekt {
 		this.now_update_pos();
 
 		this.getgroup().add(this.mesh);
-
 	}
-
 	getgroup() {
 		let c: Chunk | null | undefined;
 		if (c = this.struct.obj?.chunk)
@@ -124,49 +117,53 @@ class Rekt {
 		else
 			return tq.scene;
 	}
+	dual() {
+		let p = <vec2>vecs.clone(this.struct.xy);
+		let offset = <vec2>vecs.clone(this.offset);
 
+		if (this.struct.tiled) {
+			p = Rekt.mult(p);
+			offset = Rekt.mult(offset);
+		}
+		vecs.add(p, offset);
+
+		return p;
+	}
 	now_update_pos() {
 		const d = this.struct.wh;
 
 		let x, y;
 
-		let p = <zx>vecs.clone(this.struct.xy);
-		let offset = <zx>vecs.clone(this.offset);
-
-		if (this.struct.tiled) {
-			p = Rekt.Smult(p);
-			offset = Rekt.Smult(offset);
-		}
-		vecs.add(p, offset);
+		let xy = this.dual();
 
 		if (this.plain) {
-			x = p[0];
-			y = p[1];
+			x = xy[0];
+			y = xy[1];
 		}
 		else {
 			if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
 				let c = this.struct.obj?.chunk;
 				if (c) {
-					vecs.subtract(p, c.rekt_offset);
+					vecs.subtract(xy, c.rekt_offset);
 				}
 			}
-			x = p[0] / 2 + p[1] / 2;
-			y = p[1] / 4 - p[0] / 4;
+			x = xy[0] / 2 + xy[1] / 2;
+			y = xy[1] / 4 - xy[0] / 4;
 
 			this.center = [x, y];
 
 			// middle bottom
-			let w = d[0] / 2;
-			let h = d[1] / 2;
+			const w = d[0] / 2;
+			const h = d[1] / 2;
 
 			y += h;
 		}
 
-		this.actualpos = [x, y, 0];
+		this.position = [x, y, 0];
 
 		if (this.mesh) {
-			this.rorder();
-			this.mesh.position.fromArray(this.actualpos);
+			this.rorder(xy);
+			this.mesh.position.fromArray(this.position);
 			this.mesh.updateMatrix();
 		}
 	}
@@ -178,12 +175,12 @@ namespace Rekt {
 
 	export type Struct = Rekt['struct']
 
-	export function Srorder(p: zx) {
+	export function depth(p: vec2) {
 		return -p[1] + p[0];
 	}
 
-	export function Smult(p: zx) {
-		return vecs.multp(p, 24);
+	export function mult(p: vec2) {
+		return vecs.mult(p, 24);
 	}
 }
 

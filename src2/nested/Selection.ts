@@ -77,7 +77,7 @@ class Selection {
 		if (Egyt.game.scale == 0.5)
 			scale = 2;
 
-		vecs.multp(
+		vecs.mult(
 			mouse, scale);
 	}
 

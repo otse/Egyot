@@ -83,11 +83,11 @@ namespace Board {
 			Board.win.find('#numObjs').html(`Num objs: ${Obj.active} / ${Obj.num}`);
 			Board.win.find('#numRekts').html(`Num rekts: ${Rekt.active} / ${Rekt.num}`);
 
-			let b = Egyt.map.statmaster.big(Egyt.map.mouse_tile);
+			let b = Egyt.map.statmaster.big(Egyt.map.mouse_tiled);
 			let c = Egyt.map.statmaster.at(b[0], b[1]);
 				
-			Board.win.find('#square').text(`Mouse: ${vecs.string(Egyt.map.mouse_tile)}`);
-			Board.win.find('#squareChunk').text(`Mouse chunk: ${vecs.string(b)}`);
+			Board.win.find('#square').text(`Mouse: ${vecs.to_string(Egyt.map.mouse_tiled)}`);
+			Board.win.find('#squareChunk').text(`Mouse chunk: ${vecs.to_string(b)}`);
 			Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${c?.rt ? 'true' : 'false'}`);
 			Board.win.find('#snakeTurns').text(`CSnake turns: ${Egyt.map.statmaster.fitter.lines}`);
 			Board.win.find('#snakeTotal').text(`CSnake total: ${Egyt.map.statmaster.fitter.total}`);

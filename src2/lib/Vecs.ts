@@ -14,7 +14,7 @@ namespace vecs {
 		}
 	}
 
-	export function two_one(p: vec2): vec2 {
+	export function project(p: vec2): vec2 {
 		let copy = [...p];
 		p[0] = copy[0] / 2 + copy[1] / 2;
 		p[1] = copy[1] / 4 - copy[0] / 4;
@@ -28,7 +28,7 @@ namespace vecs {
 		return p;
 	}
 
-	export function string(a: vec2 | vec3 | vec4) {
+	export function to_string(a: vec2 | vec3 | vec4) {
 		const pr = (b) => b != undefined ? `, ${b}` : '';
 
 		return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
@@ -52,7 +52,7 @@ namespace vecs {
 		return a;
 	}
 
-	export function multp(zx: vec2, n: number, n2?: number) {
+	export function mult(zx: vec2, n: number, n2?: number) {
 		zx[0] *= n;
 		zx[1] *= n2 || n;
 		return zx;

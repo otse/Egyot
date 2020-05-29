@@ -48,4 +48,25 @@ class World {
 	}
 }
 
+namespace World {
+	type Un = { untiled: vec2, tiled: vec2, mult: vec2 };
+
+	export function unproject(query: zx): Un {
+		let p = query;
+
+		let un = <vec2>vecs.clone(p);
+		vecs.unproject(un);
+
+		let p2 = <vec2>vecs.clone(un);
+		vecs.divide(p2, 24);
+		vecs.floor(p2);
+		p2[0] += 1; // necessary
+
+		let p3 = <vec2>vecs.clone(p2);
+		vecs.mult(p3, 24);
+
+		return { untiled: un, tiled: p2, mult: p3 };
+	}
+}
+
 export { World }
