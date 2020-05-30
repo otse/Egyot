@@ -76,7 +76,7 @@ class Chunk {
 		this.rekt_offset = <vec2>vecs.clone(basest_tile);
 
 		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
-			const zx = vecs.project(vecs.clone(basest_tile));
+			const zx = vecs.project(basest_tile);
 			const zxc = <vec3>[...zx, 0];
 
 			this.group.position.fromArray(zxc);
@@ -154,12 +154,11 @@ namespace Chunk {
 
 		let basest_tile = vecs.mult([x + 1, y], master.span * 24);
 
-		let real = vecs.project(vecs.clone(basest_tile));
-		vecs.subtract(real, [0, -master.height / 2]);
+		let real = vecs.subtract(vecs.project(basest_tile), [0, -master.height / 2]);
 
 		return new aabb2(
-			vecs.add(vecs.clone(real), [-master.width / 2, -master.height / 2]),
-			vecs.add(vecs.clone(real), [master.width / 2, master.height / 2])
+			vecs.add(real, [-master.width / 2, -master.height / 2]),
+			vecs.add(real, [master.width / 2, master.height / 2])
 		)
 	}
 }
@@ -241,7 +240,7 @@ class ChunkMaster<T extends Chunk> {
 		}
 	}
 	big(zx: vec2): vec2 {
-		return vecs.floor(vecs.divide(vecs.clone(zx), this.span));
+		return vecs.floor(vecs.divide(zx, this.span));
 	}
 	at(x, y): T | null {
 		let c;
@@ -354,7 +353,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 }
 
 class ChunkRt {
-	readonly padding = Egyt.YUM * 4
+	readonly padding = Egyt.EVEN * 4
 	readonly w: number
 	readonly h: number
 
@@ -370,7 +369,7 @@ class ChunkRt {
 		this.camera = tqlib.ortographiccamera(this.w, this.h);
 
 		let p2 = <vec2>[this.chunk.p[0] + 1, this.chunk.p[1]];
-		vecs.mult(p2, this.chunk.master.span);
+		p2 = vecs.mult(p2, this.chunk.master.span);
 
 		let rekt = this.rekt = new Rekt;
 		rekt.tile = p2;

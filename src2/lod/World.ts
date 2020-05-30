@@ -53,16 +53,14 @@ namespace World {
 	export function unproject(query: zx): Un {
 		let p = query;
 
-		let un = <vec2>vecs.clone(p);
-		vecs.unproject(un);
+		let un = vecs.unproject(p);
 
-		let p2 = <vec2>vecs.clone(un);
-		vecs.divide(p2, 24);
-		vecs.floor(p2);
+		let p2;
+		p2 = vecs.divide(un, 24);
+		p2 = vecs.floor(p2);
 		p2[0] += 1; // necessary
 
-		let p3 = <vec2>vecs.clone(p2);
-		vecs.mult(p3, 24);
+		let p3 = vecs.mult(p2, 24);
 
 		return { untiled: un, tiled: p2, mult: p3 };
 	}

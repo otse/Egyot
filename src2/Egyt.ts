@@ -9,11 +9,12 @@ import Agriculture from "./lod/gen/Agriculture";
 
 export namespace Egyt {
 
-	export var USE_CHUNK_RT = true;
+	export var USE_CHUNK_RT = false;
 	export var OFFSET_CHUNK_OBJ_REKT = true;
-	export var PAINT_OBJ_TICK_RATE = true;
+	export var PAINT_OBJ_TICK_RATE = false;
 
-	export const YUM = 24; // evenly divisible
+	export const EVEN = 24; // very evenly divisible
+	export const YUM = EVEN;
 
 	export var game: Game;
 	export var map: Map;

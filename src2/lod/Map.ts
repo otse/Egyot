@@ -112,10 +112,10 @@ class Map {
 
 		let m = <zx>[...App.move];
 		m[1] = -m[1];
-		vecs.divide(m, Egyt.game.scale);
+		m = vecs.divide(m, Egyt.game.scale);
 
 		let p = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
-		vecs.add(p, m);
+		p = vecs.add(p, m);
 
 		const un = World.unproject(p);
 

@@ -105,9 +105,7 @@ class Rekt {
 			return tq.scene;
 	}
 	dual() {
-		let xy = <vec2>vecs.clone(this.tile);
-
-		vecs.add(xy, this.offset);
+		let xy = vecs.add(this.tile, this.offset);
 
 		return xy;
 	}
@@ -116,11 +114,9 @@ class Rekt {
 
 		let x, y;
 
-		let xy = <vec2>vecs.clone(this.tile);
+		const depth = Rekt.depth(this.tile); // ignore offset! ?
 
-		const depth = Rekt.depth(xy); // ignore offset!
-
-		vecs.add(xy, this.offset);
+		let xy = vecs.add(this.tile, this.offset);
 
 		if (this.tiled) {
 			xy = Rekt.mult(xy);
@@ -134,7 +130,7 @@ class Rekt {
 			if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
 				let c = this.obj?.chunk;
 				if (c) {
-					vecs.subtract(xy, c.rekt_offset);
+					xy = vecs.subtract(xy, c.rekt_offset);
 				}
 			}
 			x = xy[0] / 2 + xy[1] / 2;

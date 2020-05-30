@@ -207,18 +207,18 @@ void main() {
             }
         }
         vecs.area_every = area_every;
-        function project(p) {
-            let copy = [...p];
-            p[0] = copy[0] / 2 + copy[1] / 2;
-            p[1] = copy[1] / 4 - copy[0] / 4;
-            return p;
+        function project(a) {
+            let copy = [...a];
+            copy[0] = a[0] / 2 + a[1] / 2;
+            copy[1] = a[1] / 4 - a[0] / 4;
+            return copy;
         }
         vecs.project = project;
-        function unproject(p) {
-            let copy = [...p];
-            p[0] = copy[0] - copy[1] * 2;
-            p[1] = copy[1] * 2 + copy[0];
-            return p;
+        function unproject(a) {
+            let copy = [...a];
+            copy[0] = a[0] - a[1] * 2;
+            copy[1] = a[1] * 2 + a[0];
+            return copy;
         }
         vecs.unproject = unproject;
         function to_string(a) {
@@ -227,51 +227,59 @@ void main() {
         }
         vecs.to_string = to_string;
         function floor(a) {
-            a[0] = Math.floor(a[0]);
-            a[1] = Math.floor(a[1]);
-            return a;
+            let copy = [...a];
+            copy[0] = Math.floor(a[0]);
+            copy[1] = Math.floor(a[1]);
+            return copy;
         }
         vecs.floor = floor;
         function ceil(a) {
-            a[0] = Math.ceil(a[0]);
-            a[1] = Math.ceil(a[1]);
-            return a;
+            let copy = [...a];
+            copy[0] = Math.ceil(a[0]);
+            copy[1] = Math.ceil(a[1]);
+            return copy;
         }
         vecs.ceil = ceil;
         function inv(a) {
-            a[0] = -a[0];
-            a[1] = -a[1];
-            return a;
+            let copy = [...a];
+            copy[0] = -a[0];
+            copy[1] = -a[1];
+            return copy;
         }
         vecs.inv = inv;
-        function mult(zx, n, n2) {
-            zx[0] *= n;
-            zx[1] *= n2 || n;
-            return zx;
+        function mult(a, n, n2) {
+            let copy = [...a];
+            copy[0] *= n;
+            copy[1] *= n2 || n;
+            return copy;
         }
         vecs.mult = mult;
         function divide(a, n, n2) {
-            a[0] /= n;
-            a[1] /= n2 || n;
-            return a;
+            let copy = [...a];
+            copy[0] /= n;
+            copy[1] /= n2 || n;
+            return copy;
         }
         vecs.divide = divide;
         function subtract(a, b) {
-            a[0] -= b[0];
-            a[1] -= b[1];
-            return a;
+            let copy = [...a];
+            copy[0] -= b[0];
+            copy[1] -= b[1];
+            return copy;
         }
         vecs.subtract = subtract;
         function add(a, b) {
-            a[0] += b[0];
-            a[1] += b[1];
-            return a;
+            let copy = [...a];
+            copy[0] += b[0];
+            copy[1] += b[1];
+            return copy;
         }
         vecs.add = add;
-        function abs(zx) {
-            zx[0] = Math.abs(zx[0]);
-            zx[1] = Math.abs(zx[1]);
-            return zx;
+        function abs(a) {
+            let copy = [...a];
+            copy[0] = Math.abs(a[0]);
+            copy[1] = Math.abs(a[1]);
+            return copy;
         }
         vecs.abs = abs;
         function together(zx) {
@@ -357,17 +365,15 @@ void main() {
                 return tq.scene;
         }
         dual() {
-            let xy = vecs$1.clone(this.tile);
-            vecs$1.add(xy, this.offset);
+            let xy = vecs$1.add(this.tile, this.offset);
             return xy;
         }
         now_update_pos() {
             var _a;
             const d = this.wh;
             let x, y;
-            let xy = vecs$1.clone(this.tile);
-            const depth = Rekt.depth(xy); // ignore offset!
-            vecs$1.add(xy, this.offset);
+            const depth = Rekt.depth(this.tile); // ignore offset! ?
+            let xy = vecs$1.add(this.tile, this.offset);
             if (this.tiled) {
                 xy = Rekt.mult(xy);
             }
@@ -379,7 +385,7 @@ void main() {
                 if (Egyt$1.OFFSET_CHUNK_OBJ_REKT) {
                     let c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk;
                     if (c) {
-                        vecs$1.subtract(xy, c.rekt_offset);
+                        xy = vecs$1.subtract(xy, c.rekt_offset);
                     }
                 }
                 x = xy[0] / 2 + xy[1] / 2;
@@ -470,14 +476,12 @@ void main() {
     (function (World) {
         function unproject(query) {
             let p = query;
-            let un = vecs$1.clone(p);
-            vecs$1.unproject(un);
-            let p2 = vecs$1.clone(un);
-            vecs$1.divide(p2, 24);
-            vecs$1.floor(p2);
+            let un = vecs$1.unproject(p);
+            let p2;
+            p2 = vecs$1.divide(un, 24);
+            p2 = vecs$1.floor(p2);
             p2[0] += 1; // necessary
-            let p3 = vecs$1.clone(p2);
-            vecs$1.mult(p3, 24);
+            let p3 = vecs$1.mult(p2, 24);
             return { untiled: un, tiled: p2, mult: p3 };
         }
         World.unproject = unproject;
@@ -755,7 +759,7 @@ void main() {
             this.order_tile = north;
             this.rekt_offset = vecs$1.clone(basest_tile);
             if (Egyt$1.OFFSET_CHUNK_OBJ_REKT) {
-                const zx = vecs$1.project(vecs$1.clone(basest_tile));
+                const zx = vecs$1.project(basest_tile);
                 const zxc = [...zx, 0];
                 this.group.position.fromArray(zxc);
                 this.grouprt.position.fromArray(zxc);
@@ -826,9 +830,8 @@ void main() {
     (function (Chunk) {
         function Sscreen(x, y, master) {
             let basest_tile = vecs$1.mult([x + 1, y], master.span * 24);
-            let real = vecs$1.project(vecs$1.clone(basest_tile));
-            vecs$1.subtract(real, [0, -master.height / 2]);
-            return new aabb2(vecs$1.add(vecs$1.clone(real), [-master.width / 2, -master.height / 2]), vecs$1.add(vecs$1.clone(real), [master.width / 2, master.height / 2]));
+            let real = vecs$1.subtract(vecs$1.project(basest_tile), [0, -master.height / 2]);
+            return new aabb2(vecs$1.add(real, [-master.width / 2, -master.height / 2]), vecs$1.add(real, [master.width / 2, master.height / 2]));
         }
         Chunk.Sscreen = Sscreen;
     })(Chunk || (Chunk = {}));
@@ -900,7 +903,7 @@ void main() {
             }
         }
         big(zx) {
-            return vecs$1.floor(vecs$1.divide(vecs$1.clone(zx), this.span));
+            return vecs$1.floor(vecs$1.divide(zx, this.span));
         }
         at(x, y) {
             let c;
@@ -1009,13 +1012,13 @@ void main() {
     class ChunkRt {
         constructor(chunk) {
             this.chunk = chunk;
-            this.padding = Egyt$1.YUM * 4;
+            this.padding = Egyt$1.EVEN * 4;
             this.offset = [0, 0];
             this.w = this.chunk.master.width + this.padding;
             this.h = this.chunk.master.height + this.padding;
             this.camera = tqlib.ortographiccamera(this.w, this.h);
             let p2 = [this.chunk.p[0] + 1, this.chunk.p[1]];
-            vecs$1.mult(p2, this.chunk.master.span);
+            p2 = vecs$1.mult(p2, this.chunk.master.span);
             let rekt = this.rekt = new Rekt$1;
             rekt.tile = p2;
             rekt.wh = [this.w, this.h];
@@ -1106,9 +1109,9 @@ void main() {
         mark_mouse() {
             let m = [...App.move];
             m[1] = -m[1];
-            vecs$1.divide(m, Egyt$1.game.scale);
+            m = vecs$1.divide(m, Egyt$1.game.scale);
             let p = [Egyt$1.game.view.min[0], Egyt$1.game.view.max[1]];
-            vecs$1.add(p, m);
+            p = vecs$1.add(p, m);
             const un = World.unproject(p);
             this.mouse_tiled = un.tiled;
             this.mark.tile = un.mult;
@@ -1264,15 +1267,15 @@ void main() {
                 console.log('scale down', this.scale);
             }
             tq.scene.scale.set(this.scale, this.scale, 1);
-            let p2 = vecs$1.mult([...this.pos], this.scale);
+            let p2 = vecs$1.mult(this.pos, this.scale);
             tq.scene.position.set(p2[0], p2[1], 0);
             let w = tq.target.width;
             let h = tq.target.height;
             let w2 = w / this.dpi / this.scale;
             let h2 = h / this.dpi / this.scale;
             this.view = new aabb2([-p[0] - w2 / 2, -p[1] - h2 / 2], [-p[0] + w2 / 2, -p[1] + h2 / 2]);
-            vecs$1.floor(this.view.min);
-            vecs$1.floor(this.view.max);
+            this.view.min = vecs$1.floor(this.view.min);
+            this.view.max = vecs$1.floor(this.view.max);
             this.focal = [-p[0], -p[1], 0];
             return;
         }
@@ -1397,10 +1400,11 @@ void main() {
 
     var Egyt;
     (function (Egyt) {
-        Egyt.USE_CHUNK_RT = true;
+        Egyt.USE_CHUNK_RT = false;
         Egyt.OFFSET_CHUNK_OBJ_REKT = true;
-        Egyt.PAINT_OBJ_TICK_RATE = true;
-        Egyt.YUM = 24; // evenly divisible
+        Egyt.PAINT_OBJ_TICK_RATE = false;
+        Egyt.EVEN = 24; // very evenly divisible
+        Egyt.YUM = Egyt.EVEN;
         var started = false;
         function sample(a) {
             return a[Math.floor(Math.random() * a.length)];

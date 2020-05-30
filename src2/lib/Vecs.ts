@@ -14,18 +14,18 @@ namespace vecs {
 		}
 	}
 
-	export function project(p: vec2): vec2 {
-		let copy = [...p];
-		p[0] = copy[0] / 2 + copy[1] / 2;
-		p[1] = copy[1] / 4 - copy[0] / 4;
-		return p;
+	export function project(a: vec2): vec2 {
+		let copy = <vec2>[...a];
+		copy[0] = a[0] / 2 + a[1] / 2;
+		copy[1] = a[1] / 4 - a[0] / 4;
+		return copy;
 	}
 
-	export function unproject(p: vec2): vec2 {
-		let copy = [...p];
-		p[0] = copy[0] - copy[1] * 2;
-		p[1] = copy[1] * 2 + copy[0];
-		return p;
+	export function unproject(a: vec2): vec2 {
+		let copy = <vec2>[...a];
+		copy[0] = a[0] - a[1] * 2;
+		copy[1] = a[1] * 2 + a[0];
+		return copy;
 	}
 
 	export function to_string(a: vec2 | vec3 | vec4) {
@@ -35,51 +35,59 @@ namespace vecs {
 	}
 
 	export function floor(a: vec2) {
-		a[0] = Math.floor(a[0]);
-		a[1] = Math.floor(a[1]);
-		return a;
+		let copy = <vec2>[...a];
+		copy[0] = Math.floor(a[0]);
+		copy[1] = Math.floor(a[1]);
+		return copy;
 	}
 
 	export function ceil(a: vec2) {
-		a[0] = Math.ceil(a[0]);
-		a[1] = Math.ceil(a[1]);
-		return a;
+		let copy = <vec2>[...a];
+		copy[0] = Math.ceil(a[0]);
+		copy[1] = Math.ceil(a[1]);
+		return copy;
 	}
 
 	export function inv(a: vec2) {
-		a[0] = -a[0];
-		a[1] = -a[1];
-		return a;
+		let copy = <vec2>[...a];
+		copy[0] = -a[0];
+		copy[1] = -a[1];
+		return copy;
 	}
 
-	export function mult(zx: vec2, n: number, n2?: number) {
-		zx[0] *= n;
-		zx[1] *= n2 || n;
-		return zx;
+	export function mult(a: vec2, n: number, n2?: number) {
+		let copy = <vec2>[...a];
+		copy[0] *= n;
+		copy[1] *= n2 || n;
+		return copy;
 	}
 
 	export function divide(a: vec2, n: number, n2?: number) {
-		a[0] /= n;
-		a[1] /= n2 || n;
-		return a;
+		let copy = <vec2>[...a];
+		copy[0] /= n;
+		copy[1] /= n2 || n;
+		return copy;
 	}
 
 	export function subtract(a: vec2, b: vec2) {
-		a[0] -= b[0];
-		a[1] -= b[1];
-		return a;
+		let copy = <vec2>[...a];
+		copy[0] -= b[0];
+		copy[1] -= b[1];
+		return copy;
 	}
 
 	export function add(a: vec2, b: vec2) {
-		a[0] += b[0];
-		a[1] += b[1];
-		return a;
+		let copy = <vec2>[...a];
+		copy[0] += b[0];
+		copy[1] += b[1];
+		return copy;
 	}
 	
-	export function abs(zx: vec2) {
-		zx[0] = Math.abs(zx[0]);
-		zx[1] = Math.abs(zx[1]);
-		return zx;
+	export function abs(a: vec2) {
+		let copy = <vec2>[...a];
+		copy[0] = Math.abs(a[0]);
+		copy[1] = Math.abs(a[1]);
+		return copy;
 	}
 
 	export function together(zx: vec2) {
