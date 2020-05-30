@@ -2,7 +2,7 @@ import Rekt from "../objrekt/Rekt";
 import { Win } from "../lib/Board";
 import Egyt from "../Egyt";
 import App from "../lib/App";
-import vecs from "../lib/Vecs";
+import pts from "../lib/Pts";
 import Forestation from "./gen/Forestation";
 import Agriculture from "./gen/Agriculture";
 import { aabb2 } from "../lib/AABB";
@@ -112,10 +112,10 @@ class Map {
 
 		let m = <zx>[...App.move];
 		m[1] = -m[1];
-		m = vecs.divide(m, Egyt.game.scale);
+		m = pts.divide(m, Egyt.game.scale);
 
 		let p = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
-		p = vecs.add(p, m);
+		p = pts.add(p, m);
 
 		const un = World.unproject(p);
 

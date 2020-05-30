@@ -3,7 +3,7 @@ import Egyt from "../../Egyt";
 import { aabb2 } from "../../lib/aabb";
 import Obj from "../../objrekt/Obj";
 import App from "../../lib/App";
-import vecs from "../../lib/Vecs";
+import pts from "../../lib/Pts";
 
 namespace Forestation {
 
@@ -84,7 +84,7 @@ namespace Forestation {
 		if (plopping) {
 			let tree = plopping;
 
-			let p = <vec2>vecs.clone(Egyt.map.mouse_tiled);
+			let p = pts.clone(Egyt.map.mouse_tiled);
 
 			tree.tile = p;
 			tree.rekt.tile = p;

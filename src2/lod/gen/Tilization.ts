@@ -3,7 +3,7 @@ import Egyt from "../../Egyt";
 import { aabb2 } from "../../lib/aabb";
 import Obj from "../../objrekt/Obj";
 import App from "../../lib/App";
-import vecs from "../../lib/Vecs";
+import pts from "../../lib/Pts";
 import { Map } from "../Map";
 import { World } from "../World";
 
@@ -89,13 +89,13 @@ namespace Tilization {
 	export function area_sample(chance: number, assets: string[], aabb: aabb2) {
 		const every = (pos: zx) => place_tile(chance, Egyt.sample(assets), pos);
 
-		vecs.area_every(aabb, every);
+		pts.area_every(aabb, every);
 	}
 
 	export function area(chance: number, asset: string, aabb: aabb2) {
 		const every = (pos: zx) => place_tile(chance, asset, pos);
 
-		vecs.area_every(aabb, every);
+		pts.area_every(aabb, every);
 	}
 }
 

@@ -4,7 +4,7 @@ import Rekt from "../objrekt/Rekt";
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 
 import { tq } from "../lib/tq";
-import vecs from "../lib/Vecs";
+import pts from "../lib/Pts";
 import Egyt from "../Egyt";
 
 class Selection {
@@ -52,11 +52,11 @@ class Selection {
 	}
 
 	Sufficient(mouse: zx) {
-		let rem = vecs.subtract(
-			<zx>vecs.clone(this.end), this.start);
+		let rem = pts.subtract(
+			<zx>pts.clone(this.end), this.start);
 
-		const px = vecs.together(
-			vecs.abs(rem as zx));
+		const px = pts.together(
+			pts.abs(rem as zx));
 
 		if (!this.enuf && px > 15) {
 			this.enuf = true;
@@ -66,18 +66,18 @@ class Selection {
 	}
 
 	View(mouse: zx) {
-		vecs.subtract(mouse, Egyt.game.pos);
+		pts.subtract(mouse, Egyt.game.pos);
 
-		vecs.subtract(
-			mouse, vecs.divide(
-				<zx>vecs.clone(tq.wh), 2));
+		pts.subtract(
+			mouse, pts.divide(
+				<zx>pts.clone(tq.wh), 2));
 
 		let scale = 1;
 
 		if (Egyt.game.scale == 0.5)
 			scale = 2;
 
-		vecs.mult(
+		pts.mult(
 			mouse, scale);
 	}
 
@@ -92,11 +92,11 @@ class Selection {
 		if (!this.enuf)
 			return;
 
-		let size = vecs.subtract(
-			<zx>vecs.clone(this.end), this.start);
+		let size = pts.subtract(
+			<zx>pts.clone(this.end), this.start);
 
-		let pos = vecs.subtract(
-			<zx>vecs.clone(mouse), vecs.divide(<zx>vecs.clone(size), 2));
+		let pos = pts.subtract(
+			<zx>pts.clone(mouse), pts.divide(<zx>pts.clone(size), 2));
 
 		this.mesh.scale.set(size[0], size[1], 1);
 		this.mesh.position.set(pos[0], pos[1], 0);

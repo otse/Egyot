@@ -8,7 +8,7 @@ import Obj from "./objrekt/Obj";
 import Selection from "./nested/Selection";
 import { Object3D, Mesh, PlaneBufferGeometry, MeshBasicMaterial } from "three";
 import { aabb2 } from "./lib/AABB";
-import vecs from "./lib/Vecs";
+import pts from "./lib/Pts";
 import { Win } from "./lib/Board";
 
 class Game {
@@ -95,7 +95,7 @@ class Game {
 
 		tq.scene.scale.set(this.scale, this.scale, 1);
 
-		let p2 = vecs.mult(this.pos, this.scale);
+		let p2 = pts.mult(this.pos, this.scale);
 
 		tq.scene.position.set(p2[0], p2[1], 0);
 
@@ -110,8 +110,8 @@ class Game {
 			[-p[0] - w2 / 2, -p[1] - h2 / 2],
 			[-p[0] + w2 / 2, -p[1] + h2 / 2]
 		);
-		this.view.min = vecs.floor(this.view.min);
-		this.view.max = vecs.floor(this.view.max);
+		this.view.min = pts.floor(this.view.min);
+		this.view.max = pts.floor(this.view.max);
 
 		this.focal = [-p[0], -p[1], 0];
 

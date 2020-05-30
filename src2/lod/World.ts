@@ -1,7 +1,7 @@
 import Obj from "../objrekt/Obj";
 import Egyt from "../Egyt";
 import { Ply } from "../nested/char/Char";
-import vecs from "../lib/Vecs";
+import pts from "../lib/Pts";
 
 class World {
 	static rig() {
@@ -53,14 +53,14 @@ namespace World {
 	export function unproject(query: zx): Un {
 		let p = query;
 
-		let un = vecs.unproject(p);
+		let un = pts.unproject(p);
 
 		let p2;
-		p2 = vecs.divide(un, 24);
-		p2 = vecs.floor(p2);
+		p2 = pts.divide(un, 24);
+		p2 = pts.floor(p2);
 		p2[0] += 1; // necessary
 
-		let p3 = vecs.mult(p2, 24);
+		let p3 = pts.mult(p2, 24);
 
 		return { untiled: un, tiled: p2, mult: p3 };
 	}

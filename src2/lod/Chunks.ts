@@ -2,7 +2,7 @@ import Rekt from "../objrekt/Rekt";
 import { Win } from "../lib/Board";
 import Egyt from "../Egyt";
 import App from "../lib/App";
-import vecs from "../lib/Vecs";
+import pts from "../lib/Pts";
 import Forestation from "./gen/Forestation";
 import Agriculture from "./gen/Agriculture";
 import { aabb2 } from "../lib/AABB";
@@ -65,18 +65,18 @@ class Chunk {
 		let x = this.p[0];
 		let y = this.p[1];
 
-		let basest_tile = vecs.mult([x + 1, y], this.master.span * 24);
-		this.basest_tile = <vec2>vecs.clone(basest_tile);
+		let basest_tile = pts.mult([x + 1, y], this.master.span * 24);
+		this.basest_tile = pts.clone(basest_tile);
 		
-		let north = vecs.mult([x + 1, y], this.master.span * 24);
+		let north = pts.mult([x + 1, y], this.master.span * 24);
 		this.north = north;
 
 		this.order_tile = north;
 
-		this.rekt_offset = <vec2>vecs.clone(basest_tile);
+		this.rekt_offset = pts.clone(basest_tile);
 
 		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
-			const zx = vecs.project(basest_tile);
+			const zx = pts.project(basest_tile);
 			const zxc = <vec3>[...zx, 0];
 
 			this.group.position.fromArray(zxc);
@@ -152,13 +152,13 @@ class Chunk {
 namespace Chunk {
 	export function Sscreen(x, y, master) {
 
-		let basest_tile = vecs.mult([x + 1, y], master.span * 24);
+		let basest_tile = pts.mult([x + 1, y], master.span * 24);
 
-		let real = vecs.subtract(vecs.project(basest_tile), [0, -master.height / 2]);
+		let real = pts.subtract(pts.project(basest_tile), [0, -master.height / 2]);
 
 		return new aabb2(
-			vecs.add(real, [-master.width / 2, -master.height / 2]),
-			vecs.add(real, [master.width / 2, master.height / 2])
+			pts.add(real, [-master.width / 2, -master.height / 2]),
+			pts.add(real, [master.width / 2, master.height / 2])
 		)
 	}
 }
@@ -240,7 +240,7 @@ class ChunkMaster<T extends Chunk> {
 		}
 	}
 	big(zx: vec2): vec2 {
-		return vecs.floor(vecs.divide(zx, this.span));
+		return pts.floor(pts.divide(zx, this.span));
 	}
 	at(x, y): T | null {
 		let c;
@@ -369,7 +369,7 @@ class ChunkRt {
 		this.camera = tqlib.ortographiccamera(this.w, this.h);
 
 		let p2 = <vec2>[this.chunk.p[0] + 1, this.chunk.p[1]];
-		p2 = vecs.mult(p2, this.chunk.master.span);
+		p2 = pts.mult(p2, this.chunk.master.span);
 
 		let rekt = this.rekt = new Rekt;
 		rekt.tile = p2;

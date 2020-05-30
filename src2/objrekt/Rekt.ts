@@ -1,7 +1,7 @@
 import { tq, THREE } from "../lib/tq";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3, Color } from "three";
-import vecs from "../lib/Vecs";
+import pts from "../lib/Pts";
 import Obj from "./Obj";
 import Egyt from "../Egyt";
 import { tqlib } from "../lib/tqlib";
@@ -105,7 +105,7 @@ class Rekt {
 			return tq.scene;
 	}
 	dual() {
-		let xy = vecs.add(this.tile, this.offset);
+		let xy = pts.add(this.tile, this.offset);
 
 		return xy;
 	}
@@ -116,7 +116,7 @@ class Rekt {
 
 		const depth = Rekt.depth(this.tile); // ignore offset! ?
 
-		let xy = vecs.add(this.tile, this.offset);
+		let xy = pts.add(this.tile, this.offset);
 
 		if (this.tiled) {
 			xy = Rekt.mult(xy);
@@ -130,7 +130,7 @@ class Rekt {
 			if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
 				let c = this.obj?.chunk;
 				if (c) {
-					xy = vecs.subtract(xy, c.rekt_offset);
+					xy = pts.subtract(xy, c.rekt_offset);
 				}
 			}
 			x = xy[0] / 2 + xy[1] / 2;
@@ -166,7 +166,7 @@ namespace Rekt {
 	}
 
 	export function mult(t: vec2) {
-		return vecs.mult(t, 24);
+		return pts.mult(t, 24);
 	}
 }
 
