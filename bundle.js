@@ -196,7 +196,15 @@ void main() {
 
     var pts;
     (function (pts) {
+        function pt(a) {
+            return { x: a[0], y: a[1] };
+        }
+        pts.pt = pt;
         pts.clone = (zx) => [...zx];
+        function make(n, m) {
+            return [n, m];
+        }
+        pts.make = make;
         function area_every(bb, callback) {
             let y = bb.min[1];
             for (; y <= bb.max[1]; y++) {
@@ -730,8 +738,8 @@ void main() {
 
     const count = (c, prop) => {
         let num = 0;
-        for (let tuple of c.objs.tuples)
-            if (tuple[0][prop])
+        for (let t of c.objs.mat.t)
+            if (t[0][prop])
                 num++;
         return num;
     };
@@ -745,16 +753,16 @@ void main() {
             this.objs = new ChunkObjs(this);
             //this.color = Egyt.sample(colors);
             this.p = [x, y];
+            this.p2 = [x + 1, y];
             this.group = new THREE.Group;
             this.grouprt = new THREE.Group;
             this.set_bounds();
         }
         set_bounds() {
-            let x = this.p[0];
-            let y = this.p[1];
-            let basest_tile = pts$1.mult([x + 1, y], this.master.span * 24);
+            const pt = pts$1.pt(this.p);
+            let basest_tile = pts$1.mult(this.p2, this.master.span * 24);
             this.basest_tile = pts$1.clone(basest_tile);
-            let north = pts$1.mult([x + 1, y], this.master.span * 24);
+            let north = pts$1.mult(this.p2, this.master.span * 24);
             this.north = north;
             this.order_tile = north;
             this.rekt_offset = pts$1.clone(basest_tile);
@@ -768,8 +776,8 @@ void main() {
                 this.grouprt.renderOrder = depth;
             }
             // non screen bound not used anymore
-            this.bound = new aabb2([x * this.master.span, y * this.master.span], [(x + 1) * this.master.span, (y + 1) * this.master.span]);
-            this.screen = Chunk.Sscreen(x, y, this.master);
+            this.bound = new aabb2([pt.x * this.master.span, pt.y * this.master.span], [(pt.x + 1) * this.master.span, (pt.y + 1) * this.master.span]);
+            this.screen = Chunk.Sscreen(pt.x, pt.y, this.master);
         }
         update_color() {
             return;
@@ -779,7 +787,7 @@ void main() {
             //this.rttrekt.material.needsUpdate = true;
         }
         empty() {
-            return this.objs.tuples.length < 1;
+            return this.objs.mat.t.length < 1;
         }
         comes() {
             if (this.on || this.empty())
@@ -835,54 +843,65 @@ void main() {
         }
         Chunk.Sscreen = Sscreen;
     })(Chunk || (Chunk = {}));
+    class Matrix {
+        constructor(key = 0) {
+            this.key = key;
+            this.t = [];
+        }
+        search(k = this.key, v) {
+            let i = this.t.length;
+            while (i--)
+                if (this.t[i][k] == v)
+                    return i;
+        }
+        add(t, k = this.key) {
+            let i = this.search(k, t[k]);
+            if (i == undefined) {
+                this.t.push(t);
+                return !!1;
+            }
+            return !!0;
+        }
+        remove(v, k = this.key) {
+            let i = this.search(k, v);
+            if (i != undefined) {
+                this.t.splice(i, 1);
+                return !!1;
+            }
+            return !!0;
+        }
+    }
     class ChunkObjs {
         constructor(chunk) {
             this.chunk = chunk;
             this.rtts = 0;
-            this.tuples = [];
+            this.mat = new Matrix;
         }
         rate(obj) {
-            return this.tuples.length * obj.rate;
-        }
-        where(obj) {
-            let i = this.tuples.length;
-            while (i--)
-                if (this.tuples[i][0] == obj)
-                    return i;
+            return this.mat.t.length * obj.rate;
         }
         add(obj) {
-            let i = this.where(obj);
-            if (i == undefined) {
-                const rate = this.rate(obj);
-                this.tuples.push([obj, rate]);
-                return true;
-            }
+            return this.mat.add([obj, this.rate(obj)]);
         }
         remove(obj) {
-            let i = this.where(obj);
-            if (i != undefined) {
-                this.tuples.splice(i, 1);
-                return true;
-            }
+            return this.mat.remove(obj);
         }
         updates() {
-            for (let tuple of this.tuples) {
-                let rate = tuple[1]--;
+            for (let t of this.mat.t) {
+                let rate = t[1]--;
                 if (rate <= 0) {
-                    tuple[0].update();
-                    tuple[1] = this.rate(tuple[0]);
+                    t[0].update();
+                    t[1] = this.rate(t[0]);
                 }
             }
         }
         comes() {
-            for (let tuple of this.tuples) {
-                tuple[0].comes();
-            }
+            for (let t of this.mat.t)
+                t[0].comes();
         }
         goes() {
-            for (let tuple of this.tuples) {
-                tuple[0].goes();
-            }
+            for (let t of this.mat.t)
+                t[0].goes();
         }
     }
     class ChunkMaster {
@@ -1014,13 +1033,14 @@ void main() {
             this.chunk = chunk;
             this.padding = Egyt$1.EVEN * 4;
             this.offset = [0, 0];
+            // todo, width height
             this.w = this.chunk.master.width + this.padding;
             this.h = this.chunk.master.height + this.padding;
             this.camera = tqlib.ortographiccamera(this.w, this.h);
-            let p2 = [this.chunk.p[0] + 1, this.chunk.p[1]];
-            p2 = pts$1.mult(p2, this.chunk.master.span);
+            // todo, pts.make(blah)
+            let t = pts$1.mult(this.chunk.p2, this.chunk.master.span);
             let rekt = this.rekt = new Rekt$1;
-            rekt.tile = p2;
+            rekt.tile = t;
             rekt.wh = [this.w, this.h];
             rekt.asset = 'egyt/tenbyten';
         }
@@ -1402,7 +1422,7 @@ void main() {
     (function (Egyt) {
         Egyt.USE_CHUNK_RT = true;
         Egyt.OFFSET_CHUNK_OBJ_REKT = true;
-        Egyt.PAINT_OBJ_TICK_RATE = false;
+        Egyt.PAINT_OBJ_TICK_RATE = true;
         Egyt.EVEN = 24; // very evenly divisible
         Egyt.YUM = Egyt.EVEN;
         var started = false;

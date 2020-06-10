@@ -16,8 +16,8 @@ import { World } from "./World";
 
 const count = (c: Chunk, prop: string) => {
 	let num = 0;
-	for (let tuple of c.objs.tuples)
-		if (tuple[0][prop])
+	for (let t of c.objs.mat.t)
+		if (t[0][prop])
 			num++;
 	return num;
 }
@@ -28,7 +28,8 @@ class Chunk {
 
 	readonly objs: ChunkObjs
 	rt: ChunkRt | null
-	p: zx
+	p: vec2
+	p2: vec2
 
 	basest_tile: vec2
 	order_tile: vec2
@@ -55,6 +56,7 @@ class Chunk {
 		//this.color = Egyt.sample(colors);
 
 		this.p = [x, y];
+		this.p2 = [x + 1, y];
 		this.group = new Group;
 		this.grouprt = new Group;
 
@@ -62,13 +64,12 @@ class Chunk {
 	}
 
 	set_bounds() {
-		let x = this.p[0];
-		let y = this.p[1];
+		const pt = pts.pt(this.p);
 
-		let basest_tile = pts.mult([x + 1, y], this.master.span * 24);
+		let basest_tile = pts.mult(this.p2, this.master.span * 24);
 		this.basest_tile = pts.clone(basest_tile);
-		
-		let north = pts.mult([x + 1, y], this.master.span * 24);
+
+		let north = pts.mult(this.p2, this.master.span * 24);
 		this.north = north;
 
 		this.order_tile = north;
@@ -83,17 +84,17 @@ class Chunk {
 			this.grouprt.position.fromArray(zxc);
 
 			const depth = Rekt.depth(this.order_tile);
-			
+
 			this.group.renderOrder = depth;
 			this.grouprt.renderOrder = depth;
 		}
 
 		// non screen bound not used anymore
 		this.bound = new aabb2(
-			[x * this.master.span, y * this.master.span],
-			[(x + 1) * this.master.span, (y + 1) * this.master.span]);
+			[pt.x * this.master.span, pt.y * this.master.span],
+			[(pt.x + 1) * this.master.span, (pt.y + 1) * this.master.span]);
 
-		this.screen = Chunk.Sscreen(x, y, this.master);
+		this.screen = Chunk.Sscreen(pt.x, pt.y, this.master);
 	}
 	update_color() {
 		return;
@@ -103,7 +104,7 @@ class Chunk {
 		//this.rttrekt.material.needsUpdate = true;
 	}
 	empty() {
-		return this.objs.tuples.length < 1;
+		return this.objs.mat.t.length < 1;
 	}
 	comes() {
 		if (this.on || this.empty())
@@ -163,54 +164,65 @@ namespace Chunk {
 	}
 }
 
-class ChunkObjs {
-	public rtts = 0
-	public readonly tuples: [Obj, number][]
-	constructor(private chunk: Chunk) {
-		this.tuples = [];
+class Matrix<T = []> {
+	public readonly t: T[] = []
+	constructor(private key = 0) {
 	}
-	rate(obj: Obj) {
-		return this.tuples.length * obj.rate;
-	}
-	where(obj: Obj) {
-		let i = this.tuples.length;
+	search(k = this.key, v: any): number | undefined {
+		let i = this.t.length;
 		while (i--)
-			if (this.tuples[i][0] == obj)
+			if (this.t[i][k] == v)
 				return i;
 	}
-	add(obj: Obj) {
-		let i = this.where(obj);
+	add(t: T, k = this.key): boolean {
+		let i = this.search(k, t[k]);
 		if (i == undefined) {
-			const rate = this.rate(obj);
-			this.tuples.push([obj, rate]);
-			return true;
+			this.t.push(t);
+			return !!1;
 		}
+		return !!0;
+	}
+	remove(v: any, k = this.key): boolean {
+		let i = this.search(k, v);
+		if (i != undefined) {
+			this.t.splice(i, 1);
+			return !!1;
+		}
+		return !!0;
+	}
+}
+
+class ChunkObjs {
+	public rtts = 0
+	public readonly mat: Matrix<[Obj, number]>
+	constructor(private chunk: Chunk) {
+		this.mat = new Matrix;
+	}
+	rate(obj: Obj) {
+		return this.mat.t.length * obj.rate;
+	}
+	add(obj: Obj) {
+		return this.mat.add([obj, this.rate(obj)]);
 	}
 	remove(obj: Obj) {
-		let i = this.where(obj);
-		if (i != undefined) {
-			this.tuples.splice(i, 1);
-			return true;
-		}
+		return this.mat.remove(obj);
 	}
 	updates() {
-		for (let tuple of this.tuples) {
-			let rate = tuple[1]--;
+		for (let t of this.mat.t) {
+			let rate = t[1]--;
 			if (rate <= 0) {
-				tuple[0].update();
-				tuple[1] = this.rate(tuple[0]);
+				t[0].update();
+				t[1] = this.rate(t[0]);
 			}
 		}
 	}
 	comes() {
-		for (let tuple of this.tuples) {
-			tuple[0].comes();
-		}
+		for (let t of this.mat.t)
+			t[0].comes();
 	}
 	goes() {
-		for (let tuple of this.tuples) {
-			tuple[0].goes();
-		}
+		for (let t of this.mat.t)
+			t[0].goes();
 	}
 }
 
@@ -364,15 +376,17 @@ class ChunkRt {
 	camera: OrthographicCamera
 
 	constructor(private chunk: Chunk) {
+		// todo, width height
 		this.w = this.chunk.master.width + this.padding;
 		this.h = this.chunk.master.height + this.padding;
 		this.camera = tqlib.ortographiccamera(this.w, this.h);
 
-		let p2 = <vec2>[this.chunk.p[0] + 1, this.chunk.p[1]];
-		p2 = pts.mult(p2, this.chunk.master.span);
+		// todo, pts.make(blah)
+
+		let t = pts.mult(this.chunk.p2, this.chunk.master.span);
 
 		let rekt = this.rekt = new Rekt;
-		rekt.tile = p2;
+		rekt.tile = t;
 		rekt.wh = [this.w, this.h];
 		rekt.asset = 'egyt/tenbyten';
 	}

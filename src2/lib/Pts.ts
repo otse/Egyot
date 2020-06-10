@@ -2,8 +2,18 @@ import { aabb2 } from "./AABB";
 
 namespace pts {
 
+	export interface Pt { x: number; y: number };
+	
+	export function pt(a: vec2): Pt {
+		return { x: a[0], y: a[1] };
+	}
+
 	export const clone = (zx: vec2): vec2 => <vec2>[...zx];
 
+	export function make(n: number, m: number): vec2 {
+		return [n, m];
+	}
+	
 	export function area_every(bb: aabb2, callback: (pos: vec2) => any) {
 		let y = bb.min[1];
 		for (; y <= bb.max[1]; y++) {
@@ -90,7 +100,7 @@ namespace pts {
 		copy[1] += b[1];
 		return copy;
 	}
-	
+
 	export function abs(a: vec2) {
 		let copy = clone(a);
 

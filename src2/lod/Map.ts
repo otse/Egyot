@@ -84,7 +84,7 @@ class Map {
 		//Agriculture.plop_wheat_area(3, new aabb3([-20, -302, 0], [11, -600, 0]));
 
 		const stones = [
-			'egyt/ground/stone1',
+~			'egyt/ground/stone1',
 			'egyt/ground/stone2',
 		];
 		//Tilization.area_sample(30, stones, new aabb3([-2, 0, 0], [6, -2, 0]));
