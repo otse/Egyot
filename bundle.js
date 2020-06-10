@@ -738,7 +738,7 @@ void main() {
 
     const count = (c, prop) => {
         let num = 0;
-        for (let t of c.objs.mat.t)
+        for (let t of c.objs.table.t)
             if (t[0][prop])
                 num++;
         return num;
@@ -750,7 +750,7 @@ void main() {
             this.changed = true;
             this.rektcolor = 'white';
             this.master.total++;
-            this.objs = new ChunkObjs(this);
+            this.objs = new Objs(this);
             //this.color = Egyt.sample(colors);
             this.p = [x, y];
             this.p2 = [x + 1, y];
@@ -787,7 +787,7 @@ void main() {
             //this.rttrekt.material.needsUpdate = true;
         }
         empty() {
-            return this.objs.mat.t.length < 1;
+            return this.objs.table.t.length < 1;
         }
         comes() {
             if (this.on || this.empty())
@@ -806,7 +806,7 @@ void main() {
             if (!threshold)
                 return;
             if (!this.rt)
-                this.rt = new ChunkRt(this);
+                this.rt = new RtChunk(this);
             this.rt.comes();
             this.rt.render();
         }
@@ -843,7 +843,7 @@ void main() {
         }
         Chunk.Sscreen = Sscreen;
     })(Chunk || (Chunk = {}));
-    class Matrix {
+    class Tuple {
         constructor(key = 0) {
             this.key = key;
             this.t = [];
@@ -871,23 +871,23 @@ void main() {
             return !!0;
         }
     }
-    class ChunkObjs {
+    class Objs {
         constructor(chunk) {
             this.chunk = chunk;
             this.rtts = 0;
-            this.mat = new Matrix;
+            this.table = new Tuple;
         }
         rate(obj) {
-            return this.mat.t.length * obj.rate;
+            return this.table.t.length * obj.rate;
         }
         add(obj) {
-            return this.mat.add([obj, this.rate(obj)]);
+            return this.table.add([obj, this.rate(obj)]);
         }
         remove(obj) {
-            return this.mat.remove(obj);
+            return this.table.remove(obj);
         }
         updates() {
-            for (let t of this.mat.t) {
+            for (let t of this.table.t) {
                 let rate = t[1]--;
                 if (rate <= 0) {
                     t[0].update();
@@ -896,11 +896,11 @@ void main() {
             }
         }
         comes() {
-            for (let t of this.mat.t)
+            for (let t of this.table.t)
                 t[0].comes();
         }
         goes() {
-            for (let t of this.mat.t)
+            for (let t of this.table.t)
                 t[0].goes();
         }
     }
@@ -1028,27 +1028,27 @@ void main() {
     }
     Tailorer.forward = 1;
     Tailorer.reverse = -1;
-    class ChunkRt {
+    class RtChunk {
         constructor(chunk) {
             this.chunk = chunk;
             this.padding = Egyt$1.EVEN * 4;
             this.offset = [0, 0];
             // todo, width height
-            this.w = this.chunk.master.width + this.padding;
-            this.h = this.chunk.master.height + this.padding;
-            this.camera = tqlib.ortographiccamera(this.w, this.h);
+            this.width = this.chunk.master.width + this.padding;
+            this.height = this.chunk.master.height + this.padding;
+            this.camera = tqlib.ortographiccamera(this.width, this.height);
             // todo, pts.make(blah)
             let t = pts$1.mult(this.chunk.p2, this.chunk.master.span);
             let rekt = this.rekt = new Rekt$1;
             rekt.tile = t;
-            rekt.wh = [this.w, this.h];
+            rekt.wh = [this.width, this.height];
             rekt.asset = 'egyt/tenbyten';
         }
         // todo pool the rts?
         comes() {
             this.rekt.use();
             this.rekt.mesh.renderOrder = Rekt$1.depth(this.chunk.order_tile);
-            this.target = tqlib.rendertarget(this.w, this.h);
+            this.target = tqlib.rendertarget(this.width, this.height);
         }
         goes() {
             this.rekt.unuse();
@@ -1058,7 +1058,7 @@ void main() {
             while (tq.rttscene.children.length > 0)
                 tq.rttscene.remove(tq.rttscene.children[0]);
             const group = this.chunk.grouprt;
-            group.position.set(0, -this.h / 2, 0);
+            group.position.set(0, -this.height / 2, 0);
             tq.rttscene.add(group);
             tq.renderer.setRenderTarget(this.target);
             tq.renderer.clear();

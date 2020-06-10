@@ -16,7 +16,7 @@ import { World } from "./World";
 
 const count = (c: Chunk, prop: string) => {
 	let num = 0;
-	for (let t of c.objs.mat.t)
+	for (let t of c.objs.table.t)
 		if (t[0][prop])
 			num++;
 	return num;
@@ -26,8 +26,8 @@ class Chunk {
 	changed = true
 	childobjscolor
 
-	readonly objs: ChunkObjs
-	rt: ChunkRt | null
+	readonly objs: Objs
+	rt: RtChunk | null
 	p: vec2
 	p2: vec2
 
@@ -52,7 +52,7 @@ class Chunk {
 
 		const colors = ['lightsalmon', 'khaki', 'lightgreen', 'paleturquoise', 'plum', 'pink'];
 
-		this.objs = new ChunkObjs(this);
+		this.objs = new Objs(this);
 		//this.color = Egyt.sample(colors);
 
 		this.p = [x, y];
@@ -104,7 +104,7 @@ class Chunk {
 		//this.rttrekt.material.needsUpdate = true;
 	}
 	empty() {
-		return this.objs.mat.t.length < 1;
+		return this.objs.table.t.length < 1;
 	}
 	comes() {
 		if (this.on || this.empty())
@@ -123,7 +123,7 @@ class Chunk {
 		if (!threshold)
 			return;
 		if (!this.rt)
-			this.rt = new ChunkRt(this);
+			this.rt = new RtChunk(this);
 		this.rt.comes();
 		this.rt.render();
 	}
@@ -164,7 +164,7 @@ namespace Chunk {
 	}
 }
 
-class Matrix<T = []> {
+class Tuple<T = []> {
 	public readonly t: T[] = []
 	constructor(private key = 0) {
 	}
@@ -192,23 +192,23 @@ class Matrix<T = []> {
 	}
 }
 
-class ChunkObjs {
+class Objs {
 	public rtts = 0
-	public readonly mat: Matrix<[Obj, number]>
+	public readonly table: Tuple<[Obj, number]>
 	constructor(private chunk: Chunk) {
-		this.mat = new Matrix;
+		this.table = new Tuple;
 	}
 	rate(obj: Obj) {
-		return this.mat.t.length * obj.rate;
+		return this.table.t.length * obj.rate;
 	}
 	add(obj: Obj) {
-		return this.mat.add([obj, this.rate(obj)]);
+		return this.table.add([obj, this.rate(obj)]);
 	}
 	remove(obj: Obj) {
-		return this.mat.remove(obj);
+		return this.table.remove(obj);
 	}
 	updates() {
-		for (let t of this.mat.t) {
+		for (let t of this.table.t) {
 			let rate = t[1]--;
 			if (rate <= 0) {
 				t[0].update();
@@ -217,11 +217,11 @@ class ChunkObjs {
 		}
 	}
 	comes() {
-		for (let t of this.mat.t)
+		for (let t of this.table.t)
 			t[0].comes();
 	}
 	goes() {
-		for (let t of this.mat.t)
+		for (let t of this.table.t)
 			t[0].goes();
 	}
 }
@@ -364,10 +364,10 @@ class Tailorer<T extends Chunk> { // chunk-snake
 
 }
 
-class ChunkRt {
+class RtChunk {
 	readonly padding = Egyt.EVEN * 4
-	readonly w: number
-	readonly h: number
+	readonly width: number
+	readonly height: number
 
 	offset: vec2 = [0, 0]
 
@@ -377,9 +377,9 @@ class ChunkRt {
 
 	constructor(private chunk: Chunk) {
 		// todo, width height
-		this.w = this.chunk.master.width + this.padding;
-		this.h = this.chunk.master.height + this.padding;
-		this.camera = tqlib.ortographiccamera(this.w, this.h);
+		this.width = this.chunk.master.width + this.padding;
+		this.height = this.chunk.master.height + this.padding;
+		this.camera = tqlib.ortographiccamera(this.width, this.height);
 
 		// todo, pts.make(blah)
 
@@ -387,14 +387,14 @@ class ChunkRt {
 
 		let rekt = this.rekt = new Rekt;
 		rekt.tile = t;
-		rekt.wh = [this.w, this.h];
+		rekt.wh = [this.width, this.height];
 		rekt.asset = 'egyt/tenbyten';
 	}
 	// todo pool the rts?
 	comes() {
 		this.rekt.use();
 		this.rekt.mesh.renderOrder = Rekt.depth(this.chunk.order_tile);
-		this.target = tqlib.rendertarget(this.w, this.h);
+		this.target = tqlib.rendertarget(this.width, this.height);
 	}
 	goes() {
 		this.rekt.unuse();
@@ -406,7 +406,7 @@ class ChunkRt {
 
 		const group = this.chunk.grouprt;
 
-		group.position.set(0, -this.h / 2, 0);
+		group.position.set(0, -this.height / 2, 0);
 		tq.rttscene.add(group);
 
 		tq.renderer.setRenderTarget(this.target);
@@ -417,4 +417,4 @@ class ChunkRt {
 	}
 }
 
-export { Chunk, ChunkMaster, Tailorer, ChunkObjs }
+export { Chunk, ChunkMaster }
