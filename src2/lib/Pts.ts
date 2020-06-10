@@ -13,7 +13,7 @@ namespace pts {
 	export function make(n: number, m: number): vec2 {
 		return [n, m];
 	}
-	
+
 	export function area_every(bb: aabb2, callback: (pos: vec2) => any) {
 		let y = bb.min[1];
 		for (; y <= bb.max[1]; y++) {
@@ -26,6 +26,7 @@ namespace pts {
 
 	export function project(a: vec2): vec2 {
 		let copy = clone(a);
+		
 		copy[0] = a[0] / 2 + a[1] / 2;
 		copy[1] = a[1] / 4 - a[0] / 4;
 		return copy;

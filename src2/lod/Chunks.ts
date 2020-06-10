@@ -283,7 +283,6 @@ class ChunkMaster<T extends Chunk> {
 }
 
 class Tailorer<T extends Chunk> { // chunk-snake
-
 	static readonly forward = 1
 	static readonly reverse = -1
 	lines: number
