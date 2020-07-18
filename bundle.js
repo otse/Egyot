@@ -80,18 +80,13 @@ void main() {
         }
         tq.calc = calc;
         function render() {
-            //if (!changes)
-            //return;
             calc();
-            //renderer.setSize(
-            //	window.innerWidth, window.innerHeight);
             tq.renderer.setRenderTarget(tq.target);
             tq.renderer.clear();
             tq.renderer.render(tq.scene, tq.camera);
             tq.renderer.setRenderTarget(null); // Naar scherm
             tq.renderer.clear();
             tq.renderer.render(tq.scene2, tq.camera);
-            //changes = false;
         }
         tq.render = render;
         function init() {
@@ -101,10 +96,10 @@ void main() {
             tq.scene.background = new THREE.Color('rgb(40, 72, 42)'); // #444
             tq.scene2 = new THREE.Scene();
             tq.rttscene = new THREE.Scene();
-            //scene3.background = new Color('pink');
-            tq.dpi = window.devicePixelRatio;
-            if (tq.dpi == 2) {
-                console.warn('DPI > 1. Egyt will scale by whole factors.');
+            tq.ndpi = window.devicePixelRatio;
+            console.log(`window innerWidth, innerHeight ${window.innerWidth} x ${window.innerHeight}`);
+            if (tq.ndpi > 1) {
+                console.warn('Dpi i> 1. Game may scale.');
             }
             tq.target = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
                 minFilter: THREE__default.NearestFilter,
@@ -112,7 +107,7 @@ void main() {
                 format: THREE__default.RGBFormat
             });
             tq.renderer = new THREE.WebGLRenderer({ antialias: false });
-            tq.renderer.setPixelRatio(tq.dpi);
+            tq.renderer.setPixelRatio(1);
             tq.renderer.setSize(window.innerWidth, window.innerHeight);
             tq.renderer.autoClear = true;
             tq.renderer.setClearColor(0xffffff, 0);
@@ -150,10 +145,10 @@ void main() {
             if (tq.h % 2 != 0) ;
             let targetwidth = tq.w;
             let targetheight = tq.h;
-            if (tq.dpi == 2) {
-                targetwidth *= tq.dpi;
-                targetheight *= tq.dpi;
-            }
+            //if (ndpi == 2) {
+            //	targetwidth *= ndpi;
+            //	targetheight *= ndpi;
+            //}
             tq.plane = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
             tq.quadPost.geometry = tq.plane;
             tq.target.setSize(targetwidth, targetheight);
@@ -775,16 +770,9 @@ void main() {
                 this.group.renderOrder = depth;
                 this.grouprt.renderOrder = depth;
             }
-            // non screen bound not used anymore
+            // note: non screen bound not used anymore
             this.bound = new aabb2([pt.x * this.master.span, pt.y * this.master.span], [(pt.x + 1) * this.master.span, (pt.y + 1) * this.master.span]);
             this.screen = Chunk.Sscreen(pt.x, pt.y, this.master);
-        }
-        update_color() {
-            return;
-            //if (!this.rttrekt.inuse)
-            //	return;
-            //this.rttrekt.material.color.set(new Color(this.rektcolor));
-            //this.rttrekt.material.needsUpdate = true;
         }
         empty() {
             return this.objs.table.t.length < 1;
@@ -1205,7 +1193,8 @@ void main() {
             if (Board.collapsed.Stats) {
                 Board.win.find('#fpsStat').text(`Fps: ${parseInt(tq.fps)}`);
                 Board.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
-                Board.win.find('#gameAabb').html(`View bounding volume: <span>${Egyt$1.game.view.min[0]}, ${Egyt$1.game.view.min[1]} x ${Egyt$1.game.view.max[0]}, ${Egyt$1.game.view.max[1]} `);
+                Board.win.find('#gameZoom').html(`Scale: <span>${Egyt$1.game.scale} / ndpi ${Egyt$1.game.dpi} / ${window.devicePixelRatio}`);
+                Board.win.find('#gameAabb').html(`View bounding volume: <span>${Egyt$1.game.view.min[0]}, ${Egyt$1.game.view.min[1]} x ${Egyt$1.game.view.max[0]}, ${Egyt$1.game.view.max[1]}`);
                 //Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
                 Board.win.find('#numChunks').text(`Num chunks: ${Egyt$1.map.statmaster.fitter.shown.length} / ${Egyt$1.map.statmaster.total}`);
                 Board.win.find('#numObjs').html(`Num objs: ${Obj$1.active} / ${Obj$1.num}`);
@@ -1236,19 +1225,19 @@ void main() {
             console.log('Game');
             this.rekts = [];
             this.objs = [];
-            this.pos = [0, 0]; //[-1665, 3585, 0];
-            this.dpi = window.devicePixelRatio;
-            this.scale = 1 / this.dpi;
+            this.pos = [0, 0];
+            this.dpi = 1; //tq.ndpi;
+            this.scale = 1; // / this.dpi;
             this.view = new aabb2([0, 0]);
-            let rekt = this.frustumRekt = new Rekt$1;
+            let rekt = this.frustum = new Rekt$1;
             rekt.name = 'Frustum';
             rekt.tile = [0, 0];
             rekt.wh = [1, 1];
             rekt.asset = 'egyt/128';
-            this.frustumRekt.plain = true; // dont 2:1
-            this.frustumRekt.use();
-            this.frustumRekt.mesh.renderOrder = 9999999;
-            this.frustumRekt.material.wireframe = true;
+            this.frustum.plain = true; // dont 2:1
+            this.frustum.use();
+            this.frustum.mesh.renderOrder = 9999999;
+            this.frustum.material.wireframe = true;
         }
         static rig() {
             return new Game();
@@ -1289,15 +1278,19 @@ void main() {
             tq.scene.scale.set(this.scale, this.scale, 1);
             let p2 = pts$1.mult(this.pos, this.scale);
             tq.scene.position.set(p2[0], p2[1], 0);
-            let w = tq.target.width;
-            let h = tq.target.height;
+            let w = window.innerWidth; // tq.target.width;
+            let h = window.innerHeight; // tq.target.height;
+            //console.log(`tq target ${w} x ${h}`)
             let w2 = w / this.dpi / this.scale;
             let h2 = h / this.dpi / this.scale;
             this.view = new aabb2([-p[0] - w2 / 2, -p[1] - h2 / 2], [-p[0] + w2 / 2, -p[1] + h2 / 2]);
             this.view.min = pts$1.floor(this.view.min);
             this.view.max = pts$1.floor(this.view.max);
             this.focal = [-p[0], -p[1], 0];
-            return;
+            //return;
+            this.frustum.mesh.scale.set(w2, h2, 1);
+            //this.frustumRekt.tile = <vec2><unknown>this.focal;
+            this.frustum.now_update_pos();
         }
         sels() {
             /*if (App.left) {
@@ -1430,6 +1423,10 @@ void main() {
             return a[Math.floor(Math.random() * a.length)];
         }
         Egyt.sample = sample;
+        function clamp(val, min, max) {
+            return val > max ? max : val < min ? min : val;
+        }
+        Egyt.clamp = clamp;
         let RESOURCES;
         (function (RESOURCES) {
             RESOURCES[RESOURCES["UNDEFINED_OR_INIT"] = 0] = "UNDEFINED_OR_INIT";
@@ -1520,6 +1517,7 @@ void main() {
 				<span id="fpsStat">xx</span><br/>
 				<span id="memoryStat">xx</span><br/>
 				<br/>
+				<span id="gameZoom"></span><br/>
 				<span id="gameAabb"></span><br/>
 				<br/>
 				<span id="numChunks"></span><br/>

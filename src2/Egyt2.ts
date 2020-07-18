@@ -10,6 +10,9 @@ import { Object3D, Mesh, PlaneBufferGeometry, MeshBasicMaterial } from "three";
 import { aabb2 } from "./lib/AABB";
 import pts from "./lib/Pts";
 import { Win } from "./lib/Board";
+import Egyt from "./Egyt";
+
+
 
 class Game {
 	rekts: Rekt[]
@@ -23,7 +26,7 @@ class Game {
 
 	focal: zxc
 	view: aabb2
-	frustumRekt: Rekt
+	frustum: Rekt
 
 	static rig() {
 		return new Game();
@@ -35,23 +38,23 @@ class Game {
 		this.rekts = [];
 		this.objs = [];
 
-		this.pos = [0, 0]; //[-1665, 3585, 0];
-		this.dpi = window.devicePixelRatio;
-		this.scale = 1 / this.dpi;
+		this.pos = [0, 0];
+		this.dpi = 1;//tq.ndpi;
+		this.scale = 1;// / this.dpi;
 
 		this.view = new aabb2([0, 0]);
 
-		let rekt = this.frustumRekt = new Rekt;
+		let rekt = this.frustum = new Rekt;
 		rekt.name = 'Frustum';
 		rekt.tile = [0, 0];
 		rekt.wh = [1, 1];
 		rekt.asset = 'egyt/128';
 
-		this.frustumRekt.plain = true; // dont 2:1
+		this.frustum.plain = true; // dont 2:1
 
-		this.frustumRekt.use();
-		this.frustumRekt.mesh.renderOrder = 9999999;
-		this.frustumRekt.material.wireframe = true;
+		this.frustum.use();
+		this.frustum.mesh.renderOrder = 9999999;
+		this.frustum.material.wireframe = true;
 	}
 
 	update() {
@@ -100,8 +103,10 @@ class Game {
 		tq.scene.position.set(p2[0], p2[1], 0);
 
 
-		let w = tq.target.width;
-		let h = tq.target.height;
+		let w = window.innerWidth // tq.target.width;
+		let h = window.innerHeight // tq.target.height;
+
+		//console.log(`tq target ${w} x ${h}`)
 
 		let w2 = w / this.dpi / this.scale;
 		let h2 = h / this.dpi / this.scale;
@@ -115,11 +120,11 @@ class Game {
 
 		this.focal = [-p[0], -p[1], 0];
 
-		return;
+		//return;
 
-		this.frustumRekt.mesh.scale.set(w2, h2, 1);
-		this.frustumRekt.tile = <zx>[...this.focal];
-		this.frustumRekt.now_update_pos();
+		this.frustum.mesh.scale.set(w2, h2, 1);
+		//this.frustumRekt.tile = <vec2><unknown>this.focal;
+		this.frustum.now_update_pos();
 	}
 
 	sels() {

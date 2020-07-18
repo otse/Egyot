@@ -33,7 +33,7 @@ void main() {
 export namespace tq {
 
 	export var changes = true;
-	export var dpi;
+	export var ndpi;
 	export var delta = 0;
 
 	export var clock: Clock
@@ -79,13 +79,7 @@ export namespace tq {
 	}
 	export function render() {
 
-		//if (!changes)
-		//return;
-
 		calc();
-
-		//renderer.setSize(
-		//	window.innerWidth, window.innerHeight);
 
 		renderer.setRenderTarget(target);
 		renderer.clear();
@@ -94,8 +88,6 @@ export namespace tq {
 		renderer.setRenderTarget(null); // Naar scherm
 		renderer.clear();
 		renderer.render(scene2, camera);
-
-		//changes = false;
 	}
 
 	export var w;
@@ -113,15 +105,16 @@ export namespace tq {
 		scene.background = new Color('rgb(40, 72, 42)'); // #444
 		scene2 = new Scene();
 		rttscene = new Scene();
-		//scene3.background = new Color('pink');
 
-		dpi = window.devicePixelRatio;
+		ndpi = window.devicePixelRatio;
 
-		if (dpi == 2) {
-			console.warn('DPI > 1. Egyt will scale by whole factors.');
+		console.log(`window innerWidth, innerHeight ${window.innerWidth} x ${window.innerHeight}`);
+
+		if (ndpi > 1) {
+			console.warn('Dpi i> 1. Game may scale.');
 		}
 
-		target = new WebGLRenderTarget(
+		target = new WebGLRenderTarget( 
 			window.innerWidth, window.innerHeight,
 			{
 				minFilter: THREE.NearestFilter,
@@ -130,7 +123,7 @@ export namespace tq {
 			});
 
 		renderer = new WebGLRenderer({ antialias: false });
-		renderer.setPixelRatio(dpi);
+		renderer.setPixelRatio(1);
 		renderer.setSize(
 			window.innerWidth, window.innerHeight);
 		renderer.autoClear = true;
@@ -176,35 +169,24 @@ export namespace tq {
 
 		w = window.innerWidth;
 		h = window.innerHeight;
-
 		if (w % 2 != 0) {
 			//w -= 1;
 		}
 		if (h % 2 != 0) {
 			//h -= 1;
 		}
-
 		let targetwidth = w;
 		let targetheight = h;
-
-		if (dpi == 2) {
-			targetwidth *= dpi;
-			targetheight *= dpi;
-		}
-
-		plane = new PlaneBufferGeometry(
-			window.innerWidth, window.innerHeight);
+		//if (ndpi == 2) {
+		//	targetwidth *= ndpi;
+		//	targetheight *= ndpi;
+		//}
+		plane = new PlaneBufferGeometry(window.innerWidth, window.innerHeight);
 		quadPost.geometry = plane;
-
 		target.setSize(targetwidth, targetheight);
-
 		camera = tqlib.ortographiccamera(w, h);
-		
 		camera.updateProjectionMatrix();
-
-		renderer.setSize(
-			w, h);
-
+		renderer.setSize(w, h);
 	}
 
 }

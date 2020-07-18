@@ -27,6 +27,10 @@ export namespace Egyt {
 		return a[Math.floor(Math.random() * a.length)];
 	}
 
+	export function clamp(val, min, max) {
+		return val > max ? max : val < min ? min : val;
+	}
+
 	export enum RESOURCES {
 		UNDEFINED_OR_INIT = 0,
 		TILE_ORANGE,
@@ -139,6 +143,7 @@ export namespace Egyt {
 				<span id="fpsStat">xx</span><br/>
 				<span id="memoryStat">xx</span><br/>
 				<br/>
+				<span id="gameZoom"></span><br/>
 				<span id="gameAabb"></span><br/>
 				<br/>
 				<span id="numChunks"></span><br/>

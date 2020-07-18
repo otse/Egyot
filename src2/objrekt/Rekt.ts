@@ -19,8 +19,7 @@ class Rekt {
 	color?: string
 	opacity?: number = 1
 	flip?: boolean
-
-
+	
 	mesh: Mesh
 	meshShadow: Mesh
 

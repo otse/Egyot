@@ -76,7 +76,8 @@ namespace Board {
 			Board.win.find('#fpsStat').text(`Fps: ${parseInt(tq.fps)}`);
 			Board.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
 
-			Board.win.find('#gameAabb').html(`View bounding volume: <span>${Egyt.game.view.min[0]}, ${Egyt.game.view.min[1]} x ${Egyt.game.view.max[0]}, ${Egyt.game.view.max[1]} `);
+			Board.win.find('#gameZoom').html(`Scale: <span>${Egyt.game.scale} / ndpi ${Egyt.game.dpi} / ${window.devicePixelRatio}`);
+			Board.win.find('#gameAabb').html(`View bounding volume: <span>${Egyt.game.view.min[0]}, ${Egyt.game.view.min[1]} x ${Egyt.game.view.max[0]}, ${Egyt.game.view.max[1]}`);
 			//Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
 
 			Board.win.find('#numChunks').text(`Num chunks: ${Egyt.map.statmaster.fitter.shown.length} / ${Egyt.map.statmaster.total}`);

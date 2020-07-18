@@ -89,19 +89,13 @@ class Chunk {
 			this.grouprt.renderOrder = depth;
 		}
 
-		// non screen bound not used anymore
+		// note: non screen bound not used anymore
+
 		this.bound = new aabb2(
 			[pt.x * this.master.span, pt.y * this.master.span],
 			[(pt.x + 1) * this.master.span, (pt.y + 1) * this.master.span]);
 
 		this.screen = Chunk.Sscreen(pt.x, pt.y, this.master);
-	}
-	update_color() {
-		return;
-		//if (!this.rttrekt.inuse)
-		//	return;
-		//this.rttrekt.material.color.set(new Color(this.rektcolor));
-		//this.rttrekt.material.needsUpdate = true;
 	}
 	empty() {
 		return this.objs.table.t.length < 1;
