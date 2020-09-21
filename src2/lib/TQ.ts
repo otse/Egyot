@@ -17,7 +17,9 @@ const fragmentPost = `
 varying vec2 vUv;
 uniform sampler2D tDiffuse;
 void main() {
-	gl_FragColor = texture2D( tDiffuse, vUv );
+	vec4 clr = texture2D( tDiffuse, vUv );
+	clr.rgb = mix(clr.rgb, vec3(0.5), 0.0);
+	gl_FragColor = clr;
 }`
 
 
@@ -102,7 +104,7 @@ export namespace tq {
 		clock = new Clock();
 
 		scene = new Scene();
-		scene.background = new Color('rgb(40, 72, 42)'); // #444
+		scene.background = new Color('rgb(40, 72, 42)');
 		scene2 = new Scene();
 		rttscene = new Scene();
 

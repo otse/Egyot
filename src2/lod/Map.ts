@@ -69,7 +69,7 @@ class Map {
 		tobaccoshop.asset = 'egyt/building/redstore';
 
 		granary.use();
-		//tobaccoshop.initiate();
+		tobaccoshop.use();
 
 		//Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));
 		Agriculture.area_wheat(2, new aabb2([5, -4], [5 + 50 - 2, -12]));

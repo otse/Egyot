@@ -11,7 +11,7 @@ export namespace Egyt {
 
 	export var USE_CHUNK_RT = true;
 	export var OFFSET_CHUNK_OBJ_REKT = true;
-	export var PAINT_OBJ_TICK_RATE = true;
+	export var PAINT_OBJ_TICK_RATE = false;
 
 	export const EVEN = 24; // very evenly divisible
 	export const YUM = EVEN;

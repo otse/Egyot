@@ -45,7 +45,9 @@ var duc = (function (exports, THREE) {
 varying vec2 vUv;
 uniform sampler2D tDiffuse;
 void main() {
-	gl_FragColor = texture2D( tDiffuse, vUv );
+	vec4 clr = texture2D( tDiffuse, vUv );
+	clr.rgb = mix(clr.rgb, vec3(0.5), 0.0);
+	gl_FragColor = clr;
 }`;
     const vertexScreen = `
 varying vec2 vUv;
@@ -93,7 +95,7 @@ void main() {
             console.log('ThreeQuarter Init');
             tq.clock = new THREE.Clock();
             tq.scene = new THREE.Scene();
-            tq.scene.background = new THREE.Color('rgb(40, 72, 42)'); // #444
+            tq.scene.background = new THREE.Color('rgb(40, 72, 42)');
             tq.scene2 = new THREE.Scene();
             tq.rttscene = new THREE.Scene();
             tq.ndpi = window.devicePixelRatio;
@@ -1092,7 +1094,7 @@ void main() {
             tobaccoshop.wh = [144, 144];
             tobaccoshop.asset = 'egyt/building/redstore';
             granary.use();
-            //tobaccoshop.initiate();
+            tobaccoshop.use();
             //Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));
             Agriculture$1.area_wheat(2, new aabb2([5, -4], [5 + 50 - 2, -12]));
             Agriculture$1.area_wheat(2, new aabb2([5 + 50, -4], [5 + 50 - 2 + 50, -12]));
@@ -1415,7 +1417,7 @@ void main() {
     (function (Egyt) {
         Egyt.USE_CHUNK_RT = true;
         Egyt.OFFSET_CHUNK_OBJ_REKT = true;
-        Egyt.PAINT_OBJ_TICK_RATE = true;
+        Egyt.PAINT_OBJ_TICK_RATE = false;
         Egyt.EVEN = 24; // very evenly divisible
         Egyt.YUM = Egyt.EVEN;
         var started = false;
