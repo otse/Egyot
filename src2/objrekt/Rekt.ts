@@ -3,7 +3,7 @@ import { tq, THREE } from "../lib/tq";
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3, Color } from "three";
 import pts from "../lib/Pts";
 import Obj from "./Obj";
-import Egyt from "../Egyt";
+import Lumber from "../Lumber";
 import { tqlib } from "../lib/tqlib";
 import { Chunk } from "../lod/Chunks";
 
@@ -40,7 +40,7 @@ class Rekt {
 		Rekt.num--;
 	}
 	paint_alternate() {
-		if (!Egyt.PAINT_OBJ_TICK_RATE)
+		if (!Lumber.PAINT_OBJ_TICK_RATE)
 			return;
 		if (!this.used)
 			return;
@@ -96,7 +96,7 @@ class Rekt {
 	getgroup() {
 		let c: Chunk | null | undefined;
 		if (c = this.obj?.chunk)
-			if (this.obj?.rtt && Egyt.USE_CHUNK_RT)
+			if (this.obj?.rtt && Lumber.USE_CHUNK_RT)
 				return c.grouprt;
 			else
 				return c.group;
@@ -126,7 +126,7 @@ class Rekt {
 			y = xy[1];
 		}
 		else {
-			if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
+			if (Lumber.OFFSET_CHUNK_OBJ_REKT) {
 				let c = this.obj?.chunk;
 				if (c) {
 					xy = pts.subtract(xy, c.rekt_offset);

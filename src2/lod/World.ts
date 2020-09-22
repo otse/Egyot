@@ -1,5 +1,5 @@
 import Obj from "../objrekt/Obj";
-import Egyt from "../Egyt";
+import Lumber from "../Lumber";
 import { Ply } from "../nested/char/Char";
 import pts from "../lib/Pts";
 
@@ -7,16 +7,14 @@ class World {
 	static rig() {
 		return new World;
 	}
-
 	constructor() {
 		this.init();
 
 		console.log('world');
 	}
-
 	add(obj: Obj) {
 
-		let c = Egyt.map.get_chunk_at_tile(obj.tile);
+		let c = Lumber.map.get_chunk_at_tile(obj.tile);
 
 		let succeed = c.objs.add(obj);
 
@@ -29,21 +27,18 @@ class World {
 		if (c.on)
 			obj.comes();
 	}
-
 	remove(obj: Obj) {
 
 	}
-
 	update() {
 
 	}
-
 	init() {
 
-		Egyt.ply = new Ply;
-		Egyt.ply.tile = [0, 0]
+		Lumber.ply = new Ply;
+		Lumber.ply.tile = [0, 0]
 
-		Egyt.ply.comes();
+		Lumber.ply.comes();
 	}
 }
 

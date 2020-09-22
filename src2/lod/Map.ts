@@ -1,6 +1,6 @@
 import Rekt from "../objrekt/Rekt";
 import { Win } from "../lib/Board";
-import Egyt from "../Egyt";
+import Lumber from "../Lumber";
 import App from "../lib/App";
 import pts from "../lib/Pts";
 import Forestation from "./gen/Forestation";
@@ -46,15 +46,27 @@ class Map {
 	}
 
 	init() {
-		tqlib.loadtexture('assets/egyt/tileorange.png', undefined, () => Egyt.resourced('TILE_ORANGE'))
-		tqlib.loadtexture('assets/egyt/farm/wheat_i.png', undefined, () => Egyt.resourced('WHEAT_I'))
-		tqlib.loadtexture('assets/egyt/farm/wheat_il.png', undefined, () => Egyt.resourced('WHEAT_IL'))
-		tqlib.loadtexture('assets/egyt/farm/wheat_ili.png', undefined, () => Egyt.resourced('WHEAT_ILI'))
-		tqlib.loadtexture('assets/egyt/farm/wheat_ilil.png', undefined, () => Egyt.resourced('WHEAT_ILIL'))
-		tqlib.loadtexture('assets/egyt/farm/wheat_ilili.png', undefined, () => Egyt.resourced('WHEAT_ILILI'))
+		let textures = 0;
+		let loaded = 0;
 
-		tqlib.loadtexture('assets/egyt/tree/oaktree3.png', undefined, () => Egyt.resourced('TREE_1'))
-		tqlib.loadtexture('assets/egyt/tree/oaktree4.png', undefined, () => Egyt.resourced('TREE_2'))
+		function callback() {
+			if (++loaded >= textures) Lumber.resourced('POPULAR_ASSETS');
+		}
+
+		function preload_textures(strs: string[]) {
+			textures = strs.length;
+			for (let str of strs)
+				tqlib.loadtexture(str, undefined, callback);
+		}
+		preload_textures([
+			'assets/egyt/tileorange.png',
+			'assets/egyt/farm/wheat_i.png',
+			'assets/egyt/farm/wheat_il.png',
+			'assets/egyt/farm/wheat_ili.png',
+			'assets/egyt/farm/wheat_ilil.png',
+			'assets/egyt/farm/wheat_ilili.png',
+			'assets/egyt/tree/oaktree3.png',
+			'assets/egyt/tree/oaktree4.png']);
 	}
 
 	populate() {
@@ -84,20 +96,20 @@ class Map {
 		//Agriculture.plop_wheat_area(3, new aabb3([-20, -302, 0], [11, -600, 0]));
 
 		const stones = [
-~			'egyt/ground/stone1',
+			'egyt/ground/stone1',
 			'egyt/ground/stone2',
 		];
-		//Tilization.area_sample(30, stones, new aabb3([-2, 0, 0], [6, -2, 0]));
-
 		const gravels = [
 			'egyt/ground/gravel1',
 			'egyt/ground/gravel2',
 		];
+		Tilization.area_sample(30, gravels, new aabb2([-1, 0], [2, -22]));
+
 		// long road se
-		Tilization.area_sample(50, gravels, new aabb2([-13, 0], [400, -2]));
+		Tilization.area_sample(50, stones, new aabb2([-13, 0], [400, -2]));
 
 		// long road ne
-		Tilization.area_sample(50, gravels, new aabb2([-13, 0], [-11, 400]));
+		Tilization.area_sample(50, stones, new aabb2([-13, 0], [-11, 400]));
 
 		// farms se
 		Agriculture.area_wheat(1, new aabb2([-15, 21], [-40, 101]));
@@ -112,9 +124,9 @@ class Map {
 
 		let m = <zx>[...App.move];
 		m[1] = -m[1];
-		m = pts.divide(m, Egyt.game.scale);
+		m = pts.divide(m, Lumber.game.scale);
 
-		let p = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
+		let p = [Lumber.game.view.min[0], Lumber.game.view.max[1]] as zx;
 		p = pts.add(p, m);
 
 		const un = World.unproject(p);
@@ -131,8 +143,8 @@ class Map {
 
 		this.statmaster.update();
 
-		let worldPixelsLeftUpperCorner = [Egyt.game.view.min[0], Egyt.game.view.max[1]] as zx;
-		let worldPixelsRightLowerCorner = [Egyt.game.view.max[0], Egyt.game.view.min[1]] as zx;
+		let worldPixelsLeftUpperCorner = [Lumber.game.view.min[0], Lumber.game.view.max[1]] as zx;
+		let worldPixelsRightLowerCorner = [Lumber.game.view.max[0], Lumber.game.view.min[1]] as zx;
 
 		const x = World.unproject(worldPixelsLeftUpperCorner).tiled;
 		const y = World.unproject(worldPixelsRightLowerCorner).tiled;

@@ -7,7 +7,7 @@ import Forestation from "./lod/gen/Forestation";
 import Tilization from "./lod/gen/Tilization";
 import Agriculture from "./lod/gen/Agriculture";
 
-export namespace Egyt {
+export namespace Lumber {
 
 	export var USE_CHUNK_RT = true;
 	export var OFFSET_CHUNK_OBJ_REKT = true;
@@ -32,18 +32,9 @@ export namespace Egyt {
 	}
 
 	export enum RESOURCES {
-		UNDEFINED_OR_INIT = 0,
-		TILE_ORANGE,
-		WHEAT_I,
-		WHEAT_IL,
-		WHEAT_ILI,
-		WHEAT_ILIL,
-		WHEAT_ILILI,
-		TREE_1,
-		TREE_2,
-		//FONT_YELLOW,
-		//FONT_MISSION,
-		//SPRITES,
+		RC_UNDEFINED = 0,
+		POPULAR_ASSETS,
+		READY,
 		COUNT
 	};
 
@@ -86,10 +77,11 @@ export namespace Egyt {
 
 		Forestation.init();
 		Tilization.init();
+		
+		resourced('RC_UNDEFINED');
+		resourced('READY');
 
-		resourced('UNDEFINED_OR_INIT');
-
-		(window as any).Egyt = Egyt;
+		(window as any).Egyt = Lumber;
 	}
 
 	export function start() {
@@ -97,7 +89,7 @@ export namespace Egyt {
 		if (started)
 			return;
 
-		console.log('egyt starting');
+		console.log('lumber starting');
 
 		if (window.location.href.indexOf("#nochunkrt") != -1)
 			USE_CHUNK_RT = false;
@@ -108,7 +100,6 @@ export namespace Egyt {
 		//	Win.load_sheet('style95.css');
 		//else
 		//	Win.load_sheet('style2.css');
-
 
 		Win.init();
 
@@ -182,7 +173,7 @@ export namespace Egyt {
 		if (!started)
 			return;
 
-		Egyt.game.update();
+		Lumber.game.update();
 
 		Forestation.update();
 		Tilization.update();
@@ -196,4 +187,4 @@ export namespace Egyt {
 
 }
 
-export default Egyt;
+export default Lumber;

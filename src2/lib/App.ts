@@ -1,7 +1,7 @@
 import { tq as tq } from "./tq";
 
 import Game from "../Egyt2";
-import Egyt from "../Egyt";
+import Lumber from "../Lumber";
 
 export const enum KEY {
 	OFF = 0,
@@ -77,7 +77,7 @@ export namespace App {
 
 		tq.init();
 		
-		Egyt.init();
+		Lumber.init();
 
 		loo(0);
 
@@ -103,7 +103,7 @@ export namespace App {
 		requestAnimationFrame(loo);
 
 		tq.update();
-		Egyt.update();
+		Lumber.update();
 		
 		tq.render();
 

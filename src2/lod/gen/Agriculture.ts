@@ -1,9 +1,8 @@
 import Rekt from "../../objrekt/Rekt";
-import Egyt from "../../Egyt";
+import Lumber from "../../Lumber";
 import { aabb2 } from "../../lib/aabb";
 import Obj from "../../objrekt/Obj";
 import App from "../../lib/App";
-import Points from "../../lib/Pts";
 import pts from "../../lib/Pts";
 import { Color } from "three";
 
@@ -41,18 +40,18 @@ namespace Agriculture {
 
 			this.rate = 2.0;
 		}
-		post() {
+		finish() {
 			let rekt = this.rekt = new Rekt;
 			rekt.obj = this;
 			rekt.asset =
-				this.growth == 1 ? Egyt.sample(tillering) :
-				this.growth == 2 ? Egyt.sample(ripening) :
+				this.growth == 1 ? Lumber.sample(tillering) :
+				this.growth == 2 ? Lumber.sample(ripening) :
 				this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
 			rekt.tile = this.tile;
 			rekt.wh = [22, 22];
 		}
 		update() {
-			if (Egyt.PAINT_OBJ_TICK_RATE)
+			if (Lumber.PAINT_OBJ_TICK_RATE)
 				this.rekt.paint_alternate();
 		}
 		comes() {
@@ -86,9 +85,9 @@ namespace Agriculture {
 
 		let crop = new Wheat(growth);
 		crop.tile = tile;
-		crop.post();
+		crop.finish();
 
-		Egyt.world.add(crop);
+		Lumber.world.add(crop);
 
 		return crop;
 	}
@@ -96,7 +95,7 @@ namespace Agriculture {
 	export function area_wheat(growth: number, aabb: aabb2) {
 		const every = (pos: vec2) => place_wheat(growth, pos);
 
-		Points.area_every(aabb, every);
+		pts.area_every(aabb, every);
 	}
 }
 

@@ -1,5 +1,5 @@
 import Rekt from "../../objrekt/Rekt";
-import Egyt from "../../Egyt";
+import Lumber from "../../Lumber";
 import { aabb2 } from "../../lib/aabb";
 import Obj from "../../objrekt/Obj";
 import App from "../../lib/App";
@@ -35,13 +35,13 @@ namespace Forestation {
 		post() {
 			let rekt = this.rekt = new Rekt;
 			rekt.obj = this;
-			rekt.asset = Egyt.sample(treez);
+			rekt.asset = Lumber.sample(treez);
 			rekt.tile = this.tile;
 			rekt.offset = [1, -1];
 			rekt.wh = [120, 132];
 		}
 		update() {
-			if (Egyt.PAINT_OBJ_TICK_RATE)
+			if (Lumber.PAINT_OBJ_TICK_RATE)
 				this.rekt.paint_alternate();
 		}
 		comes() {
@@ -72,7 +72,7 @@ namespace Forestation {
 			tree.tile = pos;
 			tree.post();
 			
-			Egyt.world.add(tree);
+			Lumber.world.add(tree);
 		}
 	}
 
@@ -84,7 +84,7 @@ namespace Forestation {
 		if (plopping) {
 			let tree = plopping;
 
-			let p = pts.clone(Egyt.map.mouse_tiled);
+			let p = pts.clone(Lumber.map.mouse_tiled);
 
 			tree.tile = p;
 			tree.rekt.tile = p;
@@ -100,7 +100,7 @@ namespace Forestation {
 				tree2.tile = p;
 				tree2.post();
 
-				Egyt.world.add(tree2);
+				Lumber.world.add(tree2);
 			}
 		}
 	}

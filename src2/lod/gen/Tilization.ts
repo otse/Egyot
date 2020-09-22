@@ -1,5 +1,5 @@
 import Rekt from "../../objrekt/Rekt";
-import Egyt from "../../Egyt";
+import Lumber from "../../Lumber";
 import { aabb2 } from "../../lib/aabb";
 import Obj from "../../objrekt/Obj";
 import App from "../../lib/App";
@@ -18,19 +18,20 @@ namespace Tilization {
 	]
 
 	export class Tile extends Obj {
-
 		rekt: Rekt
-
+		asset: string = 'egyt/ground/stone1'
 		constructor(asset) {
-
 			super();
-
+			this.rtt = false;
+		}
+		finish() {
 			let rekt = this.rekt = new Rekt;
-			rekt.asset = asset;
+			rekt.obj = this;
+			rekt.asset = this.asset;
 			rekt.tile = this.tile;
 			rekt.wh = [24, 12];
 		}
-		comes() {
+		comes() {			
 			super.comes();
 			this.rekt.use();
 		}
@@ -39,7 +40,12 @@ namespace Tilization {
 			this.rekt.unuse();
 		}
 		update() {
-
+			if (Lumber.PAINT_OBJ_TICK_RATE)
+				this.rekt.paint_alternate();
+		}
+		unset() {
+			super.unset();
+			this.rekt.unset();
 		}
 	}
 
@@ -59,25 +65,25 @@ namespace Tilization {
 		}
 
 		if (App.map['u'] == 1) {
-			let middle = World.unproject(Egyt.game.view.center()).tiled;
+			let middle = World.unproject(Lumber.game.view.center()).tiled;
 
 			let b = this.master.big(middle);
 
 			press = 1;
-
-			console.log('woo');
 		}
 	}
 
-	export function place_tile(chance: number, asset: string, pos) {
+	export function place_tile(chance: number, asset: string, pos: vec2) {
 
 		if (Math.random() > chance / 100)
 			return;
 
 		let tile = new Tile(asset);
 		tile.tile = pos;
+		tile.asset = asset;
+		tile.finish();
 
-		//Egyt.world.add(tile);
+		Lumber.world.add(tile);
 
 		return tile;
 	}
@@ -87,7 +93,7 @@ namespace Tilization {
 	}
 
 	export function area_sample(chance: number, assets: string[], aabb: aabb2) {
-		const every = (pos: zx) => place_tile(chance, Egyt.sample(assets), pos);
+		const every = (pos: zx) => place_tile(chance, Lumber.sample(assets), pos);
 
 		pts.area_every(aabb, every);
 	}

@@ -5,7 +5,7 @@ import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
 
 import { tq } from "../lib/tq";
 import pts from "../lib/Pts";
-import Egyt from "../Egyt";
+import Lumber from "../Lumber";
 
 class Selection {
 
@@ -66,7 +66,7 @@ class Selection {
 	}
 
 	View(mouse: zx) {
-		pts.subtract(mouse, Egyt.game.pos);
+		pts.subtract(mouse, Lumber.game.pos);
 
 		pts.subtract(
 			mouse, pts.divide(
@@ -74,7 +74,7 @@ class Selection {
 
 		let scale = 1;
 
-		if (Egyt.game.scale == 0.5)
+		if (Lumber.game.scale == 0.5)
 			scale = 2;
 
 		pts.mult(

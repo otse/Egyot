@@ -14,7 +14,7 @@
         "strictNullChecks": true
     },
     "files": [
-        "src2/Egyt.d.ts"
+        "src2/Lumber.d.ts"
     ],
     "include": [
         "src2",

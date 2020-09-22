@@ -2,7 +2,7 @@ import Rekt from "../objrekt/Rekt";
 import Obj from "../objrekt/Obj";
 import pts from "./Pts";
 import { tq } from "./tq";
-import Egyt from "../Egyt";
+import Lumber from "../Lumber";
 
 namespace Board {
 	export var win;
@@ -74,24 +74,24 @@ namespace Board {
 
 		if (Board.collapsed.Stats) {
 			Board.win.find('#fpsStat').text(`Fps: ${parseInt(tq.fps)}`);
-			Board.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
+			//Board.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
 
-			Board.win.find('#gameZoom').html(`Scale: <span>${Egyt.game.scale} / ndpi ${Egyt.game.dpi} / ${window.devicePixelRatio}`);
-			Board.win.find('#gameAabb').html(`View bounding volume: <span>${Egyt.game.view.min[0]}, ${Egyt.game.view.min[1]} x ${Egyt.game.view.max[0]}, ${Egyt.game.view.max[1]}`);
+			Board.win.find('#gameZoom').html(`Scale: <span>${Lumber.game.scale} / ndpi ${Lumber.game.dpi} / ${window.devicePixelRatio}`);
+			Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber.game.view.min[0]}, ${Lumber.game.view.min[1]} x ${Lumber.game.view.max[0]}, ${Lumber.game.view.max[1]}`);
 			//Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
 
-			Board.win.find('#numChunks').text(`Num chunks: ${Egyt.map.statmaster.fitter.shown.length} / ${Egyt.map.statmaster.total}`);
+			Board.win.find('#numChunks').text(`Num chunks: ${Lumber.map.statmaster.fitter.shown.length} / ${Lumber.map.statmaster.total}`);
 			Board.win.find('#numObjs').html(`Num objs: ${Obj.active} / ${Obj.num}`);
 			Board.win.find('#numRekts').html(`Num rekts: ${Rekt.active} / ${Rekt.num}`);
 
-			let b = Egyt.map.statmaster.big(Egyt.map.mouse_tiled);
-			let c = Egyt.map.statmaster.at(b[0], b[1]);
+			let b = Lumber.map.statmaster.big(Lumber.map.mouse_tiled);
+			let c = Lumber.map.statmaster.at(b[0], b[1]);
 				
-			Board.win.find('#square').text(`Mouse: ${pts.to_string(Egyt.map.mouse_tiled)}`);
+			Board.win.find('#square').text(`Mouse: ${pts.to_string(Lumber.map.mouse_tiled)}`);
 			Board.win.find('#squareChunk').text(`Mouse chunk: ${pts.to_string(b)}`);
 			Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${c?.rt ? 'true' : 'false'}`);
-			Board.win.find('#snakeTurns').text(`CSnake turns: ${Egyt.map.statmaster.fitter.lines}`);
-			Board.win.find('#snakeTotal').text(`CSnake total: ${Egyt.map.statmaster.fitter.total}`);
+			Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber.map.statmaster.fitter.lines}`);
+			Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber.map.statmaster.fitter.total}`);
 		}
 	}
 

@@ -10,7 +10,7 @@ import { Object3D, Mesh, PlaneBufferGeometry, MeshBasicMaterial } from "three";
 import { aabb2 } from "./lib/AABB";
 import pts from "./lib/Pts";
 import { Win } from "./lib/Board";
-import Egyt from "./Egyt";
+import Lumber from "./Lumber";
 
 
 

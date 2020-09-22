@@ -1,6 +1,6 @@
 import Rekt from "../objrekt/Rekt";
 import { Win } from "../lib/Board";
-import Egyt from "../Egyt";
+import Lumber from "../Lumber";
 import App from "../lib/App";
 import pts from "../lib/Pts";
 import Forestation from "./gen/Forestation";
@@ -76,7 +76,7 @@ class Chunk {
 
 		this.rekt_offset = pts.clone(basest_tile);
 
-		if (Egyt.OFFSET_CHUNK_OBJ_REKT) {
+		if (Lumber.OFFSET_CHUNK_OBJ_REKT) {
 			const zx = pts.project(basest_tile);
 			const zxc = <vec3>[...zx, 0];
 
@@ -110,7 +110,7 @@ class Chunk {
 		return true;
 	}
 	comes_pt2() {
-		if (!Egyt.USE_CHUNK_RT)
+		if (!Lumber.USE_CHUNK_RT)
 			return;
 		let rtt = count(this, 'rtt');
 		const threshold = rtt >= 10;
@@ -132,14 +132,14 @@ class Chunk {
 		this.on = false;
 	}
 	noob() {
-		return Egyt.game.view.test(this.screen) != aabb2.OOB;
+		return Lumber.game.view.test(this.screen) != aabb2.OOB;
 	}
 	oob() {
-		return Egyt.game.view.test_oob(this.screen) == aabb2.OOB;
+		return Lumber.game.view.test_oob(this.screen) == aabb2.OOB;
 	}
 	update() {
 		this.objs.updates();
-		if (Egyt.USE_CHUNK_RT && this.changed)
+		if (Lumber.USE_CHUNK_RT && this.changed)
 			this.rt?.render();
 		this.changed = false;
 	}
@@ -300,7 +300,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 		}
 	}
 	update() {
-		let middle = World.unproject(Egyt.game.view.center()).tiled;
+		let middle = World.unproject(Lumber.game.view.center()).tiled;
 		let b = this.master.big(middle);
 		this.lines = this.total = 0;
 		this.off();
@@ -358,7 +358,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 }
 
 class RtChunk {
-	readonly padding = Egyt.EVEN * 4
+	readonly padding = Lumber.EVEN * 4
 	readonly width: number
 	readonly height: number
 
