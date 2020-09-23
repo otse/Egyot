@@ -53,7 +53,7 @@ class Chunk {
 		const colors = ['lightsalmon', 'khaki', 'lightgreen', 'paleturquoise', 'plum', 'pink'];
 
 		this.objs = new Objs(this);
-		//this.color = Egyt.sample(colors);
+		//this.childobjscolor = Lumber.sample(colors);
 
 		this.p = [x, y];
 		this.p2 = [x + 1, y];
@@ -62,22 +62,24 @@ class Chunk {
 
 		this.set_bounds();
 	}
-
+	anchor()
+	{
+		
+	}
 	set_bounds() {
 		const pt = pts.pt(this.p);
 
-		let basest_tile = pts.mult(this.p2, this.master.span * 24);
-		this.basest_tile = pts.clone(basest_tile);
+		let p3 = pts.clone(this.p);
 
-		let north = pts.mult(this.p2, this.master.span * 24);
-		this.north = north;
+		this.basest_tile = pts.mult(this.p2, this.master.span * 24);
+		this.north = 	   pts.mult(p3, 	 this.master.span * 24);
 
-		this.order_tile = north;
+		this.order_tile = this.north;
 
-		this.rekt_offset = pts.clone(basest_tile);
+		this.rekt_offset = pts.clone(this.basest_tile);
 
 		if (Lumber.OFFSET_CHUNK_OBJ_REKT) {
-			const zx = pts.project(basest_tile);
+			const zx = pts.project(this.basest_tile);
 			const zxc = <vec3>[...zx, 0];
 
 			this.group.position.fromArray(zxc);
@@ -112,10 +114,11 @@ class Chunk {
 	comes_pt2() {
 		if (!Lumber.USE_CHUNK_RT)
 			return;
-		let rtt = count(this, 'rtt');
-		const threshold = rtt >= 10;
-		if (!threshold)
-			return;
+		if (Lumber.MINIMUM_REKTS_BEFORE_RT) {
+			let rtt = count(this, 'rtt');
+			if (rtt <= Lumber.MINIMUM_REKTS_BEFORE_RT)
+				return;
+		}
 		if (!this.rt)
 			this.rt = new RtChunk(this);
 		this.rt.comes();
@@ -185,6 +188,7 @@ class Tuple<T = []> {
 		return !!0;
 	}
 }
+
 
 class Objs {
 	public rtts = 0
@@ -378,10 +382,10 @@ class RtChunk {
 
 		let t = pts.mult(this.chunk.p2, this.chunk.master.span);
 
-		let rekt = this.rekt = new Rekt;
-		rekt.tile = t;
-		rekt.wh = [this.width, this.height];
-		rekt.asset = 'egyt/tenbyten';
+		this.rekt = new Rekt;
+		this.rekt.tile = t;
+		this.rekt.wh = [this.width, this.height];
+		this.rekt.asset = 'egyt/tenbyten';
 	}
 	// todo pool the rts?
 	comes() {

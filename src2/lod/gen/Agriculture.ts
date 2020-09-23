@@ -41,14 +41,14 @@ namespace Agriculture {
 			this.rate = 2.0;
 		}
 		finish() {
-			let rekt = this.rekt = new Rekt;
-			rekt.obj = this;
-			rekt.asset =
+			this.rekt = new Rekt;
+			this.rekt.obj = this;
+			this.rekt.asset =
 				this.growth == 1 ? Lumber.sample(tillering) :
 				this.growth == 2 ? Lumber.sample(ripening) :
 				this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
-			rekt.tile = this.tile;
-			rekt.wh = [22, 22];
+				this.rekt.tile = this.tile;
+				this.rekt.wh = [22, 22];
 		}
 		update() {
 			if (Lumber.PAINT_OBJ_TICK_RATE)

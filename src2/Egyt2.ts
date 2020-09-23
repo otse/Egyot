@@ -12,7 +12,7 @@ import pts from "./lib/Pts";
 import { Win } from "./lib/Board";
 import Lumber from "./Lumber";
 
-
+const SHOW_FRUSTUM = false;
 
 class Game {
 	rekts: Rekt[]
@@ -44,17 +44,18 @@ class Game {
 
 		this.view = new aabb2([0, 0]);
 
-		let rekt = this.frustum = new Rekt;
-		rekt.name = 'Frustum';
-		rekt.tile = [0, 0];
-		rekt.wh = [1, 1];
-		rekt.asset = 'egyt/128';
+		if (SHOW_FRUSTUM) {
+			this.frustum = new Rekt;
+			this.frustum.name = 'Frustum';
+			this.frustum.tile = [0, 0];
+			this.frustum.wh = [1, 1];
+			this.frustum.asset = 'egyt/128';
 
-		this.frustum.plain = true; // dont 2:1
-
-		this.frustum.use();
-		this.frustum.mesh.renderOrder = 9999999;
-		this.frustum.material.wireframe = true;
+			this.frustum.plain = true;
+			this.frustum.use();
+			this.frustum.mesh.renderOrder = 9999999;
+			this.frustum.material.wireframe = true;
+		}
 	}
 
 	update() {
@@ -122,9 +123,11 @@ class Game {
 
 		//return;
 
-		this.frustum.mesh.scale.set(w2, h2, 1);
-		//this.frustumRekt.tile = <vec2><unknown>this.focal;
-		this.frustum.now_update_pos();
+		if (SHOW_FRUSTUM) {
+			this.frustum.mesh.scale.set(w2, h2, 1);
+			this.frustum.tile = pts.divide(<vec2><unknown>this.focal, Lumber.EVEN);
+			this.frustum.now_update_pos();
+		}
 	}
 
 	sels() {

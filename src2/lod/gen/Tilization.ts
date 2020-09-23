@@ -22,14 +22,14 @@ namespace Tilization {
 		asset: string = 'egyt/ground/stone1'
 		constructor(asset) {
 			super();
-			this.rtt = false;
+			//this.rtt = false;
 		}
 		finish() {
-			let rekt = this.rekt = new Rekt;
-			rekt.obj = this;
-			rekt.asset = this.asset;
-			rekt.tile = this.tile;
-			rekt.wh = [24, 12];
+			this.rekt = new Rekt;
+			this.rekt.obj = this;
+			this.rekt.asset = this.asset;
+			this.rekt.tile = this.tile;
+			this.rekt.wh = [24, 12];
 		}
 		comes() {			
 			super.comes();

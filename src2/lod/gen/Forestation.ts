@@ -32,13 +32,13 @@ namespace Forestation {
 
 			trees.push(this);
 		}
-		post() {
-			let rekt = this.rekt = new Rekt;
-			rekt.obj = this;
-			rekt.asset = Lumber.sample(treez);
-			rekt.tile = this.tile;
-			rekt.offset = [1, -1];
-			rekt.wh = [120, 132];
+		finish() {
+			this.rekt = new Rekt;
+			this.rekt.obj = this;
+			this.rekt.asset = Lumber.sample(treez);
+			this.rekt.tile = this.tile;
+			this.rekt.offset = [1, -1];
+			this.rekt.wh = [120, 132];
 		}
 		update() {
 			if (Lumber.PAINT_OBJ_TICK_RATE)
@@ -70,7 +70,7 @@ namespace Forestation {
 		for (let pos of positions) {
 			let tree = new Tree;
 			tree.tile = pos;
-			tree.post();
+			tree.finish();
 			
 			Lumber.world.add(tree);
 		}
@@ -98,7 +98,7 @@ namespace Forestation {
 
 				let tree2 = new Tree;
 				tree2.tile = p;
-				tree2.post();
+				tree2.finish();
 
 				Lumber.world.add(tree2);
 			}
@@ -117,7 +117,7 @@ namespace Forestation {
 
 		let tree = new Tree;
 		tree.tile = [0, 0];
-		tree.post();
+		tree.finish();
 
 		tree.comes();
 

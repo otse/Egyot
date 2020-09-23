@@ -12,6 +12,7 @@ export namespace Lumber {
 	export var USE_CHUNK_RT = true;
 	export var OFFSET_CHUNK_OBJ_REKT = true;
 	export var PAINT_OBJ_TICK_RATE = false;
+	export var MINIMUM_REKTS_BEFORE_RT = 0;
 
 	export const EVEN = 24; // very evenly divisible
 	export const YUM = EVEN;
@@ -151,6 +152,7 @@ export namespace Lumber {
 				<span id="USE_CHUNK_RTT">USE_CHUNK_RTT: ${USE_CHUNK_RT}</span><br/>
 				<span id="OFFSET_CHUNK_OBJ_REKT">OFFSET_CHUNK_OBJ_REKT: ${OFFSET_CHUNK_OBJ_REKT}</span><br/>
 				<span id="PAINT_OBJ_TICK_RATE">PAINT_OBJ_TICK_RATE: ${PAINT_OBJ_TICK_RATE}</span><br/>
+				<span id="PAINT_OBJ_TICK_RATE">MINIMUM_REKTS_BEFORE_RT: ${MINIMUM_REKTS_BEFORE_RT}</span><br/>
 
 			</div>
 

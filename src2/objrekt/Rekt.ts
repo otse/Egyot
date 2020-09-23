@@ -113,9 +113,9 @@ class Rekt {
 
 		let x, y;
 
-		const depth = Rekt.depth(this.tile); // ignore offset! ?
-
 		let xy = pts.add(this.tile, this.offset);
+		
+		const depth = Rekt.depth(this.tile);
 
 		if (this.tiled) {
 			xy = Rekt.mult(xy);

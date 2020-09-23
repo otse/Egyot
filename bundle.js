@@ -379,8 +379,8 @@ void main() {
             var _a;
             const d = this.wh;
             let x, y;
-            const depth = Rekt.depth(this.tile); // ignore offset! ?
             let xy = pts$1.add(this.tile, this.offset);
+            const depth = Rekt.depth(this.tile);
             if (this.tiled) {
                 xy = Rekt.mult(xy);
             }
@@ -525,14 +525,14 @@ void main() {
                 this.rate = 2.0;
             }
             finish() {
-                let rekt = this.rekt = new Rekt$1;
-                rekt.obj = this;
-                rekt.asset =
+                this.rekt = new Rekt$1;
+                this.rekt.obj = this;
+                this.rekt.asset =
                     this.growth == 1 ? Lumber$1.sample(tillering) :
                         this.growth == 2 ? Lumber$1.sample(ripening) :
                             this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
-                rekt.tile = this.tile;
-                rekt.wh = [22, 22];
+                this.rekt.tile = this.tile;
+                this.rekt.wh = [22, 22];
             }
             update() {
                 if (Lumber$1.PAINT_OBJ_TICK_RATE)
@@ -680,14 +680,14 @@ void main() {
             constructor(asset) {
                 super();
                 this.asset = 'egyt/ground/stone1';
-                this.rtt = false;
+                //this.rtt = false;
             }
             finish() {
-                let rekt = this.rekt = new Rekt$1;
-                rekt.obj = this;
-                rekt.asset = this.asset;
-                rekt.tile = this.tile;
-                rekt.wh = [24, 12];
+                this.rekt = new Rekt$1;
+                this.rekt.obj = this;
+                this.rekt.asset = this.asset;
+                this.rekt.tile = this.tile;
+                this.rekt.wh = [24, 12];
             }
             comes() {
                 super.comes();
@@ -762,23 +762,24 @@ void main() {
             this.rektcolor = 'white';
             this.master.total++;
             this.objs = new Objs(this);
-            //this.color = Egyt.sample(colors);
+            //this.childobjscolor = Lumber.sample(colors);
             this.p = [x, y];
             this.p2 = [x + 1, y];
             this.group = new THREE.Group;
             this.grouprt = new THREE.Group;
             this.set_bounds();
         }
+        anchor() {
+        }
         set_bounds() {
             const pt = pts$1.pt(this.p);
-            let basest_tile = pts$1.mult(this.p2, this.master.span * 24);
-            this.basest_tile = pts$1.clone(basest_tile);
-            let north = pts$1.mult(this.p2, this.master.span * 24);
-            this.north = north;
-            this.order_tile = north;
-            this.rekt_offset = pts$1.clone(basest_tile);
+            let p3 = pts$1.clone(this.p);
+            this.basest_tile = pts$1.mult(this.p2, this.master.span * 24);
+            this.north = pts$1.mult(p3, this.master.span * 24);
+            this.order_tile = this.north;
+            this.rekt_offset = pts$1.clone(this.basest_tile);
             if (Lumber$1.OFFSET_CHUNK_OBJ_REKT) {
-                const zx = pts$1.project(basest_tile);
+                const zx = pts$1.project(this.basest_tile);
                 const zxc = [...zx, 0];
                 this.group.position.fromArray(zxc);
                 this.grouprt.position.fromArray(zxc);
@@ -805,10 +806,11 @@ void main() {
         comes_pt2() {
             if (!Lumber$1.USE_CHUNK_RT)
                 return;
-            let rtt = count(this, 'rtt');
-            const threshold = rtt >= 10;
-            if (!threshold)
-                return;
+            if (Lumber$1.MINIMUM_REKTS_BEFORE_RT) {
+                let rtt = count(this, 'rtt');
+                if (rtt <= Lumber$1.MINIMUM_REKTS_BEFORE_RT)
+                    return;
+            }
             if (!this.rt)
                 this.rt = new RtChunk(this);
             this.rt.comes();
@@ -1043,10 +1045,10 @@ void main() {
             this.camera = tqlib.ortographiccamera(this.width, this.height);
             // todo, pts.make(blah)
             let t = pts$1.mult(this.chunk.p2, this.chunk.master.span);
-            let rekt = this.rekt = new Rekt$1;
-            rekt.tile = t;
-            rekt.wh = [this.width, this.height];
-            rekt.asset = 'egyt/tenbyten';
+            this.rekt = new Rekt$1;
+            this.rekt.tile = t;
+            this.rekt.wh = [this.width, this.height];
+            this.rekt.asset = 'egyt/tenbyten';
         }
         // todo pool the rts?
         comes() {
@@ -1074,16 +1076,15 @@ void main() {
     class Map {
         constructor() {
             window.Chunk = Chunk;
-            this.statmaster = new ChunkMaster(Chunk, 20);
-            this.dynmaster = new ChunkMaster(Chunk, 20);
+            this.chunkMaster = new ChunkMaster(Chunk, 20);
+            //this.dynmaster = new ChunkMaster<Chunk>(Chunk, 20);
             this.mouse_tiled = [0, 0];
-            let rekt = this.mark = new Rekt$1;
-            rekt.tile = [0, 0];
-            rekt.wh = [22, 25];
-            rekt.asset = 'egyt/iceblock';
+            this.mark = new Rekt$1;
+            this.mark.tile = [0, 0];
+            this.mark.wh = [22, 25];
+            this.mark.asset = 'egyt/iceblock';
             //this.mark.use();
             //this.mark.mesh.renderOrder = 999;
-            //this.mark.dontOrder = true;
         }
         static state() {
             return new Map;
@@ -1108,7 +1109,11 @@ void main() {
                 'assets/egyt/farm/wheat_ilil.png',
                 'assets/egyt/farm/wheat_ilili.png',
                 'assets/egyt/tree/oaktree3.png',
-                'assets/egyt/tree/oaktree4.png'
+                'assets/egyt/tree/oaktree4.png',
+                'assets/egyt/ground/stone1.png',
+                'assets/egyt/ground/stone2.png',
+                'assets/egyt/ground/gravel1.png',
+                'assets/egyt/ground/gravel2.png',
             ]);
         }
         populate() {
@@ -1117,7 +1122,7 @@ void main() {
             granary.wh = [216, 168];
             granary.asset = 'egyt/building/granary';
             let tobaccoshop = new Rekt$1;
-            tobaccoshop.tile = [-13, 2];
+            tobaccoshop.tile = [-14, 2];
             tobaccoshop.wh = [144, 144];
             tobaccoshop.asset = 'egyt/building/redstore';
             granary.use();
@@ -1127,7 +1132,7 @@ void main() {
             Agriculture$1.area_wheat(2, new aabb2([5 + 50, -4], [5 + 50 - 2 + 50, -12]));
             Agriculture$1.area_wheat(3, new aabb2([5, -14], [5 + 50 - 2, -22]));
             Agriculture$1.area_wheat(3, new aabb2([5 + 50, -14], [5 + 50 - 2 + 50, -22]));
-            //Agriculture.plop_wheat_area(2, new aabb3([5, -14, 0], [5+12+12+12, -22, 0]));
+            Agriculture$1.area_wheat(3, new aabb2([-42, 21], [-80, 183]));
             //Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
             //Agriculture.plop_wheat_area(3, new aabb3([-4, -4, 0], [20, -39, 0]));
             //Agriculture.plop_wheat_area(2, new aabb3([-25, 14, 0], [5, 50, 0]));
@@ -1142,16 +1147,18 @@ void main() {
                 'egyt/ground/gravel2',
             ];
             Tilization$1.area_sample(30, gravels, new aabb2([-1, 0], [2, -22]));
+            // lots gravels
+            //Tilization.area_sample(66, gravels, new aabb2([-20, -10], [50, 80]));
             // long road se
-            Tilization$1.area_sample(50, stones, new aabb2([-13, 0], [400, -2]));
+            Tilization$1.area_sample(50, stones, new aabb2([-13, 0], [400, -3]));
             // long road ne
-            Tilization$1.area_sample(50, stones, new aabb2([-13, 0], [-11, 400]));
+            Tilization$1.area_sample(50, stones, new aabb2([-14, 0], [-12, 400]));
             // farms se
             Agriculture$1.area_wheat(1, new aabb2([-15, 21], [-40, 101]));
             Agriculture$1.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
         }
         get_chunk_at_tile(zx) {
-            return this.statmaster.which(zx);
+            return this.chunkMaster.which(zx);
         }
         mark_mouse() {
             let m = [...App.move];
@@ -1161,12 +1168,12 @@ void main() {
             p = pts$1.add(p, m);
             const un = World.unproject(p);
             this.mouse_tiled = un.tiled;
-            this.mark.tile = un.mult;
+            this.mark.tile = un.tiled;
             this.mark.now_update_pos();
         }
         update() {
             this.mark_mouse();
-            this.statmaster.update();
+            this.chunkMaster.update();
             let worldPixelsLeftUpperCorner = [Lumber$1.game.view.min[0], Lumber$1.game.view.max[1]];
             let worldPixelsRightLowerCorner = [Lumber$1.game.view.max[0], Lumber$1.game.view.min[1]];
             const x = World.unproject(worldPixelsLeftUpperCorner).tiled;
@@ -1235,16 +1242,16 @@ void main() {
                 Board.win.find('#gameZoom').html(`Scale: <span>${Lumber$1.game.scale} / ndpi ${Lumber$1.game.dpi} / ${window.devicePixelRatio}`);
                 Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber$1.game.view.min[0]}, ${Lumber$1.game.view.min[1]} x ${Lumber$1.game.view.max[0]}, ${Lumber$1.game.view.max[1]}`);
                 //Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
-                Board.win.find('#numChunks').text(`Num chunks: ${Lumber$1.map.statmaster.fitter.shown.length} / ${Lumber$1.map.statmaster.total}`);
+                Board.win.find('#numChunks').text(`Num chunks: ${Lumber$1.map.chunkMaster.fitter.shown.length} / ${Lumber$1.map.chunkMaster.total}`);
                 Board.win.find('#numObjs').html(`Num objs: ${Obj$1.active} / ${Obj$1.num}`);
                 Board.win.find('#numRekts').html(`Num rekts: ${Rekt$1.active} / ${Rekt$1.num}`);
-                let b = Lumber$1.map.statmaster.big(Lumber$1.map.mouse_tiled);
-                let c = Lumber$1.map.statmaster.at(b[0], b[1]);
+                let b = Lumber$1.map.chunkMaster.big(Lumber$1.map.mouse_tiled);
+                let c = Lumber$1.map.chunkMaster.at(b[0], b[1]);
                 Board.win.find('#square').text(`Mouse: ${pts$1.to_string(Lumber$1.map.mouse_tiled)}`);
                 Board.win.find('#squareChunk').text(`Mouse chunk: ${pts$1.to_string(b)}`);
                 Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${(c === null || c === void 0 ? void 0 : c.rt) ? 'true' : 'false'}`);
-                Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber$1.map.statmaster.fitter.lines}`);
-                Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber$1.map.statmaster.fitter.total}`);
+                Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber$1.map.chunkMaster.fitter.lines}`);
+                Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber$1.map.chunkMaster.fitter.total}`);
             }
         }
         Board.update = update;
@@ -1268,15 +1275,6 @@ void main() {
             this.dpi = 1; //tq.ndpi;
             this.scale = 1; // / this.dpi;
             this.view = new aabb2([0, 0]);
-            let rekt = this.frustum = new Rekt$1;
-            rekt.name = 'Frustum';
-            rekt.tile = [0, 0];
-            rekt.wh = [1, 1];
-            rekt.asset = 'egyt/128';
-            this.frustum.plain = true; // dont 2:1
-            this.frustum.use();
-            this.frustum.mesh.renderOrder = 9999999;
-            this.frustum.material.wireframe = true;
         }
         static rig() {
             return new Game();
@@ -1326,10 +1324,6 @@ void main() {
             this.view.min = pts$1.floor(this.view.min);
             this.view.max = pts$1.floor(this.view.max);
             this.focal = [-p[0], -p[1], 0];
-            //return;
-            this.frustum.mesh.scale.set(w2, h2, 1);
-            //this.frustumRekt.tile = <vec2><unknown>this.focal;
-            this.frustum.now_update_pos();
         }
         sels() {
             /*if (App.left) {
@@ -1366,13 +1360,13 @@ void main() {
                 this.rate = 10;
                 trees.push(this);
             }
-            post() {
-                let rekt = this.rekt = new Rekt$1;
-                rekt.obj = this;
-                rekt.asset = Lumber$1.sample(treez);
-                rekt.tile = this.tile;
-                rekt.offset = [1, -1];
-                rekt.wh = [120, 132];
+            finish() {
+                this.rekt = new Rekt$1;
+                this.rekt.obj = this;
+                this.rekt.asset = Lumber$1.sample(treez);
+                this.rekt.tile = this.tile;
+                this.rekt.offset = [1, -1];
+                this.rekt.wh = [120, 132];
             }
             update() {
                 if (Lumber$1.PAINT_OBJ_TICK_RATE)
@@ -1402,7 +1396,7 @@ void main() {
             for (let pos of positions) {
                 let tree = new Tree;
                 tree.tile = pos;
-                tree.post();
+                tree.finish();
                 Lumber$1.world.add(tree);
             }
         }
@@ -1423,7 +1417,7 @@ void main() {
                     tree.unset();
                     let tree2 = new Tree;
                     tree2.tile = p;
-                    tree2.post();
+                    tree2.finish();
                     Lumber$1.world.add(tree2);
                 }
             }
@@ -1440,7 +1434,7 @@ void main() {
         function plop_tree() {
             let tree = new Tree;
             tree.tile = [0, 0];
-            tree.post();
+            tree.finish();
             tree.comes();
             // dont add to world yet
             //Egyt.world.add(plop);
@@ -1455,6 +1449,7 @@ void main() {
         Lumber.USE_CHUNK_RT = true;
         Lumber.OFFSET_CHUNK_OBJ_REKT = true;
         Lumber.PAINT_OBJ_TICK_RATE = false;
+        Lumber.MINIMUM_REKTS_BEFORE_RT = 0;
         Lumber.EVEN = 24; // very evenly divisible
         Lumber.YUM = Lumber.EVEN;
         var started = false;
@@ -1565,6 +1560,7 @@ void main() {
 				<span id="USE_CHUNK_RTT">USE_CHUNK_RTT: ${Lumber.USE_CHUNK_RT}</span><br/>
 				<span id="OFFSET_CHUNK_OBJ_REKT">OFFSET_CHUNK_OBJ_REKT: ${Lumber.OFFSET_CHUNK_OBJ_REKT}</span><br/>
 				<span id="PAINT_OBJ_TICK_RATE">PAINT_OBJ_TICK_RATE: ${Lumber.PAINT_OBJ_TICK_RATE}</span><br/>
+				<span id="PAINT_OBJ_TICK_RATE">MINIMUM_REKTS_BEFORE_RT: ${Lumber.MINIMUM_REKTS_BEFORE_RT}</span><br/>
 
 			</div>
 
