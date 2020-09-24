@@ -1,6 +1,6 @@
 import { tq as tq } from "./tq";
 
-import Game from "../Egyt2";
+import Game from "../Game";
 import Lumber from "../Lumber";
 
 export const enum KEY {

@@ -4,7 +4,6 @@ import { aabb2 } from "../../lib/aabb";
 import Obj from "../../objrekt/Obj";
 import App from "../../lib/App";
 import pts from "../../lib/Pts";
-import { Map } from "../Map";
 import { World } from "../World";
 
 namespace Tilization {

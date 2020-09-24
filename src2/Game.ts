@@ -102,8 +102,7 @@ class Game {
 		let p2 = pts.mult(this.pos, this.scale);
 
 		tq.scene.position.set(p2[0], p2[1], 0);
-
-
+		
 		let w = window.innerWidth // tq.target.width;
 		let h = window.innerHeight // tq.target.height;
 

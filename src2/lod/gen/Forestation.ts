@@ -84,7 +84,7 @@ namespace Forestation {
 		if (plopping) {
 			let tree = plopping;
 
-			let p = pts.clone(Lumber.map.mouse_tiled);
+			let p = pts.clone(Lumber.world.mouse_tiled);
 
 			tree.tile = p;
 			tree.rekt.tile = p;

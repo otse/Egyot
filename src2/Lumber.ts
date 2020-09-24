@@ -1,8 +1,7 @@
 import { World } from "./lod/World";
-import { Map } from "./lod/Map";
 import Obj from "./objrekt/Obj";
 import { Win } from "./lib/Board";
-import Game from "./Egyt2";
+import Game from "./Game";
 import Forestation from "./lod/gen/Forestation";
 import Tilization from "./lod/gen/Tilization";
 import Agriculture from "./lod/gen/Agriculture";
@@ -18,7 +17,6 @@ export namespace Lumber {
 	export const YUM = EVEN;
 
 	export var game: Game;
-	export var map: Map;
 	export var world: World;
 	export var ply: Obj;
 
@@ -73,8 +71,6 @@ export namespace Lumber {
 
 		game = Game.rig();
 		world = World.rig();
-		map = Map.state();
-		map.init();
 
 		Forestation.init();
 		Tilization.init();
@@ -95,7 +91,7 @@ export namespace Lumber {
 		if (window.location.href.indexOf("#nochunkrt") != -1)
 			USE_CHUNK_RT = false;
 
-		map.populate();
+		world.populate();
 		Forestation.populate();
 
 		//	Win.load_sheet('style95.css');
@@ -182,7 +178,6 @@ export namespace Lumber {
 		Agriculture.update();
 
 		world.update();
-		map.update();
 
 		Win.update();
 	}

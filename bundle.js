@@ -452,132 +452,6 @@ void main() {
         }
     }
 
-    class World {
-        static rig() {
-            return new World;
-        }
-        constructor() {
-            this.init();
-            console.log('world');
-        }
-        add(obj) {
-            let c = Lumber$1.map.get_chunk_at_tile(obj.tile);
-            let succeed = c.objs.add(obj);
-            if (succeed) {
-                obj.chunk = c;
-                c.changed = true;
-            }
-            if (c.on)
-                obj.comes();
-        }
-        remove(obj) {
-        }
-        update() {
-        }
-        init() {
-            Lumber$1.ply = new Ply;
-            Lumber$1.ply.tile = [0, 0];
-            Lumber$1.ply.comes();
-        }
-    }
-    (function (World) {
-        function unproject(query) {
-            let p = query;
-            let un = pts$1.unproject(p);
-            let p2;
-            p2 = pts$1.divide(un, 24);
-            p2 = pts$1.floor(p2);
-            p2[0] += 1; // necessary
-            let p3 = pts$1.mult(p2, 24);
-            return { untiled: un, tiled: p2, mult: p3 };
-        }
-        World.unproject = unproject;
-    })(World || (World = {}));
-
-    var Agriculture;
-    (function (Agriculture) {
-        const tillering = [
-            'egyt/farm/wheat_i',
-            'egyt/farm/wheat_i',
-            'egyt/farm/wheat_il',
-            'egyt/farm/wheat_il',
-            'egyt/farm/wheat_il',
-            'egyt/farm/wheat_ili',
-        ];
-        const ripening = [
-            'egyt/farm/wheat_il',
-            'egyt/farm/wheat_ili',
-            'egyt/farm/wheat_ili',
-            'egyt/farm/wheat_ilil',
-            'egyt/farm/wheat_ilil',
-        ];
-        class Crop extends Obj$1 {
-            constructor(growth) {
-                super();
-                this.growth = growth;
-            }
-        }
-        Agriculture.Crop = Crop;
-        class Wheat extends Crop {
-            constructor(growth) {
-                super(growth);
-                this.flick = false;
-                this.rate = 2.0;
-            }
-            finish() {
-                this.rekt = new Rekt$1;
-                this.rekt.obj = this;
-                this.rekt.asset =
-                    this.growth == 1 ? Lumber$1.sample(tillering) :
-                        this.growth == 2 ? Lumber$1.sample(ripening) :
-                            this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
-                this.rekt.tile = this.tile;
-                this.rekt.wh = [22, 22];
-            }
-            update() {
-                if (Lumber$1.PAINT_OBJ_TICK_RATE)
-                    this.rekt.paint_alternate();
-            }
-            comes() {
-                super.comes();
-                this.rekt.use();
-            }
-            goes() {
-                super.goes();
-                this.rekt.unuse();
-            }
-            unset() {
-                super.unset();
-                this.rekt.unset();
-            }
-        }
-        Agriculture.Wheat = Wheat;
-        function init() {
-            console.log('agriculture');
-            window.Agriculture = Agriculture;
-        }
-        Agriculture.init = init;
-        function update() {
-        }
-        Agriculture.update = update;
-        function place_wheat(growth, tile) {
-            if (Math.random() > .99)
-                return;
-            let crop = new Wheat(growth);
-            crop.tile = tile;
-            crop.finish();
-            Lumber$1.world.add(crop);
-            return crop;
-        }
-        Agriculture.place_wheat = place_wheat;
-        function area_wheat(growth, aabb) {
-            const every = (pos) => place_wheat(growth, pos);
-            pts$1.area_every(aabb, every);
-        }
-        Agriculture.area_wheat = area_wheat;
-    })(Agriculture || (Agriculture = {}));
-    var Agriculture$1 = Agriculture;
-
     function min(a, b) {
         return [
             Math.min(a[0], b[0]),
@@ -673,79 +547,6 @@ void main() {
         //	CROSS,
         //}
     })(aabb2 || (aabb2 = {}));
-
-    var Tilization;
-    (function (Tilization) {
-        class Tile extends Obj$1 {
-            constructor(asset) {
-                super();
-                this.asset = 'egyt/ground/stone1';
-                //this.rtt = false;
-            }
-            finish() {
-                this.rekt = new Rekt$1;
-                this.rekt.obj = this;
-                this.rekt.asset = this.asset;
-                this.rekt.tile = this.tile;
-                this.rekt.wh = [24, 12];
-            }
-            comes() {
-                super.comes();
-                this.rekt.use();
-            }
-            goes() {
-                super.goes();
-                this.rekt.unuse();
-            }
-            update() {
-                if (Lumber$1.PAINT_OBJ_TICK_RATE)
-                    this.rekt.paint_alternate();
-            }
-            unset() {
-                super.unset();
-                this.rekt.unset();
-            }
-        }
-        Tilization.Tile = Tile;
-        function init() {
-            console.log('tilization');
-            window.Tilization = Tilization;
-        }
-        Tilization.init = init;
-        function update() {
-            if (App.map['escape'] == 1) ;
-            if (App.map['u'] == 1) {
-                let middle = World.unproject(Lumber$1.game.view.center()).tiled;
-                let b = this.master.big(middle);
-            }
-        }
-        Tilization.update = update;
-        function place_tile(chance, asset, pos) {
-            if (Math.random() > chance / 100)
-                return;
-            let tile = new Tile(asset);
-            tile.tile = pos;
-            tile.asset = asset;
-            tile.finish();
-            Lumber$1.world.add(tile);
-            return tile;
-        }
-        Tilization.place_tile = place_tile;
-        function click_area(asset, pos) {
-        }
-        Tilization.click_area = click_area;
-        function area_sample(chance, assets, aabb) {
-            const every = (pos) => place_tile(chance, Lumber$1.sample(assets), pos);
-            pts$1.area_every(aabb, every);
-        }
-        Tilization.area_sample = area_sample;
-        function area(chance, asset, aabb) {
-            const every = (pos) => place_tile(chance, asset, pos);
-            pts$1.area_every(aabb, every);
-        }
-        Tilization.area = area;
-    })(Tilization || (Tilization = {}));
-    var Tilization$1 = Tilization;
 
     const count = (c, prop) => {
         let num = 0;
@@ -1073,23 +874,208 @@ void main() {
         }
     }
 
-    class Map {
-        constructor() {
-            window.Chunk = Chunk;
-            this.chunkMaster = new ChunkMaster(Chunk, 20);
-            //this.dynmaster = new ChunkMaster<Chunk>(Chunk, 20);
-            this.mouse_tiled = [0, 0];
-            this.mark = new Rekt$1;
-            this.mark.tile = [0, 0];
-            this.mark.wh = [22, 25];
-            this.mark.asset = 'egyt/iceblock';
-            //this.mark.use();
-            //this.mark.mesh.renderOrder = 999;
+    var Agriculture;
+    (function (Agriculture) {
+        const tillering = [
+            'egyt/farm/wheat_i',
+            'egyt/farm/wheat_i',
+            'egyt/farm/wheat_il',
+            'egyt/farm/wheat_il',
+            'egyt/farm/wheat_il',
+            'egyt/farm/wheat_ili',
+        ];
+        const ripening = [
+            'egyt/farm/wheat_il',
+            'egyt/farm/wheat_ili',
+            'egyt/farm/wheat_ili',
+            'egyt/farm/wheat_ilil',
+            'egyt/farm/wheat_ilil',
+        ];
+        class Crop extends Obj$1 {
+            constructor(growth) {
+                super();
+                this.growth = growth;
+            }
         }
-        static state() {
-            return new Map;
+        Agriculture.Crop = Crop;
+        class Wheat extends Crop {
+            constructor(growth) {
+                super(growth);
+                this.flick = false;
+                this.rate = 2.0;
+            }
+            finish() {
+                this.rekt = new Rekt$1;
+                this.rekt.obj = this;
+                this.rekt.asset =
+                    this.growth == 1 ? Lumber$1.sample(tillering) :
+                        this.growth == 2 ? Lumber$1.sample(ripening) :
+                            this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
+                this.rekt.tile = this.tile;
+                this.rekt.wh = [22, 22];
+            }
+            update() {
+                if (Lumber$1.PAINT_OBJ_TICK_RATE)
+                    this.rekt.paint_alternate();
+            }
+            comes() {
+                super.comes();
+                this.rekt.use();
+            }
+            goes() {
+                super.goes();
+                this.rekt.unuse();
+            }
+            unset() {
+                super.unset();
+                this.rekt.unset();
+            }
+        }
+        Agriculture.Wheat = Wheat;
+        function init() {
+            console.log('agriculture');
+            window.Agriculture = Agriculture;
+        }
+        Agriculture.init = init;
+        function update() {
+        }
+        Agriculture.update = update;
+        function place_wheat(growth, tile) {
+            if (Math.random() > .99)
+                return;
+            let crop = new Wheat(growth);
+            crop.tile = tile;
+            crop.finish();
+            Lumber$1.world.add(crop);
+            return crop;
+        }
+        Agriculture.place_wheat = place_wheat;
+        function area_wheat(growth, aabb) {
+            const every = (pos) => place_wheat(growth, pos);
+            pts$1.area_every(aabb, every);
+        }
+        Agriculture.area_wheat = area_wheat;
+    })(Agriculture || (Agriculture = {}));
+    var Agriculture$1 = Agriculture;
+
+    var Tilization;
+    (function (Tilization) {
+        class Tile extends Obj$1 {
+            constructor(asset) {
+                super();
+                this.asset = 'egyt/ground/stone1';
+                //this.rtt = false;
+            }
+            finish() {
+                this.rekt = new Rekt$1;
+                this.rekt.obj = this;
+                this.rekt.asset = this.asset;
+                this.rekt.tile = this.tile;
+                this.rekt.wh = [24, 12];
+            }
+            comes() {
+                super.comes();
+                this.rekt.use();
+            }
+            goes() {
+                super.goes();
+                this.rekt.unuse();
+            }
+            update() {
+                if (Lumber$1.PAINT_OBJ_TICK_RATE)
+                    this.rekt.paint_alternate();
+            }
+            unset() {
+                super.unset();
+                this.rekt.unset();
+            }
+        }
+        Tilization.Tile = Tile;
+        function init() {
+            console.log('tilization');
+            window.Tilization = Tilization;
+        }
+        Tilization.init = init;
+        function update() {
+            if (App.map['escape'] == 1) ;
+            if (App.map['u'] == 1) {
+                let middle = World.unproject(Lumber$1.game.view.center()).tiled;
+                let b = this.master.big(middle);
+            }
+        }
+        Tilization.update = update;
+        function place_tile(chance, asset, pos) {
+            if (Math.random() > chance / 100)
+                return;
+            let tile = new Tile(asset);
+            tile.tile = pos;
+            tile.asset = asset;
+            tile.finish();
+            Lumber$1.world.add(tile);
+            return tile;
+        }
+        Tilization.place_tile = place_tile;
+        function click_area(asset, pos) {
+        }
+        Tilization.click_area = click_area;
+        function area_sample(chance, assets, aabb) {
+            const every = (pos) => place_tile(chance, Lumber$1.sample(assets), pos);
+            pts$1.area_every(aabb, every);
+        }
+        Tilization.area_sample = area_sample;
+        function area(chance, asset, aabb) {
+            const every = (pos) => place_tile(chance, asset, pos);
+            pts$1.area_every(aabb, every);
+        }
+        Tilization.area = area;
+    })(Tilization || (Tilization = {}));
+    var Tilization$1 = Tilization;
+
+    class World {
+        constructor() {
+            this.mouse_tiled = [0, 0];
+            this.init();
+            console.log('world');
+        }
+        static rig() {
+            return new World;
+        }
+        add(obj) {
+            let c = this.getChunkAt(obj.tile);
+            let succeed = c.objs.add(obj);
+            if (succeed) {
+                obj.chunk = c;
+                c.changed = true;
+            }
+            if (c.on)
+                obj.comes();
+        }
+        remove(obj) {
+        }
+        update() {
+            this.chunkMaster.update();
+        }
+        getChunkAt(zx) {
+            return this.chunkMaster.which(zx);
+        }
+        mark_mouse() {
+            let m = [...App.move];
+            m[1] = -m[1];
+            m = pts$1.divide(m, Lumber$1.game.scale);
+            let p = [Lumber$1.game.view.min[0], Lumber$1.game.view.max[1]];
+            p = pts$1.add(p, m);
+            const unprojected = World.unproject(p);
+            this.mouse_tiled = unprojected.tiled;
         }
         init() {
+            this.chunkMaster = new ChunkMaster(Chunk, 20);
+            Lumber$1.ply = new Ply;
+            Lumber$1.ply.tile = [0, 0];
+            Lumber$1.ply.comes();
+            this.preloads();
+            //this.populate();
+        }
+        preloads() {
             let textures = 0;
             let loaded = 0;
             function callback() {
@@ -1157,29 +1143,20 @@ void main() {
             Agriculture$1.area_wheat(1, new aabb2([-15, 21], [-40, 101]));
             Agriculture$1.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
         }
-        get_chunk_at_tile(zx) {
-            return this.chunkMaster.which(zx);
-        }
-        mark_mouse() {
-            let m = [...App.move];
-            m[1] = -m[1];
-            m = pts$1.divide(m, Lumber$1.game.scale);
-            let p = [Lumber$1.game.view.min[0], Lumber$1.game.view.max[1]];
-            p = pts$1.add(p, m);
-            const un = World.unproject(p);
-            this.mouse_tiled = un.tiled;
-            this.mark.tile = un.tiled;
-            this.mark.now_update_pos();
-        }
-        update() {
-            this.mark_mouse();
-            this.chunkMaster.update();
-            let worldPixelsLeftUpperCorner = [Lumber$1.game.view.min[0], Lumber$1.game.view.max[1]];
-            let worldPixelsRightLowerCorner = [Lumber$1.game.view.max[0], Lumber$1.game.view.min[1]];
-            const x = World.unproject(worldPixelsLeftUpperCorner).tiled;
-            const y = World.unproject(worldPixelsRightLowerCorner).tiled;
-        }
     }
+    (function (World) {
+        function unproject(query) {
+            let p = query;
+            let un = pts$1.unproject(p);
+            let p2;
+            p2 = pts$1.divide(un, 24);
+            p2 = pts$1.floor(p2);
+            p2[0] += 1; // necessary
+            let p3 = pts$1.mult(p2, 24);
+            return { untiled: un, tiled: p2, mult: p3 };
+        }
+        World.unproject = unproject;
+    })(World || (World = {}));
 
     var Board;
     (function (Board) {
@@ -1242,16 +1219,16 @@ void main() {
                 Board.win.find('#gameZoom').html(`Scale: <span>${Lumber$1.game.scale} / ndpi ${Lumber$1.game.dpi} / ${window.devicePixelRatio}`);
                 Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber$1.game.view.min[0]}, ${Lumber$1.game.view.min[1]} x ${Lumber$1.game.view.max[0]}, ${Lumber$1.game.view.max[1]}`);
                 //Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
-                Board.win.find('#numChunks').text(`Num chunks: ${Lumber$1.map.chunkMaster.fitter.shown.length} / ${Lumber$1.map.chunkMaster.total}`);
+                Board.win.find('#numChunks').text(`Num chunks: ${Lumber$1.world.chunkMaster.fitter.shown.length} / ${Lumber$1.world.chunkMaster.total}`);
                 Board.win.find('#numObjs').html(`Num objs: ${Obj$1.active} / ${Obj$1.num}`);
                 Board.win.find('#numRekts').html(`Num rekts: ${Rekt$1.active} / ${Rekt$1.num}`);
-                let b = Lumber$1.map.chunkMaster.big(Lumber$1.map.mouse_tiled);
-                let c = Lumber$1.map.chunkMaster.at(b[0], b[1]);
-                Board.win.find('#square').text(`Mouse: ${pts$1.to_string(Lumber$1.map.mouse_tiled)}`);
+                let b = Lumber$1.world.chunkMaster.big(Lumber$1.world.mouse_tiled);
+                let c = Lumber$1.world.chunkMaster.at(b[0], b[1]);
+                Board.win.find('#square').text(`Mouse: ${pts$1.to_string(Lumber$1.world.mouse_tiled)}`);
                 Board.win.find('#squareChunk').text(`Mouse chunk: ${pts$1.to_string(b)}`);
                 Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${(c === null || c === void 0 ? void 0 : c.rt) ? 'true' : 'false'}`);
-                Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber$1.map.chunkMaster.fitter.lines}`);
-                Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber$1.map.chunkMaster.fitter.total}`);
+                Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber$1.world.chunkMaster.fitter.lines}`);
+                Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber$1.world.chunkMaster.fitter.total}`);
             }
         }
         Board.update = update;
@@ -1407,7 +1384,7 @@ void main() {
             }
             if (plopping) {
                 let tree = plopping;
-                let p = pts$1.clone(Lumber$1.map.mouse_tiled);
+                let p = pts$1.clone(Lumber$1.world.mouse_tiled);
                 tree.tile = p;
                 tree.rekt.tile = p;
                 tree.rekt.now_update_pos();
@@ -1491,8 +1468,6 @@ void main() {
             console.log('egyt init');
             Lumber.game = Game.rig();
             Lumber.world = World.rig();
-            Lumber.map = Map.state();
-            Lumber.map.init();
             Forestation$1.init();
             Tilization$1.init();
             resourced('RC_UNDEFINED');
@@ -1506,7 +1481,7 @@ void main() {
             console.log('lumber starting');
             if (window.location.href.indexOf("#nochunkrt") != -1)
                 Lumber.USE_CHUNK_RT = false;
-            Lumber.map.populate();
+            Lumber.world.populate();
             Forestation$1.populate();
             //	Win.load_sheet('style95.css');
             //else
@@ -1584,7 +1559,6 @@ void main() {
             Tilization$1.update();
             Agriculture$1.update();
             Lumber.world.update();
-            Lumber.map.update();
             Board.update();
         }
         Lumber.update = update;

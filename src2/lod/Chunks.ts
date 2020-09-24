@@ -11,7 +11,6 @@ import { Color, Group, WebGLRenderTarget, Int8Attribute, RGBFormat, NearestFilte
 import { tq } from "../lib/tq";
 import Tilization from "./gen/Tilization";
 import { tqlib } from "../lib/tqlib";
-import { Map } from "./Map";
 import { World } from "./World";
 
 const count = (c: Chunk, prop: string) => {
