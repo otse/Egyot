@@ -1,9 +1,6 @@
-import Rekt from "../../objrekt/Rekt";
-import Lumber from "../../Lumber";
-import { aabb2 } from "../../lib/aabb";
-import Obj from "../../objrekt/Obj";
-import App from "../../lib/App";
-import pts from "../../lib/Pts";
+import { Lumber, World, Rekt, Obj, pts, aabb2 } from "./../../Re-exports";
+
+import App from "../../App";
 
 namespace Forestation {
 

@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        //"baseUrl": "./src2",
         "sourceMap": false,
         "module": "es6",
         "target": "es6",

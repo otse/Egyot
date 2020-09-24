@@ -1,11 +1,6 @@
-import Obj from "../objrekt/Obj";
-import Rekt from "../objrekt/Rekt";
+import { Lumber, Renderer, World, Obj, Rekt, aabb2, pts } from "./../Re-exports";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3 } from "three";
-
-import { tq } from "../lib/tq";
-import pts from "../lib/Pts";
-import Lumber from "../Lumber";
 
 class Selection {
 
@@ -41,7 +36,7 @@ class Selection {
 
 		this.mesh.renderOrder = 500;
 
-		tq.scene.add(this.mesh);
+		Renderer.scene.add(this.mesh);
 	}
 
 	Update(mouse: zx) {
@@ -66,15 +61,15 @@ class Selection {
 	}
 
 	View(mouse: zx) {
-		pts.subtract(mouse, Lumber.game.pos);
+		pts.subtract(mouse, Lumber.world.pos);
 
 		pts.subtract(
 			mouse, pts.divide(
-				<zx>pts.clone(tq.wh), 2));
+				<zx>pts.clone(Renderer.wh), 2));
 
 		let scale = 1;
 
-		if (Lumber.game.scale == 0.5)
+		if (Lumber.world.scale == 0.5)
 			scale = 2;
 
 		pts.mult(
@@ -100,20 +95,16 @@ class Selection {
 
 		this.mesh.scale.set(size[0], size[1], 1);
 		this.mesh.position.set(pos[0], pos[1], 0);
-
-		tq.changes = true;
 	}
 
 	End() {
 		if (!this.enuf)
 			return;
 
-		tq.scene.remove(this.mesh);
+		Renderer.scene.remove(this.mesh);
 
 		this.geometry.dispose();
 		this.material.dispose();
-
-		tq.changes = true;
 	}
 }
 

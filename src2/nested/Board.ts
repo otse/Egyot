@@ -1,8 +1,4 @@
-import Rekt from "../objrekt/Rekt";
-import Obj from "../objrekt/Obj";
-import pts from "./Pts";
-import { tq } from "./tq";
-import Lumber from "../Lumber";
+import { Lumber, Renderer, World, Obj, Rekt, aabb2, pts } from "./../Re-exports";
 
 namespace Board {
 	export var win;
@@ -73,11 +69,11 @@ namespace Board {
 	export function update() {
 
 		if (Board.collapsed.Stats) {
-			Board.win.find('#fpsStat').text(`Fps: ${parseInt(tq.fps)}`);
+			Board.win.find('#fpsStat').text(`Fps: ${parseInt(Renderer.fps)}`);
 			//Board.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
 
-			Board.win.find('#gameZoom').html(`Scale: <span>${Lumber.game.scale} / ndpi ${Lumber.game.dpi} / ${window.devicePixelRatio}`);
-			Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber.game.view.min[0]}, ${Lumber.game.view.min[1]} x ${Lumber.game.view.max[0]}, ${Lumber.game.view.max[1]}`);
+			Board.win.find('#gameZoom').html(`Scale: <span>${Lumber.world.scale} / ndpi ${Lumber.world.dpi} / ${window.devicePixelRatio}`);
+			Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber.world.view.min[0]}, ${Lumber.world.view.min[1]} x ${Lumber.world.view.max[0]}, ${Lumber.world.view.max[1]}`);
 			//Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
 
 			Board.win.find('#numChunks').text(`Num chunks: ${Lumber.world.chunkMaster.fitter.shown.length} / ${Lumber.world.chunkMaster.total}`);

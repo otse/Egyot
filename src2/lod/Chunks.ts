@@ -1,17 +1,6 @@
-import Rekt from "../objrekt/Rekt";
-import { Win } from "../lib/Board";
-import Lumber from "../Lumber";
-import App from "../lib/App";
-import pts from "../lib/Pts";
-import Forestation from "./gen/Forestation";
-import Agriculture from "./gen/Agriculture";
-import { aabb2 } from "../lib/AABB";
-import Obj from "../objrekt/Obj";
-import { Color, Group, WebGLRenderTarget, Int8Attribute, RGBFormat, NearestFilter, LinearFilter, RGBAFormat, PlaneBufferGeometry, MeshBasicMaterial, Mesh, OrthographicCamera } from "three";
-import { tq } from "../lib/tq";
-import Tilization from "./gen/Tilization";
-import { tqlib } from "../lib/tqlib";
-import { World } from "./World";
+import { Lumber, Renderer, World, Rekt, Obj, pts, aabb2 } from "./../Re-exports";
+
+import {  Group, WebGLRenderTarget, OrthographicCamera } from "three";
 
 const count = (c: Chunk, prop: string) => {
 	let num = 0;
@@ -105,7 +94,7 @@ class Chunk {
 		if (this.on || this.empty())
 			return;
 		this.objs.comes();
-		tq.scene.add(this.group, this.grouprt);
+		Renderer.scene.add(this.group, this.grouprt);
 		this.comes_pt2();
 		this.on = true;
 		return true;
@@ -126,18 +115,15 @@ class Chunk {
 	goes() {
 		if (!this.on)
 			return;
-		tq.scene.remove(this.group, this.grouprt);
-		tqlib.erase_children(this.group);
-		tqlib.erase_children(this.grouprt);
+		Renderer.scene.remove(this.group, this.grouprt);
+		Renderer.erase_children(this.group);
+		Renderer.erase_children(this.grouprt);
 		this.objs.goes();
 		this.rt?.goes();
 		this.on = false;
 	}
-	noob() {
-		return Lumber.game.view.test(this.screen) != aabb2.OOB;
-	}
 	oob() {
-		return Lumber.game.view.test_oob(this.screen) == aabb2.OOB;
+		return Lumber.world.view.test(this.screen) == aabb2.OOB;
 	}
 	update() {
 		this.objs.updates();
@@ -244,9 +230,8 @@ class ChunkMaster<T extends Chunk> {
 		this.fitter = new Tailorer<T>(this);
 	}
 	update() {
-		if (this.refit) {
+		if (this.refit)
 			this.fitter.update();
-		}
 	}
 	big(zx: vec2): vec2 {
 		return pts.floor(pts.divide(zx, this.span));
@@ -303,7 +288,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 		}
 	}
 	update() {
-		let middle = World.unproject(Lumber.game.view.center()).tiled;
+		let middle = World.unproject(Lumber.world.view.center()).tiled;
 		let b = this.master.big(middle);
 		this.lines = this.total = 0;
 		this.off();
@@ -375,7 +360,7 @@ class RtChunk {
 		// todo, width height
 		this.width = this.chunk.master.width + this.padding;
 		this.height = this.chunk.master.height + this.padding;
-		this.camera = tqlib.ortographiccamera(this.width, this.height);
+		this.camera = Renderer.ortographiccamera(this.width, this.height);
 
 		// todo, pts.make(blah)
 
@@ -390,24 +375,24 @@ class RtChunk {
 	comes() {
 		this.rekt.use();
 		this.rekt.mesh.renderOrder = Rekt.depth(this.chunk.order_tile);
-		this.target = tqlib.rendertarget(this.width, this.height);
+		this.target = Renderer.rendertarget(this.width, this.height);
 	}
 	goes() {
 		this.rekt.unuse();
 		this.target.dispose();
 	}
 	render() {
-		while (tq.rttscene.children.length > 0)
-			tq.rttscene.remove(tq.rttscene.children[0]);
+		while (Renderer.rttscene.children.length > 0)
+			Renderer.rttscene.remove(Renderer.rttscene.children[0]);
 
 		const group = this.chunk.grouprt;
 
 		group.position.set(0, -this.height / 2, 0);
-		tq.rttscene.add(group);
+		Renderer.rttscene.add(group);
 
-		tq.renderer.setRenderTarget(this.target);
-		tq.renderer.clear();
-		tq.renderer.render(tq.rttscene, this.camera);
+		Renderer.renderer.setRenderTarget(this.target);
+		Renderer.renderer.clear();
+		Renderer.renderer.render(Renderer.rttscene, this.camera);
 
 		this.rekt.material.map = this.target.texture;
 	}

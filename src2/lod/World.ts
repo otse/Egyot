@@ -1,19 +1,27 @@
-import Obj from "../objrekt/Obj";
-import Lumber from "../Lumber";
-import { Ply } from "../nested/char/Char";
-import pts from "../lib/Pts";
+import { Lumber, Renderer, Rekt, Obj, aabb2, pts } from "./../Re-exports";
+
+import App from "../App";
+
 import { Chunk, ChunkMaster } from "./Chunks";
-import { tqlib } from "../lib/tqlib";
-import App from "../lib/App";
 import Agriculture from "./gen/Agriculture";
-import { aabb2 } from "../lib/AABB";
 import Tilization from "./gen/Tilization";
-import Rekt from "../objrekt/Rekt";
+import { Ply } from "../nested/char/Char";
+
+const SHOW_FRUSTUM = false;
+
 
 class World {
 	static rig() {
 		return new World;
 	}
+
+	pos: vec2 = [0, 0]
+	scale: number = 1
+	dpi: number = 1
+
+	focal: zxc
+	view: aabb2
+	frustum: Rekt
 
 	chunkMaster: ChunkMaster<Chunk>
 
@@ -21,6 +29,21 @@ class World {
 
 	constructor() {
 		this.init();
+
+		this.view = new aabb2([0, 0], [0, 0]);
+
+		if (SHOW_FRUSTUM) {
+			this.frustum = new Rekt;
+			this.frustum.name = 'Frustum';
+			this.frustum.tile = [0, 0];
+			this.frustum.wh = [1, 1];
+			this.frustum.asset = 'egyt/128';
+
+			this.frustum.plain = true;
+			this.frustum.use();
+			this.frustum.mesh.renderOrder = 9999999;
+			this.frustum.material.wireframe = true;
+		}
 
 		console.log('world');
 	}
@@ -42,6 +65,7 @@ class World {
 
 	}
 	update() {
+		this.move();
 		this.chunkMaster.update();
 	}
 	getChunkAt(zx: vec2 | vec3) {
@@ -49,11 +73,11 @@ class World {
 	}
 
 	mark_mouse() {
-		let m = <zx>[...App.move];
+		let m = <vec2>[...App.move];
 		m[1] = -m[1];
-		m = pts.divide(m, Lumber.game.scale);
+		m = pts.divide(m, Lumber.world.scale);
 
-		let p = [Lumber.game.view.min[0], Lumber.game.view.max[1]] as zx;
+		let p = <vec2>[Lumber.world.view.min[0], Lumber.world.view.max[1]];
 		p = pts.add(p, m);
 
 		const unprojected = World.unproject(p);
@@ -83,7 +107,7 @@ class World {
 		function preload_textures(strs: string[]) {
 			textures = strs.length;
 			for (let str of strs)
-				tqlib.loadtexture(str, undefined, callback);
+			Renderer.loadtexture(str, undefined, callback);
 		}
 		preload_textures([
 			'assets/egyt/tileorange.png',
@@ -99,6 +123,73 @@ class World {
 			'assets/egyt/ground/gravel1.png',
 			'assets/egyt/ground/gravel2.png',
 		]);
+	}
+	move() {
+		let speed = 5;
+		const factor = 1 / this.dpi;
+
+		let p = [...this.pos];
+
+		if (App.map['x']) speed *= 10;
+
+		if (App.map['w']) p[1] -= speed;
+		if (App.map['s']) p[1] += speed;
+		if (App.map['a']) p[0] += speed;
+		if (App.map['d']) p[0] -= speed;
+
+		this.pos = <vec2>[...p];
+
+		if (App.wheel > 0) {
+			if (this.scale < 1) {
+				this.scale = 1;
+			}
+			else {
+				this.scale += factor;
+			}
+			if (this.scale > 2 / this.dpi)
+				this.scale = 2 / this.dpi;
+
+			console.log('scale up', this.scale);
+		}
+
+		else if (App.wheel < 0) {
+			this.scale -= factor;
+			if (this.scale < .5 / this.dpi)
+				this.scale = .5 / this.dpi;
+
+			console.log('scale down', this.scale);
+		}
+
+		Renderer.scene.scale.set(this.scale, this.scale, 1);
+
+		let p2 = pts.mult(this.pos, this.scale);
+
+		Renderer.scene.position.set(p2[0], p2[1], 0);
+
+		let w = window.innerWidth // tq.target.width;
+		let h = window.innerHeight // tq.target.height;
+
+		//console.log(`tq target ${w} x ${h}`)
+
+		let w2 = w / this.dpi / this.scale;
+		let h2 = h / this.dpi / this.scale;
+
+		this.view = new aabb2(
+			[-p[0] - w2 / 2, -p[1] - h2 / 2],
+			[-p[0] + w2 / 2, -p[1] + h2 / 2]
+		);
+		this.view.min = pts.floor(this.view.min);
+		this.view.max = pts.floor(this.view.max);
+
+		this.focal = [-p[0], -p[1], 0];
+
+		//return;
+
+		if (SHOW_FRUSTUM) {
+			this.frustum.mesh.scale.set(w2, h2, 1);
+			this.frustum.tile = pts.divide(<vec2><unknown>this.focal, Lumber.EVEN);
+			this.frustum.now_update_pos();
+		}
 	}
 	populate() {
 		let granary = new Rekt;
@@ -154,7 +245,7 @@ class World {
 namespace World {
 	type Un = { untiled: vec2, tiled: vec2, mult: vec2 };
 
-	export function unproject(query: zx): Un {
+	export function unproject(query: vec2): Un {
 		let p = query;
 
 		let un = pts.unproject(p);
@@ -170,4 +261,4 @@ namespace World {
 	}
 }
 
-export { World }
+export default World;

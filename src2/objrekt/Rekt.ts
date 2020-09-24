@@ -1,10 +1,7 @@
-import { tq, THREE } from "../lib/tq";
+import { Lumber, Renderer, World, Obj, aabb2, pts } from "./../Re-exports";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3, Color } from "three";
-import pts from "../lib/Pts";
-import Obj from "./Obj";
-import Lumber from "../Lumber";
-import { tqlib } from "../lib/tqlib";
+
 import { Chunk } from "../lod/Chunks";
 
 class Rekt {
@@ -71,7 +68,7 @@ class Rekt {
 
 		let map;
 		if (this.asset)
-			map = tqlib.loadtexture(`assets/${this.asset}.png`);
+			map = Renderer.loadtexture(`assets/${this.asset}.png`);
 
 		this.material = new MeshBasicMaterial({
 			map: map,
@@ -101,7 +98,7 @@ class Rekt {
 			else
 				return c.group;
 		else
-			return tq.scene;
+			return Renderer.scene;
 	}
 	dual() {
 		let xy = pts.add(this.tile, this.offset);

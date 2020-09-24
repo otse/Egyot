@@ -1,5 +1,4 @@
-import Obj from "../../objrekt/Obj"
-import Rekt from "../../objrekt/Rekt";
+import { Lumber, World, Obj, Rekt, aabb2, pts } from "./../../Re-exports";
 
 class Man extends Obj {
 

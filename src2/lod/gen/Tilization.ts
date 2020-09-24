@@ -1,10 +1,7 @@
-import Rekt from "../../objrekt/Rekt";
-import Lumber from "../../Lumber";
-import { aabb2 } from "../../lib/aabb";
+import { Lumber, World, Rekt, pts, aabb2 } from "./../../Re-exports";
+
+import App from "../../App";
 import Obj from "../../objrekt/Obj";
-import App from "../../lib/App";
-import pts from "../../lib/Pts";
-import { World } from "../World";
 
 namespace Tilization {
 
@@ -64,7 +61,7 @@ namespace Tilization {
 		}
 
 		if (App.map['u'] == 1) {
-			let middle = World.unproject(Lumber.game.view.center()).tiled;
+			let middle = World.unproject(Lumber.world.view.center()).tiled;
 
 			let b = this.master.big(middle);
 

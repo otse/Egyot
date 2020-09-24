@@ -1,10 +1,9 @@
-import { World } from "./lod/World";
-import Obj from "./objrekt/Obj";
-import { Win } from "./lib/Board";
-import Game from "./Game";
+import Agriculture from "./lod/gen/Agriculture";
 import Forestation from "./lod/gen/Forestation";
 import Tilization from "./lod/gen/Tilization";
-import Agriculture from "./lod/gen/Agriculture";
+import { Win } from "./nested/Board";
+
+import { World, Rekt, Obj, aabb2, pts } from "./Re-exports";
 
 export namespace Lumber {
 
@@ -16,7 +15,6 @@ export namespace Lumber {
 	export const EVEN = 24; // very evenly divisible
 	export const YUM = EVEN;
 
-	export var game: Game;
 	export var world: World;
 	export var ply: Obj;
 
@@ -69,7 +67,6 @@ export namespace Lumber {
 	export function init() {
 		console.log('egyt init');
 
-		game = Game.rig();
 		world = World.rig();
 
 		Forestation.init();
@@ -170,8 +167,6 @@ export namespace Lumber {
 
 		if (!started)
 			return;
-
-		Lumber.game.update();
 
 		Forestation.update();
 		Tilization.update();

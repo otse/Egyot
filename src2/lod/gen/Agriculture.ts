@@ -1,10 +1,6 @@
-import Rekt from "../../objrekt/Rekt";
-import Lumber from "../../Lumber";
-import { aabb2 } from "../../lib/aabb";
+import { Lumber, World, Rekt, pts, aabb2 } from "./../../Re-exports";
+
 import Obj from "../../objrekt/Obj";
-import App from "../../lib/App";
-import pts from "../../lib/Pts";
-import { Color } from "three";
 
 namespace Agriculture {
 
