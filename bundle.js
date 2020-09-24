@@ -1,4 +1,4 @@
-var lumber = (function (exports, THREE) {
+var lumber = (function (THREE) {
     'use strict';
 
     function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -153,7 +153,7 @@ var lumber = (function (exports, THREE) {
         Forestation.populate = populate;
         function update() {
             var _a;
-            if (!plopping && App.map['t'] == 1) {
+            if (!plopping && App$1.keys['t'] == 1) {
                 plopping = plop_tree();
             }
             if (plopping) {
@@ -163,7 +163,7 @@ var lumber = (function (exports, THREE) {
                 if (tree.rekt)
                     tree.rekt.tile = p;
                 (_a = tree.rekt) === null || _a === void 0 ? void 0 : _a.now_update_pos();
-                if (App.left) {
+                if (App$1.buttons[0]) {
                     plopping = null;
                     tree.goes();
                     tree.unset();
@@ -219,8 +219,8 @@ var lumber = (function (exports, THREE) {
         }
         Tilization.init = init;
         function update() {
-            if (App.map['escape'] == 1) ;
-            if (App.map['u'] == 1) {
+            if (App$1.keys['escape'] == 1) ;
+            if (App$1.keys['u'] == 1) {
                 let middle = World$1.unproject(Lumber$1.world.view.center()).tiled;
                 let b = this.master.big(middle);
             }
@@ -507,8 +507,8 @@ var lumber = (function (exports, THREE) {
         set_bounds() {
             const pt = pts.pt(this.p);
             let p3 = pts.clone(this.p);
-            this.basest_tile = pts.mult(this.p2, this.master.span * 24);
-            this.north = pts.mult(p3, this.master.span * 24);
+            this.basest_tile = pts.mult(this.p2, this.master.span * Lumber$1.EVEN);
+            this.north = pts.mult(p3, this.master.span * Lumber$1.EVEN);
             this.order_tile = this.north;
             this.rekt_offset = pts.clone(this.basest_tile);
             if (Lumber$1.OFFSET_CHUNK_OBJ_REKT) {
@@ -521,7 +521,7 @@ var lumber = (function (exports, THREE) {
                 this.grouprt.renderOrder = depth;
             }
             // note: non screen bound not used anymore
-            this.bound = new aabb2$1([pt.x * this.master.span, pt.y * this.master.span], [(pt.x + 1) * this.master.span, (pt.y + 1) * this.master.span]);
+            this.bound = new aabb2([pt.x * this.master.span, pt.y * this.master.span], [(pt.x + 1) * this.master.span, (pt.y + 1) * this.master.span]);
             this.screen = Chunk.Sscreen(pt.x, pt.y, this.master);
         }
         empty() {
@@ -561,7 +561,7 @@ var lumber = (function (exports, THREE) {
             this.on = false;
         }
         oob() {
-            return Lumber$1.world.view.test(this.screen) == aabb2$1.OOB;
+            return Lumber$1.world.view.test(this.screen) == aabb2.TEST.Outside;
         }
         update() {
             var _a;
@@ -573,9 +573,9 @@ var lumber = (function (exports, THREE) {
     }
     (function (Chunk) {
         function Sscreen(x, y, master) {
-            let basest_tile = pts.mult([x + 1, y], master.span * 24);
+            let basest_tile = pts.mult([x + 1, y], master.span * Lumber$1.EVEN);
             let real = pts.subtract(pts.project(basest_tile), [0, -master.height / 2]);
-            return new aabb2$1(pts.add(real, [-master.width / 2, -master.height / 2]), pts.add(real, [master.width / 2, master.height / 2]));
+            return new aabb2(pts.add(real, [-master.width / 2, -master.height / 2]), pts.add(real, [master.width / 2, master.height / 2]));
         }
         Chunk.Sscreen = Sscreen;
     })(Chunk || (Chunk = {}));
@@ -648,8 +648,8 @@ var lumber = (function (exports, THREE) {
             this.refit = true;
             this.span = span;
             this.span2 = span * span;
-            this.width = span * 24;
-            this.height = span * 12;
+            this.width = span * Lumber$1.EVEN;
+            this.height = span * Lumber$1.EVEN / 2;
             this.fitter = new Tailorer(this);
         }
         update() {
@@ -835,7 +835,7 @@ var lumber = (function (exports, THREE) {
             this.dpi = 1;
             this.mouse_tiled = [0, 0];
             this.init();
-            this.view = new aabb2$1([0, 0], [0, 0]);
+            this.view = new aabb2([0, 0], [0, 0]);
             console.log('world');
         }
         static rig() {
@@ -861,7 +861,7 @@ var lumber = (function (exports, THREE) {
             return this.chunkMaster.which(zx);
         }
         mark_mouse() {
-            let m = [...App.move];
+            let m = [App$1.pos.x, App$1.pos.y];
             m[1] = -m[1];
             m = pts.divide(m, Lumber$1.world.scale);
             let p = [Lumber$1.world.view.min[0], Lumber$1.world.view.max[1]];
@@ -908,18 +908,18 @@ var lumber = (function (exports, THREE) {
             let speed = 5;
             const factor = 1 / this.dpi;
             let p = [...this.pos];
-            if (App.map['x'])
+            if (App$1.keys['x'])
                 speed *= 10;
-            if (App.map['w'])
+            if (App$1.keys['w'])
                 p[1] -= speed;
-            if (App.map['s'])
+            if (App$1.keys['s'])
                 p[1] += speed;
-            if (App.map['a'])
+            if (App$1.keys['a'])
                 p[0] += speed;
-            if (App.map['d'])
+            if (App$1.keys['d'])
                 p[0] -= speed;
             this.pos = [...p];
-            if (App.wheel > 0) {
+            if (App$1.wheel > 0) {
                 if (this.scale < 1) {
                     this.scale = 1;
                 }
@@ -930,7 +930,7 @@ var lumber = (function (exports, THREE) {
                     this.scale = 2 / this.dpi;
                 console.log('scale up', this.scale);
             }
-            else if (App.wheel < 0) {
+            else if (App$1.wheel < 0) {
                 this.scale -= factor;
                 if (this.scale < .5 / this.dpi)
                     this.scale = .5 / this.dpi;
@@ -944,7 +944,7 @@ var lumber = (function (exports, THREE) {
             //console.log(`tq target ${w} x ${h}`)
             let w2 = w / this.dpi / this.scale;
             let h2 = h / this.dpi / this.scale;
-            this.view = new aabb2$1([-p[0] - w2 / 2, -p[1] - h2 / 2], [-p[0] + w2 / 2, -p[1] + h2 / 2]);
+            this.view = new aabb2([-p[0] - w2 / 2, -p[1] - h2 / 2], [-p[0] + w2 / 2, -p[1] + h2 / 2]);
             this.view.min = pts.floor(this.view.min);
             this.view.max = pts.floor(this.view.max);
             this.focal = [-p[0], -p[1], 0];
@@ -961,11 +961,11 @@ var lumber = (function (exports, THREE) {
             granary.use();
             tobaccoshop.use();
             //Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));
-            Agriculture$1.area_wheat(2, new aabb2$1([5, -4], [5 + 50 - 2, -12]));
-            Agriculture$1.area_wheat(2, new aabb2$1([5 + 50, -4], [5 + 50 - 2 + 50, -12]));
-            Agriculture$1.area_wheat(3, new aabb2$1([5, -14], [5 + 50 - 2, -22]));
-            Agriculture$1.area_wheat(3, new aabb2$1([5 + 50, -14], [5 + 50 - 2 + 50, -22]));
-            Agriculture$1.area_wheat(3, new aabb2$1([-42, 21], [-80, 183]));
+            Agriculture$1.area_wheat(2, new aabb2([5, -4], [5 + 50 - 2, -12]));
+            Agriculture$1.area_wheat(2, new aabb2([5 + 50, -4], [5 + 50 - 2 + 50, -12]));
+            Agriculture$1.area_wheat(3, new aabb2([5, -14], [5 + 50 - 2, -22]));
+            Agriculture$1.area_wheat(3, new aabb2([5 + 50, -14], [5 + 50 - 2 + 50, -22]));
+            Agriculture$1.area_wheat(3, new aabb2([-42, 21], [-80, 183]));
             //Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
             //Agriculture.plop_wheat_area(3, new aabb3([-4, -4, 0], [20, -39, 0]));
             //Agriculture.plop_wheat_area(2, new aabb3([-25, 14, 0], [5, 50, 0]));
@@ -979,16 +979,16 @@ var lumber = (function (exports, THREE) {
                 'egyt/ground/gravel1',
                 'egyt/ground/gravel2',
             ];
-            Tilization$1.area_sample(30, gravels, new aabb2$1([-1, 0], [2, -22]));
+            Tilization$1.area_sample(30, gravels, new aabb2([-1, 0], [2, -22]));
             // lots gravels
             //Tilization.area_sample(66, gravels, new aabb2([-20, -10], [50, 80]));
             // long road se
-            Tilization$1.area_sample(50, stones, new aabb2$1([-13, 0], [400, -3]));
+            Tilization$1.area_sample(50, stones, new aabb2([-13, 0], [400, -3]));
             // long road ne
-            Tilization$1.area_sample(50, stones, new aabb2$1([-14, 0], [-12, 400]));
+            Tilization$1.area_sample(50, stones, new aabb2([-14, 0], [-12, 400]));
             // farms se
-            Agriculture$1.area_wheat(1, new aabb2$1([-15, 21], [-40, 101]));
-            Agriculture$1.area_wheat(1, new aabb2$1([-15, 103], [-40, 183]));
+            Agriculture$1.area_wheat(1, new aabb2([-15, 21], [-40, 101]));
+            Agriculture$1.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
         }
     }
     (function (World) {
@@ -1127,7 +1127,7 @@ void main() {
         function loadtexture(file, key, cb) {
             if (mem[key || file])
                 return mem[key || file];
-            let texture = new THREE.TextureLoader().load(file + `?v=${App.version}`, cb);
+            let texture = new THREE.TextureLoader().load(file + `?v=${App$1.salt}`, cb);
             texture.magFilter = THREE__default['default'].NearestFilter;
             texture.minFilter = THREE__default['default'].NearestFilter;
             mem[key || file] = texture;
@@ -1350,6 +1350,12 @@ void main() {
         }
     }
 
+    var TEST;
+    (function (TEST) {
+        TEST[TEST["Outside"] = 0] = "Outside";
+        TEST[TEST["Inside"] = 1] = "Inside";
+        TEST[TEST["Overlap"] = 2] = "Overlap";
+    })(TEST || (TEST = {}));
     class aabb2 {
         constructor(a, b) {
             this.min = this.max = a;
@@ -1357,9 +1363,8 @@ void main() {
                 this.extend(b);
             }
         }
-        static dupe(a) {
-            let b = new aabb2(a.min, a.max);
-            return b;
+        static dupe(bb) {
+            return new aabb2(bb.min, bb.max);
         }
         extend(v) {
             this.min = pts.min(this.min, v);
@@ -1371,12 +1376,6 @@ void main() {
         center() {
             return pts.add(this.min, pts.mult(this.diagonal(), 0.5));
         }
-        exponent(n) {
-            this.min[0] *= n;
-            this.min[1] *= n;
-            this.max[0] *= n;
-            this.max[1] *= n;
-        }
         translate(v) {
             this.min = pts.add(this.min, v);
             this.max = pts.add(this.max, v);
@@ -1384,89 +1383,79 @@ void main() {
         test(v) {
             if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
                 this.min[1] <= v.min[1] && this.max[1] >= v.max[1])
-                return aabb2.IN;
+                return aabb2.TEST.Inside;
             if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
                 this.max[1] < v.min[1] || this.min[1] > v.max[1])
-                return aabb2.OOB;
-            return aabb2.CROSS;
+                return aabb2.TEST.Outside;
+            return aabb2.TEST.Overlap;
         }
     }
-    (function (aabb2) {
-        aabb2.OOB = 0;
-        aabb2.IN = 1;
-        aabb2.CROSS = 2;
-    })(aabb2 || (aabb2 = {}));
-    var aabb2$1 = aabb2;
+    aabb2.TEST = TEST;
 
+    var App;
     (function (App) {
-        App.version = '0.07?';
-        App.map = {};
+        let KEY;
+        (function (KEY) {
+            KEY[KEY["Off"] = 0] = "Off";
+            KEY[KEY["Press"] = 1] = "Press";
+            KEY[KEY["Wait"] = 2] = "Wait";
+            KEY[KEY["Again"] = 3] = "Again";
+            KEY[KEY["Up"] = 4] = "Up";
+        })(KEY = App.KEY || (App.KEY = {}));
+        App.keys = {};
+        App.buttons = {};
+        App.pos = { x: 0, y: 0 };
+        App.salt = 'x';
         App.wheel = 0;
-        App.move = [0, 0];
-        App.left = false;
         function onkeys(event) {
             const key = event.key.toLowerCase();
-            // console.log(event);
             if ('keydown' == event.type)
-                App.map[key] = (undefined == App.map[key])
-                    ? 1 /* PRESSED */
-                    : 3 /* AGAIN */;
+                App.keys[key] = App.keys[key] ? KEY.Again : KEY.Press;
             else if ('keyup' == event.type)
-                App.map[key] = 0 /* UP */;
-            if (key == 114)
+                App.keys[key] = KEY.Up;
+            if (event.keyCode == 114)
                 event.preventDefault();
             return;
         }
-        function onwheel(event) {
-            let up = event.deltaY < 0;
-            App.wheel = up ? 1 : -1;
-        }
-        function onmove(event) {
-            App.move[0] = event.clientX;
-            App.move[1] = event.clientY;
-        }
-        function ondown(event) {
-            if (event.button == 0)
-                App.left = true;
-        }
-        function onup(event) {
-            if (event.button == 0)
-                App.left = false;
-        }
-        function Boot(version) {
-            App.version = version;
+        App.onkeys = onkeys;
+        function boot(a) {
+            App.salt = a;
+            function onmousemove(e) { App.pos.x = e.clientX; App.pos.y = e.clientY; }
+            function onmousedown(e) { App.buttons[e.button] = 1; }
+            function onmouseup(e) { App.buttons[e.button] = 0; }
+            function onwheel(e) { App.wheel = e.deltaY < 0 ? 1 : -1; }
             document.onkeydown = document.onkeyup = onkeys;
-            document.onmousemove = onmove;
-            document.onmousedown = ondown;
-            document.onmouseup = onup;
+            document.onmousemove = onmousemove;
+            document.onmousedown = onmousedown;
+            document.onmouseup = onmouseup;
             document.onwheel = onwheel;
             Renderer$1.init();
             Lumber$1.init();
-            Loop();
+            loop();
         }
-        App.Boot = Boot;
-        function Delay() {
-            for (let i in App.map) {
-                if (1 /* PRESSED */ == App.map[i])
-                    App.map[i] = 2 /* DELAY */;
-                else if (0 /* UP */ == App.map[i])
-                    delete App.map[i];
+        App.boot = boot;
+        function delay() {
+            for (let i in App.keys) {
+                if (KEY.Press == App.keys[i])
+                    App.keys[i] = KEY.Wait;
+                else if (KEY.Up == App.keys[i])
+                    App.keys[i] = KEY.Off;
             }
         }
-        function Loop(timestamp) {
-            requestAnimationFrame(Loop);
+        App.delay = delay;
+        function loop(timestamp) {
+            requestAnimationFrame(loop);
             Renderer$1.update();
             Lumber$1.update();
             Renderer$1.render();
             App.wheel = 0;
-            Delay();
+            delay();
         }
-    })(exports.App || (exports.App = {}));
-    window['App'] = exports.App;
-    var App = exports.App;
+        App.loop = loop;
+    })(App || (App = {}));
+    window['App'] = App;
+    var App$1 = App;
 
-    exports.default = App;
+    return App$1;
 
-    return exports;
-
-}({}, THREE));
+}(THREE));

@@ -56,7 +56,7 @@ namespace Forestation {
 	}
 
 	export function update() {
-		if (!plopping && App.map['t'] == 1) {
+		if (!plopping && App.keys['t'] == 1) {
 			plopping = plop_tree();
 		}
 
@@ -70,7 +70,7 @@ namespace Forestation {
 				tree.rekt.tile = p;
 			tree.rekt?.now_update_pos();
 
-			if (App.left) {
+			if (App.buttons[0]) {
 				plopping = null;
 				
 				tree.goes();

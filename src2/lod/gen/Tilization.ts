@@ -39,11 +39,11 @@ namespace Tilization {
 
 	export function update() {
 
-		if (App.map['escape'] == 1) {
+		if (App.keys['escape'] == 1) {
 			press = undefined;
 		}
 
-		if (App.map['u'] == 1) {
+		if (App.keys['u'] == 1) {
 			let middle = World.unproject(Lumber.world.view.center()).tiled;
 
 			let b = this.master.big(middle);

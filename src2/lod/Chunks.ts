@@ -59,8 +59,8 @@ class Chunk {
 
 		let p3 = pts.clone(this.p);
 
-		this.basest_tile = pts.mult(this.p2, this.master.span * 24);
-		this.north = 	   pts.mult(p3, 	 this.master.span * 24);
+		this.basest_tile = pts.mult(this.p2, this.master.span * Lumber.EVEN);
+		this.north = 	   pts.mult(p3, 	 this.master.span * Lumber.EVEN);
 
 		this.order_tile = this.north;
 
@@ -123,7 +123,7 @@ class Chunk {
 		this.on = false;
 	}
 	oob() {
-		return Lumber.world.view.test(this.screen) == aabb2.OOB;
+		return Lumber.world.view.test(this.screen) == aabb2.TEST.Outside;
 	}
 	update() {
 		this.objs.updates();
@@ -135,7 +135,7 @@ class Chunk {
 namespace Chunk {
 	export function Sscreen(x, y, master) {
 
-		let basest_tile = pts.mult([x + 1, y], master.span * 24);
+		let basest_tile = pts.mult([x + 1, y], master.span * Lumber.EVEN);
 
 		let real = pts.subtract(pts.project(basest_tile), [0, -master.height / 2]);
 
@@ -224,8 +224,8 @@ class ChunkMaster<T extends Chunk> {
 	constructor(private testType: new (x, y, m) => T, span: number) {
 		this.span = span;
 		this.span2 = span * span;
-		this.width = span * 24;
-		this.height = span * 12;
+		this.width = span * Lumber.EVEN;
+		this.height = span * Lumber.EVEN / 2;
 
 		this.fitter = new Tailorer<T>(this);
 	}

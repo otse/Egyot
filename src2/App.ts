@@ -1,79 +1,63 @@
 import { Lumber, Renderer, World, Rekt, Obj, pts, aabb2 } from "./Re-exports"
 
-export const enum KEY {
-	OFF = 0,
-	UP = 0,
-	PRESSED,
-	DELAY,
-	AGAIN
-}
+namespace App {
+	export enum KEY {
+		Off = 0,
+		Press,
+		Wait,
+		Again,
+		Up
+	}
+	
+	export var keys = {}
+	export var buttons = {}
+	export var pos = { x: 0, y: 0 }
 
-export namespace App {
+	export var salt = 'x'
+	export var wheel = 0
 
-	export var version = '0.07?';
-	export var map = {};
-	export var wheel = 0;
-
-	export var move: [number, number] = [0, 0];
-	export var left = false;
-
-	function onkeys(event) {
+	export function onkeys(event) {
 		const key = event.key.toLowerCase();
-		// console.log(event);
 		if ('keydown' == event.type)
-			map[key] = (undefined == map[key])
-				? KEY.PRESSED
-				: KEY.AGAIN;
+			keys[key] = keys[key] ? KEY.Again : KEY.Press;
 		else if ('keyup' == event.type)
-			map[key] = KEY.UP;
-		if (key == 114)
+			keys[key] = KEY.Up;
+		if (event.keyCode == 114)
 			event.preventDefault();
 		return;
 	}
-	function onwheel(event) {
-		let up = event.deltaY < 0;
-		wheel = up ? 1 : -1;
-	}
-	function onmove(event) {
-		move[0] = event.clientX;
-		move[1] = event.clientY;
-	}
-	function ondown(event) {
-		if (event.button == 0)
-			left = true;
-	}
-	function onup(event) {
-		if (event.button == 0)
-			left = false;
-	}
-	export function Boot(version: string) {
-		App.version = version;
+	export function boot(a: string) {
+		salt = a;
+		function onmousemove(e) { pos.x = e.clientX; pos.y = e.clientY; }
+		function onmousedown(e) { buttons[e.button] = 1; }
+		function onmouseup(e) 	{ buttons[e.button] = 0; }
+		function onwheel(e) 	{ wheel = e.deltaY < 0 ? 1 : -1; }
+
 		document.onkeydown = document.onkeyup = onkeys;
-		document.onmousemove = onmove;
-		document.onmousedown = ondown;
-		document.onmouseup = onup;
+		document.onmousemove = onmousemove;
+		document.onmousedown = onmousedown;
+		document.onmouseup = onmouseup;
 		document.onwheel = onwheel;
+
 		Renderer.init();
 		Lumber.init();
-		Loop(0);
+		loop(0);
 	}
-
-	function Delay() {
-		for (let i in map) {
-			if (KEY.PRESSED == map[i])
-				map[i] = KEY.DELAY;
-			else if (KEY.UP == map[i])
-				delete map[i];
+	export function delay() {
+		for (let i in keys) {
+			if (KEY.Press == keys[i])
+				keys[i] = KEY.Wait;
+			else if (KEY.Up == keys[i])
+				keys[i] = KEY.Off;
 		}
 	}
-
-	function Loop(timestamp) {
-		requestAnimationFrame(Loop);
+	export function loop(timestamp) {
+		requestAnimationFrame(loop);
 		Renderer.update();
 		Lumber.update();
 		Renderer.render();
 		wheel = 0;
-		Delay();
+		delay();
 	}
 }
 

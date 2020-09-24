@@ -1,6 +1,6 @@
 import { default as THREE, OrthographicCamera, Clock, Scene, WebGLRenderer, Texture, TextureLoader, WebGLRenderTarget, ShaderMaterial, Mesh, PlaneBufferGeometry, Color, NearestFilter, RGBAFormat, Group, Renderer } from 'three';
+
 import App from './App';
-import { Win } from './nested/Board';
 
 export { THREE };
 
@@ -195,7 +195,7 @@ namespace Renderer {
         if (mem[key || file])
             return mem[key || file];
 
-        let texture = new TextureLoader().load(file + `?v=${App.version}`, cb);
+        let texture = new TextureLoader().load(file + `?v=${App.salt}`, cb);
 
         texture.magFilter = THREE.NearestFilter;
         texture.minFilter = THREE.NearestFilter;

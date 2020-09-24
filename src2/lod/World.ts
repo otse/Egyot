@@ -73,7 +73,7 @@ class World {
 	}
 
 	mark_mouse() {
-		let m = <vec2>[...App.move];
+		let m: vec2 = [App.pos.x, App.pos.y];
 		m[1] = -m[1];
 		m = pts.divide(m, Lumber.world.scale);
 
@@ -130,12 +130,12 @@ class World {
 
 		let p = [...this.pos];
 
-		if (App.map['x']) speed *= 10;
+		if (App.keys['x']) speed *= 10;
 
-		if (App.map['w']) p[1] -= speed;
-		if (App.map['s']) p[1] += speed;
-		if (App.map['a']) p[0] += speed;
-		if (App.map['d']) p[0] -= speed;
+		if (App.keys['w']) p[1] -= speed;
+		if (App.keys['s']) p[1] += speed;
+		if (App.keys['a']) p[0] += speed;
+		if (App.keys['d']) p[0] -= speed;
 
 		this.pos = <vec2>[...p];
 
