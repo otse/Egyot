@@ -19,7 +19,7 @@ class World {
 	scale: number = 1
 	dpi: number = 1
 
-	focal: zxc
+	focal: vec3
 	view: aabb2
 	frustum: Rekt
 

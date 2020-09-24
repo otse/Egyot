@@ -14,7 +14,6 @@ namespace Tilization {
 	]
 
 	export class Tile extends Obj {
-		rekt: Rekt
 		asset: string = 'egyt/ground/stone1'
 		constructor(asset) {
 			super();
@@ -26,22 +25,6 @@ namespace Tilization {
 			this.rekt.asset = this.asset;
 			this.rekt.tile = this.tile;
 			this.rekt.wh = [24, 12];
-		}
-		comes() {			
-			super.comes();
-			this.rekt.use();
-		}
-		goes() {
-			super.goes();
-			this.rekt.unuse();
-		}
-		update() {
-			if (Lumber.PAINT_OBJ_TICK_RATE)
-				this.rekt.paint_alternate();
-		}
-		unset() {
-			super.unset();
-			this.rekt.unset();
 		}
 	}
 
@@ -89,13 +72,13 @@ namespace Tilization {
 	}
 
 	export function area_sample(chance: number, assets: string[], aabb: aabb2) {
-		const every = (pos: zx) => place_tile(chance, Lumber.sample(assets), pos);
+		const every = (pos: vec2) => place_tile(chance, Lumber.sample(assets), pos);
 
 		pts.area_every(aabb, every);
 	}
 
 	export function area(chance: number, asset: string, aabb: aabb2) {
-		const every = (pos: zx) => place_tile(chance, asset, pos);
+		const every = (pos: vec2) => place_tile(chance, asset, pos);
 
 		pts.area_every(aabb, every);
 	}

@@ -9,24 +9,32 @@ var lumber = (function (exports, THREE) {
         constructor() {
             this.order = 0;
             this.rate = 1;
-            this.using = false;
+            //using = false
             this.rtt = true;
+            this.rekt = null;
             this.chunk = null;
             this.tile = [0, 0];
             Obj.num++;
         }
         update() {
+            var _a;
+            if (Lumber$1.PAINT_OBJ_TICK_RATE)
+                (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.paint_alternate();
         }
         comes() {
+            var _a;
             Obj.active++;
-            this.using = true;
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.use();
         }
         goes() {
+            var _a;
             Obj.active--;
-            this.using = false;
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unuse();
         }
         unset() {
+            var _a;
             Obj.num--;
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unset();
         }
     }
     (function (Obj) {
@@ -53,16 +61,10 @@ var lumber = (function (exports, THREE) {
             'egyt/farm/wheat_ilil',
             'egyt/farm/wheat_ilil',
         ];
-        class Crop extends Obj$1 {
+        class Wheat extends Obj$1 {
             constructor(growth) {
                 super();
                 this.growth = growth;
-            }
-        }
-        Agriculture.Crop = Crop;
-        class Wheat extends Crop {
-            constructor(growth) {
-                super(growth);
                 this.flick = false;
                 this.rate = 2.0;
             }
@@ -79,18 +81,6 @@ var lumber = (function (exports, THREE) {
             update() {
                 if (Lumber$1.PAINT_OBJ_TICK_RATE)
                     this.rekt.paint_alternate();
-            }
-            comes() {
-                super.comes();
-                this.rekt.use();
-            }
-            goes() {
-                super.goes();
-                this.rekt.unuse();
-            }
-            unset() {
-                super.unset();
-                this.rekt.unset();
             }
         }
         Agriculture.Wheat = Wheat;
@@ -114,7 +104,7 @@ var lumber = (function (exports, THREE) {
         Agriculture.place_wheat = place_wheat;
         function area_wheat(growth, aabb) {
             const every = (pos) => place_wheat(growth, pos);
-            pts$1.area_every(aabb, every);
+            pts.area_every(aabb, every);
         }
         Agriculture.area_wheat = area_wheat;
     })(Agriculture || (Agriculture = {}));
@@ -144,22 +134,6 @@ var lumber = (function (exports, THREE) {
                 this.rekt.offset = [1, -1];
                 this.rekt.wh = [120, 132];
             }
-            update() {
-                if (Lumber$1.PAINT_OBJ_TICK_RATE)
-                    this.rekt.paint_alternate();
-            }
-            comes() {
-                super.comes();
-                this.rekt.use();
-            }
-            goes() {
-                super.goes();
-                this.rekt.unuse();
-            }
-            unset() {
-                super.unset();
-                this.rekt.unset();
-            }
         }
         Forestation.Tree = Tree;
         function init() {
@@ -178,15 +152,17 @@ var lumber = (function (exports, THREE) {
         }
         Forestation.populate = populate;
         function update() {
+            var _a;
             if (!plopping && App.map['t'] == 1) {
                 plopping = plop_tree();
             }
             if (plopping) {
                 let tree = plopping;
-                let p = pts$1.clone(Lumber$1.world.mouse_tiled);
+                let p = pts.clone(Lumber$1.world.mouse_tiled);
                 tree.tile = p;
-                tree.rekt.tile = p;
-                tree.rekt.now_update_pos();
+                if (tree.rekt)
+                    tree.rekt.tile = p;
+                (_a = tree.rekt) === null || _a === void 0 ? void 0 : _a.now_update_pos();
                 if (App.left) {
                     plopping = null;
                     tree.goes();
@@ -235,22 +211,6 @@ var lumber = (function (exports, THREE) {
                 this.rekt.tile = this.tile;
                 this.rekt.wh = [24, 12];
             }
-            comes() {
-                super.comes();
-                this.rekt.use();
-            }
-            goes() {
-                super.goes();
-                this.rekt.unuse();
-            }
-            update() {
-                if (Lumber$1.PAINT_OBJ_TICK_RATE)
-                    this.rekt.paint_alternate();
-            }
-            unset() {
-                super.unset();
-                this.rekt.unset();
-            }
         }
         Tilization.Tile = Tile;
         function init() {
@@ -282,12 +242,12 @@ var lumber = (function (exports, THREE) {
         Tilization.click_area = click_area;
         function area_sample(chance, assets, aabb) {
             const every = (pos) => place_tile(chance, Lumber$1.sample(assets), pos);
-            pts$1.area_every(aabb, every);
+            pts.area_every(aabb, every);
         }
         Tilization.area_sample = area_sample;
         function area(chance, asset, aabb) {
             const every = (pos) => place_tile(chance, asset, pos);
-            pts$1.area_every(aabb, every);
+            pts.area_every(aabb, every);
         }
         Tilization.area = area;
     })(Tilization || (Tilization = {}));
@@ -359,8 +319,8 @@ var lumber = (function (exports, THREE) {
                 Board.win.find('#numRekts').html(`Num rekts: ${Rekt$1.active} / ${Rekt$1.num}`);
                 let b = Lumber$1.world.chunkMaster.big(Lumber$1.world.mouse_tiled);
                 let c = Lumber$1.world.chunkMaster.at(b[0], b[1]);
-                Board.win.find('#square').text(`Mouse: ${pts$1.to_string(Lumber$1.world.mouse_tiled)}`);
-                Board.win.find('#squareChunk').text(`Mouse chunk: ${pts$1.to_string(b)}`);
+                Board.win.find('#square').text(`Mouse: ${pts.to_string(Lumber$1.world.mouse_tiled)}`);
+                Board.win.find('#squareChunk').text(`Mouse chunk: ${pts.to_string(b)}`);
                 Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${(c === null || c === void 0 ? void 0 : c.rt) ? 'true' : 'false'}`);
                 Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber$1.world.chunkMaster.fitter.lines}`);
                 Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber$1.world.chunkMaster.fitter.total}`);
@@ -545,14 +505,14 @@ var lumber = (function (exports, THREE) {
         anchor() {
         }
         set_bounds() {
-            const pt = pts$1.pt(this.p);
-            let p3 = pts$1.clone(this.p);
-            this.basest_tile = pts$1.mult(this.p2, this.master.span * 24);
-            this.north = pts$1.mult(p3, this.master.span * 24);
+            const pt = pts.pt(this.p);
+            let p3 = pts.clone(this.p);
+            this.basest_tile = pts.mult(this.p2, this.master.span * 24);
+            this.north = pts.mult(p3, this.master.span * 24);
             this.order_tile = this.north;
-            this.rekt_offset = pts$1.clone(this.basest_tile);
+            this.rekt_offset = pts.clone(this.basest_tile);
             if (Lumber$1.OFFSET_CHUNK_OBJ_REKT) {
-                const zx = pts$1.project(this.basest_tile);
+                const zx = pts.project(this.basest_tile);
                 const zxc = [...zx, 0];
                 this.group.position.fromArray(zxc);
                 this.grouprt.position.fromArray(zxc);
@@ -613,9 +573,9 @@ var lumber = (function (exports, THREE) {
     }
     (function (Chunk) {
         function Sscreen(x, y, master) {
-            let basest_tile = pts$1.mult([x + 1, y], master.span * 24);
-            let real = pts$1.subtract(pts$1.project(basest_tile), [0, -master.height / 2]);
-            return new aabb2$1(pts$1.add(real, [-master.width / 2, -master.height / 2]), pts$1.add(real, [master.width / 2, master.height / 2]));
+            let basest_tile = pts.mult([x + 1, y], master.span * 24);
+            let real = pts.subtract(pts.project(basest_tile), [0, -master.height / 2]);
+            return new aabb2$1(pts.add(real, [-master.width / 2, -master.height / 2]), pts.add(real, [master.width / 2, master.height / 2]));
         }
         Chunk.Sscreen = Sscreen;
     })(Chunk || (Chunk = {}));
@@ -697,7 +657,7 @@ var lumber = (function (exports, THREE) {
                 this.fitter.update();
         }
         big(zx) {
-            return pts$1.floor(pts$1.divide(zx, this.span));
+            return pts.floor(pts.divide(zx, this.span));
         }
         at(x, y) {
             let c;
@@ -813,7 +773,7 @@ var lumber = (function (exports, THREE) {
             this.height = this.chunk.master.height + this.padding;
             this.camera = Renderer$1.ortographiccamera(this.width, this.height);
             // todo, pts.make(blah)
-            let t = pts$1.mult(this.chunk.p2, this.chunk.master.span);
+            let t = pts.mult(this.chunk.p2, this.chunk.master.span);
             this.rekt = new Rekt$1;
             this.rekt.tile = t;
             this.rekt.wh = [this.width, this.height];
@@ -903,9 +863,9 @@ var lumber = (function (exports, THREE) {
         mark_mouse() {
             let m = [...App.move];
             m[1] = -m[1];
-            m = pts$1.divide(m, Lumber$1.world.scale);
+            m = pts.divide(m, Lumber$1.world.scale);
             let p = [Lumber$1.world.view.min[0], Lumber$1.world.view.max[1]];
-            p = pts$1.add(p, m);
+            p = pts.add(p, m);
             const unprojected = World.unproject(p);
             this.mouse_tiled = unprojected.tiled;
         }
@@ -977,7 +937,7 @@ var lumber = (function (exports, THREE) {
                 console.log('scale down', this.scale);
             }
             Renderer$1.scene.scale.set(this.scale, this.scale, 1);
-            let p2 = pts$1.mult(this.pos, this.scale);
+            let p2 = pts.mult(this.pos, this.scale);
             Renderer$1.scene.position.set(p2[0], p2[1], 0);
             let w = window.innerWidth; // tq.target.width;
             let h = window.innerHeight; // tq.target.height;
@@ -985,8 +945,8 @@ var lumber = (function (exports, THREE) {
             let w2 = w / this.dpi / this.scale;
             let h2 = h / this.dpi / this.scale;
             this.view = new aabb2$1([-p[0] - w2 / 2, -p[1] - h2 / 2], [-p[0] + w2 / 2, -p[1] + h2 / 2]);
-            this.view.min = pts$1.floor(this.view.min);
-            this.view.max = pts$1.floor(this.view.max);
+            this.view.min = pts.floor(this.view.min);
+            this.view.max = pts.floor(this.view.max);
             this.focal = [-p[0], -p[1], 0];
         }
         populate() {
@@ -1034,12 +994,12 @@ var lumber = (function (exports, THREE) {
     (function (World) {
         function unproject(query) {
             let p = query;
-            let un = pts$1.unproject(p);
+            let un = pts.unproject(p);
             let p2;
-            p2 = pts$1.divide(un, 24);
-            p2 = pts$1.floor(p2);
+            p2 = pts.divide(un, 24);
+            p2 = pts.floor(p2);
             p2[0] += 1; // necessary
-            let p3 = pts$1.mult(p2, 24);
+            let p3 = pts.mult(p2, 24);
             return { untiled: un, tiled: p2, mult: p3 };
         }
         World.unproject = unproject;
@@ -1273,14 +1233,13 @@ void main() {
                 return Renderer$1.scene;
         }
         dual() {
-            let xy = pts$1.add(this.tile, this.offset);
+            let xy = pts.add(this.tile, this.offset);
             return xy;
         }
         now_update_pos() {
             var _a;
-            const d = this.wh;
             let x, y;
-            let xy = pts$1.add(this.tile, this.offset);
+            let xy = pts.add(this.tile, this.offset);
             const depth = Rekt.depth(this.tile);
             if (this.tiled) {
                 xy = Rekt.mult(xy);
@@ -1293,15 +1252,15 @@ void main() {
                 if (Lumber$1.OFFSET_CHUNK_OBJ_REKT) {
                     let c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk;
                     if (c) {
-                        xy = pts$1.subtract(xy, c.rekt_offset);
+                        xy = pts.subtract(xy, c.rekt_offset);
                     }
                 }
                 x = xy[0] / 2 + xy[1] / 2;
                 y = xy[1] / 4 - xy[0] / 4;
                 this.center = [x, y];
                 // middle bottom
-                const w = d[0] / 2;
-                const h = d[1] / 2;
+                const w = this.wh[0] / 2;
+                const h = this.wh[1] / 2;
                 y += h;
             }
             this.position = [x, y, 0];
@@ -1321,24 +1280,23 @@ void main() {
         }
         Rekt.depth = depth;
         function mult(t) {
-            return pts$1.mult(t, 24);
+            return pts.mult(t, Lumber$1.EVEN);
         }
         Rekt.mult = mult;
     })(Rekt || (Rekt = {}));
     var Rekt$1 = Rekt;
 
-    var pts;
-    (function (pts) {
-        function pt(a) {
+    class pts {
+        static pt(a) {
             return { x: a[0], y: a[1] };
         }
-        pts.pt = pt;
-        pts.clone = (zx) => [...zx];
-        function make(n, m) {
+        static clone(zx) {
+            return [zx[0], zx[1]];
+        }
+        static make(n, m) {
             return [n, m];
         }
-        pts.make = make;
-        function area_every(bb, callback) {
+        static area_every(bb, callback) {
             let y = bb.min[1];
             for (; y <= bb.max[1]; y++) {
                 let x = bb.max[0];
@@ -1347,95 +1305,51 @@ void main() {
                 }
             }
         }
-        pts.area_every = area_every;
-        function project(a) {
-            let copy = pts.clone(a);
-            copy[0] = a[0] / 2 + a[1] / 2;
-            copy[1] = a[1] / 4 - a[0] / 4;
-            return copy;
+        static project(a) {
+            return [a[0] / 2 + a[1] / 2, a[1] / 4 - a[0] / 4];
         }
-        pts.project = project;
-        function unproject(a) {
-            let copy = pts.clone(a);
-            copy[0] = a[0] - a[1] * 2;
-            copy[1] = a[1] * 2 + a[0];
-            return copy;
+        static unproject(a) {
+            return [a[0] - a[1] * 2, a[1] * 2 + a[0]];
         }
-        pts.unproject = unproject;
-        function to_string(a) {
+        static to_string(a) {
             const pr = (b) => b != undefined ? `, ${b}` : '';
             return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
         }
-        pts.to_string = to_string;
-        function floor(a) {
-            let copy = pts.clone(a);
-            copy[0] = Math.floor(a[0]);
-            copy[1] = Math.floor(a[1]);
-            return copy;
+        static floor(a) {
+            return [Math.floor(a[0]), Math.floor(a[1])];
         }
-        pts.floor = floor;
-        function ceil(a) {
-            let copy = pts.clone(a);
-            copy[0] = Math.ceil(a[0]);
-            copy[1] = Math.ceil(a[1]);
-            return copy;
+        static ceil(a) {
+            return [Math.ceil(a[0]), Math.ceil(a[1])];
         }
-        pts.ceil = ceil;
-        function inv(a) {
-            let copy = pts.clone(a);
-            copy[0] = -a[0];
-            copy[1] = -a[1];
-            return copy;
+        static inv(a) {
+            return [-a[0], -a[1]];
         }
-        pts.inv = inv;
-        function mult(a, n, n2) {
-            let copy = pts.clone(a);
-            copy[0] *= n;
-            copy[1] *= n2 || n;
-            return copy;
+        static mult(a, n, m) {
+            return [a[0] * n, a[1] * (m || n)];
         }
-        pts.mult = mult;
-        function divide(a, n, n2) {
-            let copy = pts.clone(a);
-            copy[0] /= n;
-            copy[1] /= n2 || n;
-            return copy;
+        static divide(a, n, m) {
+            return [a[0] / n, a[1] / (m || n)];
         }
-        pts.divide = divide;
-        function subtract(a, b) {
-            let copy = pts.clone(a);
-            copy[0] -= b[0];
-            copy[1] -= b[1];
-            return copy;
+        static subtract(a, b) {
+            return [a[0] - b[0], a[1] - b[1]];
         }
-        pts.subtract = subtract;
-        function add(a, b) {
-            let copy = pts.clone(a);
-            copy[0] += b[0];
-            copy[1] += b[1];
-            return copy;
+        static add(a, b) {
+            return [a[0] + b[0], a[1] + b[1]];
         }
-        pts.add = add;
-        function abs(a) {
-            let copy = pts.clone(a);
-            copy[0] = Math.abs(a[0]);
-            copy[1] = Math.abs(a[1]);
-            return copy;
+        static abs(a) {
+            return [Math.abs(a[0]), Math.abs(a[1])];
         }
-        pts.abs = abs;
-        function together(zx) {
-            //Abs(p);
+        static min(a, b) {
+            return [Math.min(a[0], b[0]), Math.min(a[1], b[1])];
+        }
+        static max(a, b) {
+            return [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+        }
+        static together(zx) {
             return zx[0] + zx[1];
         }
-        pts.together = together;
-    })(pts || (pts = {}));
-    var pts$1 = pts;
+    }
 
-    function min(a, b) { return [Math.min(a[0], b[0]), Math.min(a[1], b[1])]; }
-    function max(a, b) { return [Math.max(a[0], b[0]), Math.max(a[1], b[1])]; }
-    function remove(a, b) { return [a[0] - b[0], a[1] - b[1]]; }
-    function add(a, b) { return [a[0] + b[0], a[1] + b[1]]; }
-    function multiply(a, f) { let x = a[0] * f; let y = a[1] * f; return [x, y]; }
     class aabb2 {
         constructor(a, b) {
             this.min = this.max = a;
@@ -1448,26 +1362,24 @@ void main() {
             return b;
         }
         extend(v) {
-            this.min = min(this.min, v);
-            this.max = max(this.max, v);
+            this.min = pts.min(this.min, v);
+            this.max = pts.max(this.max, v);
         }
         diagonal() {
-            return remove(this.max, this.min);
+            return pts.subtract(this.max, this.min);
         }
         center() {
-            return add(this.min, multiply(this.diagonal(), 0.5));
+            return pts.add(this.min, pts.mult(this.diagonal(), 0.5));
         }
         exponent(n) {
             this.min[0] *= n;
             this.min[1] *= n;
-            //this.min[2] *= n;
             this.max[0] *= n;
             this.max[1] *= n;
-            //this.max[2] *= n;
         }
         translate(v) {
-            add(this.min, v);
-            add(this.max, v);
+            this.min = pts.add(this.min, v);
+            this.max = pts.add(this.max, v);
         }
         test(v) {
             if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&

@@ -106,8 +106,6 @@ class Rekt {
 		return xy;
 	}
 	now_update_pos() {
-		const d = this.wh;
-
 		let x, y;
 
 		let xy = pts.add(this.tile, this.offset);
@@ -135,8 +133,8 @@ class Rekt {
 			this.center = [x, y];
 
 			// middle bottom
-			const w = d[0] / 2;
-			const h = d[1] / 2;
+			const w = this.wh[0] / 2;
+			const h = this.wh[1] / 2;
 
 			y += h;
 		}
@@ -162,7 +160,7 @@ namespace Rekt {
 	}
 
 	export function mult(t: vec2) {
-		return pts.mult(t, 24);
+		return pts.mult(t, Lumber.EVEN);
 	}
 }
 

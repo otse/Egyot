@@ -10,9 +10,9 @@ class Selection {
 	material: MeshBasicMaterial
 	geometry: PlaneBufferGeometry
 
-	dim: zx
-	start: zx
-	end: zx
+	dim: vec2
+	start: vec2
+	end: vec2
 
 	enuf: boolean
 
@@ -39,19 +39,19 @@ class Selection {
 		Renderer.scene.add(this.mesh);
 	}
 
-	Update(mouse: zx) {
+	Update(mouse: vec2) {
 		this.View(mouse);
 		this.Save(mouse);
 		this.Sufficient(mouse);
 		this.Set(mouse);
 	}
 
-	Sufficient(mouse: zx) {
+	Sufficient(mouse: vec2) {
 		let rem = pts.subtract(
-			<zx>pts.clone(this.end), this.start);
+			<vec2>pts.clone(this.end), this.start);
 
 		const px = pts.together(
-			pts.abs(rem as zx));
+			pts.abs(rem as vec2));
 
 		if (!this.enuf && px > 15) {
 			this.enuf = true;
@@ -60,12 +60,12 @@ class Selection {
 		}
 	}
 
-	View(mouse: zx) {
+	View(mouse: vec2) {
 		pts.subtract(mouse, Lumber.world.pos);
 
 		pts.subtract(
 			mouse, pts.divide(
-				<zx>pts.clone(Renderer.wh), 2));
+				<vec2>pts.clone(Renderer.wh), 2));
 
 		let scale = 1;
 
@@ -76,22 +76,22 @@ class Selection {
 			mouse, scale);
 	}
 
-	Save(mouse: zx) {
+	Save(mouse: vec2) {
 		if (!this.start)
-			this.start = [...mouse] as zx;
+			this.start = [...mouse] as vec2;
 
-		this.end = [...mouse] as zx;
+		this.end = [...mouse] as vec2;
 	}
 
-	Set(mouse: zx) {
+	Set(mouse: vec2) {
 		if (!this.enuf)
 			return;
 
 		let size = pts.subtract(
-			<zx>pts.clone(this.end), this.start);
+			<vec2>pts.clone(this.end), this.start);
 
 		let pos = pts.subtract(
-			<zx>pts.clone(mouse), pts.divide(<zx>pts.clone(size), 2));
+			<vec2>pts.clone(mouse), pts.divide(<vec2>pts.clone(size), 2));
 
 		this.mesh.scale.set(size[0], size[1], 1);
 		this.mesh.position.set(pos[0], pos[1], 0);

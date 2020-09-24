@@ -1,8 +1,4 @@
-function min(a: vec2, b: vec2): vec2 { return [Math.min(a[0], b[0]), Math.min(a[1], b[1])]; }
-function max(a: vec2, b: vec2): vec2 { return [Math.max(a[0], b[0]), Math.max(a[1], b[1])]; }
-function remove(a: vec2, b: vec2): vec2 { return [a[0] - b[0], a[1] - b[1]]; }
-function add(a: vec2, b: vec2): vec2 { return [a[0] + b[0], a[1] + b[1]]; }
-function multiply(a: vec2, f: number): vec2 { let x = a[0] * f; let y = a[1] * f; return [x, y]; }
+import pts from "./pts";
 
 class aabb2 {
 	min: vec2
@@ -18,26 +14,24 @@ class aabb2 {
 		}
 	}
 	extend(v: vec2) {
-		this.min = min(this.min, v);
-		this.max = max(this.max, v);
+		this.min = pts.min(this.min, v);
+		this.max = pts.max(this.max, v);
 	}
 	diagonal(): vec2 {
-		return remove(this.max, this.min);
+		return pts.subtract(this.max, this.min);
 	}
 	center(): vec2 {
-		return add(this.min, multiply(this.diagonal(), 0.5));
+		return pts.add(this.min, pts.mult(this.diagonal(), 0.5));
 	}
 	exponent(n: number) {
 		this.min[0] *= n;
 		this.min[1] *= n;
-		//this.min[2] *= n;
 		this.max[0] *= n;
 		this.max[1] *= n;
-		//this.max[2] *= n;
 	}
 	translate(v: vec2) {
-		add(this.min, v);
-		add(this.max, v);
+		this.min = pts.add(this.min, v);
+		this.max = pts.add(this.max, v);
 	}
 	test(v: aabb2) {
 		if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&

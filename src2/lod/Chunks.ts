@@ -26,7 +26,7 @@ class Chunk {
 
 	bound: aabb2
 	screen: aabb2
-	rekt_offset: zx
+	rekt_offset: vec2
 
 	group: Group
 	grouprt: Group
@@ -251,7 +251,7 @@ class ChunkMaster<T extends Chunk> {
 		c = this.arrays[y][x] = new this.testType(x, y, this);
 		return c;
 	}
-	which(t: zx): T {
+	which(t: vec2): T {
 		let b = this.big(t);
 		let c = this.guarantee(b[0], b[1]);
 		return c;
@@ -295,7 +295,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 		this.slither(b, Tailorer.forward);
 		this.slither(b, Tailorer.reverse);
 	}
-	slither(b: zx, n: number) {
+	slither(b: vec2, n: number) {
 		let x = b[0], y = b[1];
 		let i = 0, j = 0, s = 0, u = 0;
 		while (true) {

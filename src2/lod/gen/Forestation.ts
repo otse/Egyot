@@ -19,8 +19,6 @@ namespace Forestation {
 
 	export class Tree extends Obj {
 
-		rekt: Rekt
-
 		constructor() {
 			super();
 
@@ -36,22 +34,6 @@ namespace Forestation {
 			this.rekt.tile = this.tile;
 			this.rekt.offset = [1, -1];
 			this.rekt.wh = [120, 132];
-		}
-		update() {
-			if (Lumber.PAINT_OBJ_TICK_RATE)
-				this.rekt.paint_alternate();
-		}
-		comes() {
-			super.comes();
-			this.rekt.use();
-		}
-		goes() {
-			super.goes();
-			this.rekt.unuse();
-		}
-		unset() {
-			super.unset();
-			this.rekt.unset();
 		}
 	}
 
@@ -84,8 +66,9 @@ namespace Forestation {
 			let p = pts.clone(Lumber.world.mouse_tiled);
 
 			tree.tile = p;
-			tree.rekt.tile = p;
-			tree.rekt.now_update_pos();
+			if (tree.rekt)
+				tree.rekt.tile = p;
+			tree.rekt?.now_update_pos();
 
 			if (App.left) {
 				plopping = null;

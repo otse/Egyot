@@ -21,19 +21,12 @@ namespace Agriculture {
 		'egyt/farm/wheat_ilil',
 	]
 
-	export class Crop extends Obj {
-		constructor(protected growth: number) {
-			super();
-		}
-	}
-
-	export class Wheat extends Crop {
+	export class Wheat extends Obj {
 		rekt: Rekt
 		flick = false
 
-		constructor(growth: number) {
-			super(growth);
-
+		constructor(public growth: number) {
+			super();
 			this.rate = 2.0;
 		}
 		finish() {
@@ -49,18 +42,6 @@ namespace Agriculture {
 		update() {
 			if (Lumber.PAINT_OBJ_TICK_RATE)
 				this.rekt.paint_alternate();
-		}
-		comes() {
-			super.comes();
-			this.rekt.use();
-		}
-		goes() {
-			super.goes();
-			this.rekt.unuse();
-		}
-		unset() {
-			super.unset();
-			this.rekt.unset();
 		}
 	}
 

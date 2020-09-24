@@ -92,7 +92,7 @@ namespace Renderer {
 
 	export var w;
 	export var h;
-	export var wh: zx;
+	export var wh: vec2;
 	export var plane;
 
 	export function init() {
