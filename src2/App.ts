@@ -1,4 +1,6 @@
-import { Lumber, Renderer, World, Rekt, Obj, pts, aabb2 } from "./Re-exports"
+import Lumber from "./Lumber"
+import Renderer from "./Renderer"
+
 
 namespace App {
 	export enum KEY {

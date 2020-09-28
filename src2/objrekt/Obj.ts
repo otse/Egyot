@@ -1,6 +1,5 @@
 import { Chunk } from "../lod/Chunks";
-import { Lumber } from "../Re-exports";
-
+import Lumber from "../Lumber";
 import Rekt from "./Rekt";
 
 class Obj {

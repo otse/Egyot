@@ -1,11 +1,18 @@
-import { Lumber, Renderer, Rekt, Obj, aabb2, pts } from "./../Re-exports";
+import Lumber from "../Lumber";
+import Renderer from "../Renderer";
+import Obj from "../objrekt/Obj";
+import Rekt from "../objrekt/Rekt";
+import pts from "../lib/pts";
+import aabb2 from "../lib/aabb2";
 
 import App from "../App";
 
 import { Chunk, ChunkMaster } from "./Chunks";
-import Agriculture from "./gen/Agriculture";
-import Tilization from "./gen/Tilization";
+
 import { Ply } from "../nested/char/Char";
+import { Ploppables } from "./Ploppables";
+
+
 
 const SHOW_FRUSTUM = false;
 
@@ -202,15 +209,15 @@ class World {
 		tobaccoshop.wh = [144, 144];
 		tobaccoshop.asset = 'egyt/building/redstore';
 
-		granary.use();
+		//granary.use();
 		tobaccoshop.use();
 
 		//Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));
-		Agriculture.area_wheat(2, new aabb2([5, -4], [5 + 50 - 2, -12]));
-		Agriculture.area_wheat(2, new aabb2([5 + 50, -4], [5 + 50 - 2 + 50, -12]));
-		Agriculture.area_wheat(3, new aabb2([5, -14], [5 + 50 - 2, -22]));
-		Agriculture.area_wheat(3, new aabb2([5 + 50, -14], [5 + 50 - 2 + 50, -22]));
-		Agriculture.area_wheat(3, new aabb2([-42, 21], [-80, 183]));
+		Ploppables.area_wheat(2, new aabb2([5, -4], [5 + 50 - 2, -12]));
+		Ploppables.area_wheat(2, new aabb2([5 + 50, -4], [5 + 50 - 2 + 50, -12]));
+		Ploppables.area_wheat(3, new aabb2([5, -14], [5 + 50 - 2, -22]));
+		Ploppables.area_wheat(3, new aabb2([5 + 50, -14], [5 + 50 - 2 + 50, -22]));
+		Ploppables.area_wheat(3, new aabb2([-42, 21], [-80, 183]));
 		//Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
 		//Agriculture.plop_wheat_area(3, new aabb3([-4, -4, 0], [20, -39, 0]));
 		//Agriculture.plop_wheat_area(2, new aabb3([-25, 14, 0], [5, 50, 0]));
@@ -225,20 +232,20 @@ class World {
 			'egyt/ground/gravel1',
 			'egyt/ground/gravel2',
 		];
-		Tilization.area_sample(30, gravels, new aabb2([-1, 0], [2, -22]));
+		Ploppables.area_tile_sampled(30, gravels, new aabb2([-1, 0], [2, -22]));
 
 		// lots gravels
 		//Tilization.area_sample(66, gravels, new aabb2([-20, -10], [50, 80]));
 
 		// long road se
-		Tilization.area_sample(50, stones, new aabb2([-13, 0], [400, -3]));
+		Ploppables.area_tile_sampled(50, stones, new aabb2([-13, 0], [400, -3]));
 
 		// long road ne
-		Tilization.area_sample(50, stones, new aabb2([-14, 0], [-12, 400]));
+		Ploppables.area_tile_sampled(50, stones, new aabb2([-14, 0], [-12, 400]));
 
 		// farms se
-		Agriculture.area_wheat(1, new aabb2([-15, 21], [-40, 101]));
-		Agriculture.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
+		Ploppables.area_wheat(1, new aabb2([-15, 21], [-40, 101]));
+		Ploppables.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
 	}
 }
 

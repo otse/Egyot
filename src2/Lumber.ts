@@ -1,9 +1,9 @@
-import Agriculture from "./lod/gen/Agriculture";
-import Forestation from "./lod/gen/Forestation";
-import Tilization from "./lod/gen/Tilization";
-import { Win } from "./nested/Board";
+import World from "./lod/World";
+import Obj from "./objrekt/Obj";
 
-import { World, Rekt, Obj, aabb2, pts } from "./Re-exports";
+import { Win } from "./nested/Board";
+import { Ploppables } from "./lod/Ploppables";
+
 
 export namespace Lumber {
 
@@ -38,62 +38,40 @@ export namespace Lumber {
 	let resources_loaded = 0b0;
 
 	export function resourced(word: string) {
-
 		resources_loaded |= 0b1 << RESOURCES[word];
-
 		try_start();
 	}
-
 	function try_start() {
-
 		let count = 0;
-
 		let i = 0;
 		for (; i < RESOURCES.COUNT; i++)
 			(resources_loaded & 0b1 << i) ? count++ : void (0);
-
 		if (count == RESOURCES.COUNT)
 			start();
 	}
-
 	export function critical(mask: string) {
-
 		// Couldn't load
-
 		console.error('resource', mask);
-
 	}
-
 	export function init() {
 		console.log('egyt init');
-
 		world = World.rig();
-
-		Forestation.init();
-		Tilization.init();
 		
 		resourced('RC_UNDEFINED');
 		resourced('READY');
-
-		(window as any).Egyt = Lumber;
+		window['Lumber'] = Lumber;
 	}
-
-	export function start() {
-
+	function start() {
 		if (started)
 			return;
-
 		console.log('lumber starting');
 
 		if (window.location.href.indexOf("#nochunkrt") != -1)
 			USE_CHUNK_RT = false;
 
 		world.populate();
-		Forestation.populate();
-
-		//	Win.load_sheet('style95.css');
-		//else
-		//	Win.load_sheet('style2.css');
+		
+		Ploppables.plant_trees();
 
 		Win.init();
 
@@ -167,10 +145,6 @@ export namespace Lumber {
 
 		if (!started)
 			return;
-
-		Forestation.update();
-		Tilization.update();
-		Agriculture.update();
 
 		world.update();
 

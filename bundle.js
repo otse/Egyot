@@ -5,480 +5,391 @@ var lumber = (function (THREE) {
 
     var THREE__default = /*#__PURE__*/_interopDefaultLegacy(THREE);
 
-    class Obj {
-        constructor() {
-            this.order = 0;
-            this.rate = 1;
-            //using = false
-            this.rtt = true;
-            this.rekt = null;
-            this.chunk = null;
-            this.tile = [0, 0];
-            Obj.num++;
+    const fragmentPost = `
+// Todo add effect
+varying vec2 vUv;
+uniform sampler2D tDiffuse;
+void main() {
+	vec4 clr = texture2D( tDiffuse, vUv );
+	clr.rgb = mix(clr.rgb, vec3(0.5), 0.0);
+	gl_FragColor = clr;
+}`;
+    const vertexScreen = `
+varying vec2 vUv;
+void main() {
+	vUv = uv;
+	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}`;
+    // three quarter
+    var Renderer;
+    (function (Renderer) {
+        Renderer.delta = 0;
+        //export var ambientLight: AmbientLight
+        //export var directionalLight: DirectionalLight
+        function update() {
+            Renderer.delta = Renderer.clock.getDelta();
+            //filmic.composer.render();
         }
-        update() {
-            var _a;
-            if (Lumber$1.PAINT_OBJ_TICK_RATE)
-                (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.paint_alternate();
+        Renderer.update = update;
+        var reset = 0;
+        var frames = 0;
+        // https://github.com/mrdoob/stats.js/blob/master/src/Stats.js#L71
+        function calc() {
+            const s = Date.now() / 1000;
+            frames++;
+            if (s - reset >= 1) {
+                reset = s;
+                Renderer.fps = frames;
+                frames = 0;
+            }
+            Renderer.memory = window.performance.memory;
         }
-        comes() {
-            var _a;
-            Obj.active++;
-            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.use();
+        Renderer.calc = calc;
+        function render() {
+            calc();
+            Renderer.renderer.setRenderTarget(Renderer.target);
+            Renderer.renderer.clear();
+            Renderer.renderer.render(Renderer.scene, Renderer.camera);
+            Renderer.renderer.setRenderTarget(null); // Naar scherm
+            Renderer.renderer.clear();
+            Renderer.renderer.render(Renderer.scene2, Renderer.camera);
         }
-        goes() {
-            var _a;
-            Obj.active--;
-            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unuse();
+        Renderer.render = render;
+        function init() {
+            console.log('ThreeQuarter Init');
+            Renderer.clock = new THREE.Clock();
+            Renderer.scene = new THREE.Scene();
+            Renderer.scene.background = new THREE.Color('rgb(40, 72, 42)');
+            Renderer.scene2 = new THREE.Scene();
+            Renderer.rttscene = new THREE.Scene();
+            Renderer.ndpi = window.devicePixelRatio;
+            console.log(`window innerWidth, innerHeight ${window.innerWidth} x ${window.innerHeight}`);
+            if (Renderer.ndpi > 1) {
+                console.warn('Dpi i> 1. Game may scale.');
+            }
+            Renderer.target = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+                minFilter: THREE__default['default'].NearestFilter,
+                magFilter: THREE__default['default'].NearestFilter,
+                format: THREE__default['default'].RGBFormat
+            });
+            Renderer.renderer = new THREE.WebGLRenderer({ antialias: false });
+            Renderer.renderer.setPixelRatio(1);
+            Renderer.renderer.setSize(window.innerWidth, window.innerHeight);
+            Renderer.renderer.autoClear = true;
+            Renderer.renderer.setClearColor(0xffffff, 0);
+            document.body.appendChild(Renderer.renderer.domElement);
+            window.addEventListener('resize', onWindowResize, false);
+            someMore();
+            onWindowResize();
+            window.Renderer = Renderer;
         }
-        unset() {
-            var _a;
-            Obj.num--;
-            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unset();
+        Renderer.init = init;
+        function someMore() {
+            /*materialBg = new ShaderMaterial({
+                uniforms: { time: { value: 0.0 } },
+                vertexShader: vertexScreen,
+                fragmentShader: fragmentBackdrop
+            });*/
+            Renderer.materialPost = new THREE.ShaderMaterial({
+                uniforms: { tDiffuse: { value: Renderer.target.texture } },
+                vertexShader: vertexScreen,
+                fragmentShader: fragmentPost,
+                depthWrite: false
+            });
+            Renderer.plane = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
+            /*let quad = new Mesh(plane, materialBg);
+            quad.position.z = -100;
+            scene.add(quad);*/
+            Renderer.quadPost = new THREE.Mesh(Renderer.plane, Renderer.materialPost);
+            Renderer.quadPost.position.z = -100;
+            Renderer.scene2.add(Renderer.quadPost);
+        }
+        function onWindowResize() {
+            Renderer.w = window.innerWidth;
+            Renderer.h = window.innerHeight;
+            if (Renderer.w % 2 != 0) ;
+            if (Renderer.h % 2 != 0) ;
+            let targetwidth = Renderer.w;
+            let targetheight = Renderer.h;
+            //if (ndpi == 2) {
+            //	targetwidth *= ndpi;
+            //	targetheight *= ndpi;
+            //}
+            Renderer.plane = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
+            Renderer.quadPost.geometry = Renderer.plane;
+            Renderer.target.setSize(targetwidth, targetheight);
+            Renderer.camera = ortographiccamera(Renderer.w, Renderer.h);
+            Renderer.camera.updateProjectionMatrix();
+            Renderer.renderer.setSize(Renderer.w, Renderer.h);
+        }
+        let mem = [];
+        function loadtexture(file, key, cb) {
+            if (mem[key || file])
+                return mem[key || file];
+            let texture = new THREE.TextureLoader().load(file + `?v=${App$1.salt}`, cb);
+            texture.magFilter = THREE__default['default'].NearestFilter;
+            texture.minFilter = THREE__default['default'].NearestFilter;
+            mem[key || file] = texture;
+            return texture;
+        }
+        Renderer.loadtexture = loadtexture;
+        function rendertarget(w, h) {
+            const o = {
+                minFilter: THREE.NearestFilter,
+                magFilter: THREE.NearestFilter,
+                format: THREE.RGBAFormat
+            };
+            let target = new THREE.WebGLRenderTarget(w, h, o);
+            return target;
+        }
+        Renderer.rendertarget = rendertarget;
+        function ortographiccamera(w, h) {
+            let camera = new THREE.OrthographicCamera(w / -2, w / 2, h / 2, h / -2, -100, 100);
+            camera.updateProjectionMatrix();
+            return camera;
+        }
+        Renderer.ortographiccamera = ortographiccamera;
+        function erase_children(group) {
+            while (group.children.length > 0)
+                group.remove(group.children[0]);
+        }
+        Renderer.erase_children = erase_children;
+    })(Renderer || (Renderer = {}));
+    var Renderer$1 = Renderer;
+
+    class pts {
+        static pt(a) {
+            return { x: a[0], y: a[1] };
+        }
+        static clone(zx) {
+            return [zx[0], zx[1]];
+        }
+        static make(n, m) {
+            return [n, m];
+        }
+        static area_every(bb, callback) {
+            let y = bb.min[1];
+            for (; y <= bb.max[1]; y++) {
+                let x = bb.max[0];
+                for (; x >= bb.min[0]; x--) {
+                    callback([x, y]);
+                }
+            }
+        }
+        static project(a) {
+            return [a[0] / 2 + a[1] / 2, a[1] / 4 - a[0] / 4];
+        }
+        static unproject(a) {
+            return [a[0] - a[1] * 2, a[1] * 2 + a[0]];
+        }
+        static to_string(a) {
+            const pr = (b) => b != undefined ? `, ${b}` : '';
+            return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
+        }
+        static floor(a) {
+            return [Math.floor(a[0]), Math.floor(a[1])];
+        }
+        static ceil(a) {
+            return [Math.ceil(a[0]), Math.ceil(a[1])];
+        }
+        static inv(a) {
+            return [-a[0], -a[1]];
+        }
+        static mult(a, n, m) {
+            return [a[0] * n, a[1] * (m || n)];
+        }
+        static divide(a, n, m) {
+            return [a[0] / n, a[1] / (m || n)];
+        }
+        static subtract(a, b) {
+            return [a[0] - b[0], a[1] - b[1]];
+        }
+        static add(a, b) {
+            return [a[0] + b[0], a[1] + b[1]];
+        }
+        static abs(a) {
+            return [Math.abs(a[0]), Math.abs(a[1])];
+        }
+        static min(a, b) {
+            return [Math.min(a[0], b[0]), Math.min(a[1], b[1])];
+        }
+        static max(a, b) {
+            return [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+        }
+        static together(zx) {
+            return zx[0] + zx[1];
         }
     }
-    (function (Obj) {
-        Obj.active = 0;
-        Obj.num = 0;
-        //export type Struct = Obj['struct']
-    })(Obj || (Obj = {}));
-    var Obj$1 = Obj;
 
-    var Agriculture;
-    (function (Agriculture) {
-        const tillering = [
-            'egyt/farm/wheat_i',
-            'egyt/farm/wheat_i',
-            'egyt/farm/wheat_il',
-            'egyt/farm/wheat_il',
-            'egyt/farm/wheat_il',
-            'egyt/farm/wheat_ili',
-        ];
-        const ripening = [
-            'egyt/farm/wheat_il',
-            'egyt/farm/wheat_ili',
-            'egyt/farm/wheat_ili',
-            'egyt/farm/wheat_ilil',
-            'egyt/farm/wheat_ilil',
-        ];
-        class Wheat extends Obj$1 {
-            constructor(growth) {
-                super();
-                this.growth = growth;
-                this.flick = false;
-                this.rate = 2.0;
-            }
-            finish() {
-                this.rekt = new Rekt$1;
-                this.rekt.obj = this;
-                this.rekt.asset =
-                    this.growth == 1 ? Lumber$1.sample(tillering) :
-                        this.growth == 2 ? Lumber$1.sample(ripening) :
-                            this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
-                this.rekt.tile = this.tile;
-                this.rekt.wh = [22, 22];
-            }
-            update() {
-                if (Lumber$1.PAINT_OBJ_TICK_RATE)
-                    this.rekt.paint_alternate();
-            }
+    class Rekt {
+        constructor() {
+            this.tiled = true;
+            this.tile = [0, 0];
+            this.offset = [0, 0];
+            this.wh = [1, 1];
+            this.opacity = 1;
+            this.center = [0, 0];
+            this.position = [0, 0, 0];
+            this.used = false;
+            this.flick = false;
+            this.plain = false;
+            Rekt.num++;
         }
-        Agriculture.Wheat = Wheat;
-        function init() {
-            console.log('agriculture');
-            window.Agriculture = Agriculture;
+        unset() {
+            Rekt.num--;
         }
-        Agriculture.init = init;
-        function update() {
-        }
-        Agriculture.update = update;
-        function place_wheat(growth, tile) {
-            if (Math.random() > .99)
-                return;
-            let crop = new Wheat(growth);
-            crop.tile = tile;
-            crop.finish();
-            Lumber$1.world.add(crop);
-            return crop;
-        }
-        Agriculture.place_wheat = place_wheat;
-        function area_wheat(growth, aabb) {
-            const every = (pos) => place_wheat(growth, pos);
-            pts.area_every(aabb, every);
-        }
-        Agriculture.area_wheat = area_wheat;
-    })(Agriculture || (Agriculture = {}));
-    var Agriculture$1 = Agriculture;
-
-    var Forestation;
-    (function (Forestation) {
-        let positions = [[12, 5], [20, 7], [16, 4], [8, 11], [28, 7], [40, 8], [39, 13], [17, 32], [-21, 11], [-18, 16], [-19, -28], [-24, -29], [-27, -13], [-17, 9], [-18, -1], [-6, 34], [65, 11], [0, 87], [5, 125], [-1, 172], [-62, 36], [-72, 125], [-65, 216], [4, 182], [14, 162], [2, 177], [3, 198], [6, 155], [7, 291], [-38, 350], [-59, 162], [-43, 112], [-106, 52], [154, 20], [213, 21], [141, -53], [23, -60], [62, -65], [260, -62], [241, -49], [251, -45], [220, -36], [209, -57], [223, -65], [209, -45], [181, -67], [190, -83], [221, -88], [264, -87], [274, -95], [263, -106], [255, -106], [237, -110], [248, -124], [239, -65], [221, -49], [189, -94], [263, -55], [271, -44], [278, -61], [246, -51], [240, -55], [226, -43], [228, -39], [208, -49], [248, -65], [227, -70], [230, -17], [210, 12], [269, 33], [275, 156], [66, -210], [125, -49], [-106, 46], [-98, 44], [-97, 55], [-108, -67], [92, -26], [73, -29], [110, -11], [3, -26], [-19, -52], [70, -36], [-35, -82], [-23, -90], [-19, -118], [-169, 19], [20, 160], [36, 92], [-62, 91], [-112, 181], [-114, 177], [-106, 179], [-107, 174], [-102, 167], [-108, 159], [-101, 192], [30, -29], [25, -33], [31, -36], [36, -25], [41, -38], [6, -55], [25, -79], [23, -87], [125, -54], [176, -4], [-164, 12], [-157, 19], [-7, 254], [-26, 58]];
-        let plopping;
-        let trees = [];
-        const treez = [
-            'egyt/tree/oaktree3',
-            'egyt/tree/oaktree4',
-        ];
-        class Tree extends Obj$1 {
-            constructor() {
-                super();
-                //this.rtt = false
-                this.rate = 10;
-                trees.push(this);
-            }
-            finish() {
-                this.rekt = new Rekt$1;
-                this.rekt.obj = this;
-                this.rekt.asset = Lumber$1.sample(treez);
-                this.rekt.tile = this.tile;
-                this.rekt.offset = [1, -1];
-                this.rekt.wh = [120, 132];
-            }
-        }
-        Forestation.Tree = Tree;
-        function init() {
-            console.log('forestation');
-            window.Forestation = Forestation;
-        }
-        Forestation.init = init;
-        function populate() {
-            console.log(`add ${positions.length} trees from save`);
-            for (let pos of positions) {
-                let tree = new Tree;
-                tree.tile = pos;
-                tree.finish();
-                Lumber$1.world.add(tree);
-            }
-        }
-        Forestation.populate = populate;
-        function update() {
+        paint_alternate() {
             var _a;
-            if (!plopping && App$1.keys['t'] == 1) {
-                plopping = plop_tree();
-            }
-            if (plopping) {
-                let tree = plopping;
-                let p = pts.clone(Lumber$1.world.mouse_tiled);
-                tree.tile = p;
-                if (tree.rekt)
-                    tree.rekt.tile = p;
-                (_a = tree.rekt) === null || _a === void 0 ? void 0 : _a.now_update_pos();
-                if (App$1.buttons[0]) {
-                    plopping = null;
-                    tree.goes();
-                    tree.unset();
-                    let tree2 = new Tree;
-                    tree2.tile = p;
-                    tree2.finish();
-                    Lumber$1.world.add(tree2);
-                }
-            }
-        }
-        Forestation.update = update;
-        function get_positions() {
-            let a = [];
-            for (let tree of trees) {
-                a.push(tree.tile);
-            }
-            return JSON.stringify(a);
-        }
-        Forestation.get_positions = get_positions;
-        function plop_tree() {
-            let tree = new Tree;
-            tree.tile = [0, 0];
-            tree.finish();
-            tree.comes();
-            // dont add to world yet
-            //Egyt.world.add(plop);
-            return tree;
-        }
-        Forestation.plop_tree = plop_tree;
-    })(Forestation || (Forestation = {}));
-    var Forestation$1 = Forestation;
-
-    var Tilization;
-    (function (Tilization) {
-        class Tile extends Obj$1 {
-            constructor(asset) {
-                super();
-                this.asset = 'egyt/ground/stone1';
-                //this.rtt = false;
-            }
-            finish() {
-                this.rekt = new Rekt$1;
-                this.rekt.obj = this;
-                this.rekt.asset = this.asset;
-                this.rekt.tile = this.tile;
-                this.rekt.wh = [24, 12];
-            }
-        }
-        Tilization.Tile = Tile;
-        function init() {
-            console.log('tilization');
-            window.Tilization = Tilization;
-        }
-        Tilization.init = init;
-        function update() {
-            if (App$1.keys['escape'] == 1) ;
-            if (App$1.keys['u'] == 1) {
-                let middle = World$1.unproject(Lumber$1.world.view.center()).tiled;
-                let b = this.master.big(middle);
-            }
-        }
-        Tilization.update = update;
-        function place_tile(chance, asset, pos) {
-            if (Math.random() > chance / 100)
+            if (!Lumber$1.PAINT_OBJ_TICK_RATE)
                 return;
-            let tile = new Tile(asset);
-            tile.tile = pos;
-            tile.asset = asset;
-            tile.finish();
-            Lumber$1.world.add(tile);
-            return tile;
+            if (!this.used)
+                return;
+            this.flick = !this.flick;
+            this.material.color.set(new THREE.Color(this.flick ? 'red' : 'blue'));
+            if ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk)
+                this.obj.chunk.changed = true;
         }
-        Tilization.place_tile = place_tile;
-        function click_area(asset, pos) {
+        unuse() {
+            if (!this.used)
+                return;
+            this.used = false;
+            this.getgroup().remove(this.mesh);
+            Rekt.active--;
+            this.geometry.dispose();
+            this.material.dispose();
         }
-        Tilization.click_area = click_area;
-        function area_sample(chance, assets, aabb) {
-            const every = (pos) => place_tile(chance, Lumber$1.sample(assets), pos);
-            pts.area_every(aabb, every);
-        }
-        Tilization.area_sample = area_sample;
-        function area(chance, asset, aabb) {
-            const every = (pos) => place_tile(chance, asset, pos);
-            pts.area_every(aabb, every);
-        }
-        Tilization.area = area;
-    })(Tilization || (Tilization = {}));
-    var Tilization$1 = Tilization;
-
-    var Board;
-    (function (Board) {
-        var body;
-        function load_sheet(file) {
-            let link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.href = file;
-            document.head.appendChild(link);
-        }
-        Board.load_sheet = load_sheet;
-        function collapse() {
-        }
-        Board.collapse = collapse;
-        Board.collapsed = {};
-        function rig_charges(nyan) {
-            // In Vsc
-            // View -> Toggle Word Wrap
-            /*
-                A hyperlink and a paragraph form a collapser
-            */
-            const _collapse = (jay) => {
-                Board.collapsed[jay.text()] = !!jay.hasClass('toggle');
-            };
-            nyan.find('a').next('div').addClass('bar').prev().addClass('foo').click(function () {
-                let jay = $(this);
-                jay.toggleClass("toggle").next('.bar').toggleClass('toggle');
-                _collapse(jay);
-            }).append('<span>');
-            nyan.find('a.foo').each((i, e) => {
-                let jay = $(e);
-                window.afoo = jay;
-                if (jay.attr('collapse') == "") {
-                    jay.addClass('toggle').next().addClass('toggle');
-                    _collapse(jay);
-                }
+        use() {
+            var _a, _b;
+            if (this.used)
+                console.warn('rekt already inuse');
+            Rekt.active++;
+            this.used = true;
+            this.geometry = new THREE.PlaneBufferGeometry(this.wh[0], this.wh[1], 1, 1);
+            let map;
+            if (this.asset)
+                map = Renderer$1.loadtexture(`assets/${this.asset}.png`);
+            this.material = new THREE.MeshBasicMaterial({
+                map: map,
+                transparent: true,
+                opacity: this.opacity,
+                color: ((_b = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk) === null || _b === void 0 ? void 0 : _b.childobjscolor) || this.color || 0xffffff
             });
-            /*
-                A div with two spans is an rpg item.
-            */
-            nyan.find('div').children().find('span').next('span').parent().addClass('rpgitem');
+            this.mesh = new THREE.Mesh(this.geometry, this.material);
+            this.mesh.frustumCulled = false;
+            this.mesh.matrixAutoUpdate = false;
+            this.mesh.scale.set(1, 1, 1);
+            if (this.flip)
+                this.mesh.scale.x = -this.mesh.scale.x;
+            //UV.FlipPlane(this.geometry, 0, true);
+            this.now_update_pos();
+            this.getgroup().add(this.mesh);
         }
-        Board.rig_charges = rig_charges;
-        function messageslide(title, message) {
-            let jay = $('<div>').addClass('messageslide').append(`<span>${title}`).append(`<span>${message}`);
-            Board.win.append(jay);
+        getgroup() {
+            var _a, _b;
+            let c;
+            if (c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk)
+                if (((_b = this.obj) === null || _b === void 0 ? void 0 : _b.rtt) && Lumber$1.USE_CHUNK_RT)
+                    return c.grouprt;
+                else
+                    return c.group;
+            else
+                return Renderer$1.scene;
         }
-        Board.messageslide = messageslide;
-        function init() {
-            window.Chains = Board;
-            body = $('body');
-            Board.win = $('#win');
+        dual() {
+            let xy = pts.add(this.tile, this.offset);
+            return xy;
         }
-        Board.init = init;
-        function update() {
-            if (Board.collapsed.Stats) {
-                Board.win.find('#fpsStat').text(`Fps: ${parseInt(Renderer$1.fps)}`);
-                //Board.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
-                Board.win.find('#gameZoom').html(`Scale: <span>${Lumber$1.world.scale} / ndpi ${Lumber$1.world.dpi} / ${window.devicePixelRatio}`);
-                Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber$1.world.view.min[0]}, ${Lumber$1.world.view.min[1]} x ${Lumber$1.world.view.max[0]}, ${Lumber$1.world.view.max[1]}`);
-                //Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
-                Board.win.find('#numChunks').text(`Num chunks: ${Lumber$1.world.chunkMaster.fitter.shown.length} / ${Lumber$1.world.chunkMaster.total}`);
-                Board.win.find('#numObjs').html(`Num objs: ${Obj$1.active} / ${Obj$1.num}`);
-                Board.win.find('#numRekts').html(`Num rekts: ${Rekt$1.active} / ${Rekt$1.num}`);
-                let b = Lumber$1.world.chunkMaster.big(Lumber$1.world.mouse_tiled);
-                let c = Lumber$1.world.chunkMaster.at(b[0], b[1]);
-                Board.win.find('#square').text(`Mouse: ${pts.to_string(Lumber$1.world.mouse_tiled)}`);
-                Board.win.find('#squareChunk').text(`Mouse chunk: ${pts.to_string(b)}`);
-                Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${(c === null || c === void 0 ? void 0 : c.rt) ? 'true' : 'false'}`);
-                Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber$1.world.chunkMaster.fitter.lines}`);
-                Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber$1.world.chunkMaster.fitter.total}`);
+        now_update_pos() {
+            var _a;
+            let x, y;
+            let xy = pts.add(this.tile, this.offset);
+            const depth = Rekt.depth(this.tile);
+            if (this.tiled) {
+                xy = Rekt.mult(xy);
+            }
+            if (this.plain) {
+                x = xy[0];
+                y = xy[1];
+            }
+            else {
+                if (Lumber$1.OFFSET_CHUNK_OBJ_REKT) {
+                    let c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk;
+                    if (c) {
+                        xy = pts.subtract(xy, c.rekt_offset);
+                    }
+                }
+                x = xy[0] / 2 + xy[1] / 2;
+                y = xy[1] / 4 - xy[0] / 4;
+                this.center = [x, y];
+                // middle bottom
+                const w = this.wh[0] / 2;
+                const h = this.wh[1] / 2;
+                y += h;
+            }
+            this.position = [x, y, 0];
+            if (this.mesh) {
+                this.mesh.renderOrder = depth;
+                this.mesh.position.fromArray(this.position);
+                this.mesh.updateMatrix();
             }
         }
-        Board.update = update;
-        function raw(html) {
-            let nyan = $('<nyan>');
-            let jay = $(html);
-            nyan.append(jay);
-            rig_charges(nyan);
-            Board.win.append(jay);
-            return nyan;
+    }
+    (function (Rekt) {
+        Rekt.num = 0;
+        Rekt.active = 0;
+        //export type Struct = Rekt['struct']
+        function depth(t) {
+            return -t[1] + t[0];
         }
-        Board.raw = raw;
-    })(Board || (Board = {}));
+        Rekt.depth = depth;
+        function mult(t) {
+            return pts.mult(t, Lumber$1.EVEN);
+        }
+        Rekt.mult = mult;
+    })(Rekt || (Rekt = {}));
+    var Rekt$1 = Rekt;
 
-    var Lumber;
-    (function (Lumber) {
-        Lumber.USE_CHUNK_RT = true;
-        Lumber.OFFSET_CHUNK_OBJ_REKT = true;
-        Lumber.PAINT_OBJ_TICK_RATE = false;
-        Lumber.MINIMUM_REKTS_BEFORE_RT = 0;
-        Lumber.EVEN = 24; // very evenly divisible
-        Lumber.YUM = Lumber.EVEN;
-        var started = false;
-        function sample(a) {
-            return a[Math.floor(Math.random() * a.length)];
+    var TEST;
+    (function (TEST) {
+        TEST[TEST["Outside"] = 0] = "Outside";
+        TEST[TEST["Inside"] = 1] = "Inside";
+        TEST[TEST["Overlap"] = 2] = "Overlap";
+    })(TEST || (TEST = {}));
+    class aabb2 {
+        constructor(a, b) {
+            this.min = this.max = a;
+            if (b) {
+                this.extend(b);
+            }
         }
-        Lumber.sample = sample;
-        function clamp(val, min, max) {
-            return val > max ? max : val < min ? min : val;
+        static dupe(bb) {
+            return new aabb2(bb.min, bb.max);
         }
-        Lumber.clamp = clamp;
-        let RESOURCES;
-        (function (RESOURCES) {
-            RESOURCES[RESOURCES["RC_UNDEFINED"] = 0] = "RC_UNDEFINED";
-            RESOURCES[RESOURCES["POPULAR_ASSETS"] = 1] = "POPULAR_ASSETS";
-            RESOURCES[RESOURCES["READY"] = 2] = "READY";
-            RESOURCES[RESOURCES["COUNT"] = 3] = "COUNT";
-        })(RESOURCES = Lumber.RESOURCES || (Lumber.RESOURCES = {}));
-        let resources_loaded = 0b0;
-        function resourced(word) {
-            resources_loaded |= 0b1 << RESOURCES[word];
-            try_start();
+        extend(v) {
+            this.min = pts.min(this.min, v);
+            this.max = pts.max(this.max, v);
         }
-        Lumber.resourced = resourced;
-        function try_start() {
-            let count = 0;
-            let i = 0;
-            for (; i < RESOURCES.COUNT; i++)
-                (resources_loaded & 0b1 << i) ? count++ : void (0);
-            if (count == RESOURCES.COUNT)
-                start();
+        diagonal() {
+            return pts.subtract(this.max, this.min);
         }
-        function critical(mask) {
-            // Couldn't load
-            console.error('resource', mask);
+        center() {
+            return pts.add(this.min, pts.mult(this.diagonal(), 0.5));
         }
-        Lumber.critical = critical;
-        function init() {
-            console.log('egyt init');
-            Lumber.world = World$1.rig();
-            Forestation$1.init();
-            Tilization$1.init();
-            resourced('RC_UNDEFINED');
-            resourced('READY');
-            window.Egyt = Lumber;
+        translate(v) {
+            this.min = pts.add(this.min, v);
+            this.max = pts.add(this.max, v);
         }
-        Lumber.init = init;
-        function start() {
-            if (started)
-                return;
-            console.log('lumber starting');
-            if (window.location.href.indexOf("#nochunkrt") != -1)
-                Lumber.USE_CHUNK_RT = false;
-            Lumber.world.populate();
-            Forestation$1.populate();
-            //	Win.load_sheet('style95.css');
-            //else
-            //	Win.load_sheet('style2.css');
-            Board.init();
-            Board.raw(`
-		<div>May have to reload for latest version<br/>
-		<br />
-		<div class="region small">
-			<a>Tutorial</a>
-			<div>
-				Move the view with <key>W</key> <key>A</key> <key>S</key> <key>D</key>.
-				Scrollwheel to zoom. Hold <key>X</key> to go faster.
-			</div>
-
-			<a>World editing</a>
-			<div>
-				You can plop objects with these shortcuts.
-				<br/><br/>
-				<key>T</key> tree<br/>
-				<key>Y</key> tile<br/>
-				<key>U</key> tile area<br/>
-				<key>X</key> delete<br/>
-				<key>Esc</key> cancel<br/>
-			</div>
-
-			<a>Settings</a>
-			<div>
-				Nothing here yet
-			</div>
-
-			<a collapse>Stats</a>
-			<div class="stats">
-				<span id="fpsStat">xx</span><br/>
-				<span id="memoryStat">xx</span><br/>
-				<br/>
-				<span id="gameZoom"></span><br/>
-				<span id="gameAabb"></span><br/>
-				<br/>
-				<span id="numChunks"></span><br/>
-				<span id="numObjs"></span><br/>
-				<span id="numRekts"></span><br/>
-				<br/>
-				<span id="square"></span><br/>
-				<span id="squareChunk"></span><br/>
-				<span id="squareChunkRt">xx</span><br/>
-				<br />
-				<span id="snakeTurns"></span><br/>
-				<span id="snakeTotal"></span><br/>
-				<br/>
-				<span id="USE_CHUNK_RTT">USE_CHUNK_RTT: ${Lumber.USE_CHUNK_RT}</span><br/>
-				<span id="OFFSET_CHUNK_OBJ_REKT">OFFSET_CHUNK_OBJ_REKT: ${Lumber.OFFSET_CHUNK_OBJ_REKT}</span><br/>
-				<span id="PAINT_OBJ_TICK_RATE">PAINT_OBJ_TICK_RATE: ${Lumber.PAINT_OBJ_TICK_RATE}</span><br/>
-				<span id="PAINT_OBJ_TICK_RATE">MINIMUM_REKTS_BEFORE_RT: ${Lumber.MINIMUM_REKTS_BEFORE_RT}</span><br/>
-
-			</div>
-
-			<a>Items Demo</a>
-			<div>
-				<div>
-					<span>Coral Orb</span>
-					<span>It used to belong to an elemental spirit. It has the ability to summon rainstorms.</span>
-				</div>
-			</div>
-		</div>`);
-            //setTimeout(() => Win.messageslide('', 'You get one cheap set of shoes, and a well-kept shovel.'), 1000);
-            started = true;
+        test(v) {
+            if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
+                this.min[1] <= v.min[1] && this.max[1] >= v.max[1])
+                return aabb2.TEST.Inside;
+            if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
+                this.max[1] < v.min[1] || this.min[1] > v.max[1])
+                return aabb2.TEST.Outside;
+            return aabb2.TEST.Overlap;
         }
-        Lumber.start = start;
-        function update() {
-            if (!started)
-                return;
-            Forestation$1.update();
-            Tilization$1.update();
-            Agriculture$1.update();
-            Lumber.world.update();
-            Board.update();
-        }
-        Lumber.update = update;
-    })(Lumber || (Lumber = {}));
-    var Lumber$1 = Lumber;
+    }
+    aabb2.TEST = TEST;
 
     const count = (c, prop) => {
         let num = 0;
@@ -802,6 +713,45 @@ var lumber = (function (THREE) {
         }
     }
 
+    class Obj {
+        constructor() {
+            this.order = 0;
+            this.rate = 1;
+            //using = false
+            this.rtt = true;
+            this.rekt = null;
+            this.chunk = null;
+            this.tile = [0, 0];
+            Obj.num++;
+        }
+        update() {
+            var _a;
+            if (Lumber$1.PAINT_OBJ_TICK_RATE)
+                (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.paint_alternate();
+        }
+        comes() {
+            var _a;
+            Obj.active++;
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.use();
+        }
+        goes() {
+            var _a;
+            Obj.active--;
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unuse();
+        }
+        unset() {
+            var _a;
+            Obj.num--;
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unset();
+        }
+    }
+    (function (Obj) {
+        Obj.active = 0;
+        Obj.num = 0;
+        //export type Struct = Obj['struct']
+    })(Obj || (Obj = {}));
+    var Obj$1 = Obj;
+
     class Man extends Obj$1 {
         constructor() {
             super();
@@ -825,6 +775,124 @@ var lumber = (function (THREE) {
         deproduce() {
         }
         update() {
+        }
+    }
+
+    var Ploppables;
+    (function (Ploppables) {
+        function plant_trees() {
+            console.log(`add ${tree_positions.length} trees from save`);
+            for (let pos of tree_positions) {
+                let tree = new Tree;
+                tree.tile = pos;
+                tree.finish();
+                Lumber$1.world.add(tree);
+            }
+        }
+        Ploppables.plant_trees = plant_trees;
+        function place_tile(chance, asset, pos) {
+            if (Math.random() > chance / 100)
+                return;
+            let tile = new Tile(asset);
+            tile.tile = pos;
+            tile.asset = asset;
+            tile.finish();
+            Lumber$1.world.add(tile);
+            return tile;
+        }
+        Ploppables.place_tile = place_tile;
+        function area_tile(chance, asset, aabb) {
+            const every = (pos) => place_tile(chance, asset, pos);
+            pts.area_every(aabb, every);
+        }
+        Ploppables.area_tile = area_tile;
+        function area_tile_sampled(chance, assets, aabb) {
+            const every = (pos) => place_tile(chance, Lumber$1.sample(assets), pos);
+            pts.area_every(aabb, every);
+        }
+        Ploppables.area_tile_sampled = area_tile_sampled;
+        function place_wheat(growth, tile) {
+            if (Math.random() > .99)
+                return;
+            let crop = new Wheat(growth);
+            crop.tile = tile;
+            crop.finish();
+            Lumber$1.world.add(crop);
+            return crop;
+        }
+        Ploppables.place_wheat = place_wheat;
+        function area_wheat(growth, aabb) {
+            const every = (pos) => place_wheat(growth, pos);
+            pts.area_every(aabb, every);
+        }
+        Ploppables.area_wheat = area_wheat;
+    })(Ploppables || (Ploppables = {}));
+    let tree_positions = [[12, 5], [20, 7], [16, 4], [8, 11], [28, 7], [40, 8], [39, 13], [17, 32], [-21, 11], [-18, 16], [-19, -28], [-24, -29], [-27, -13], [-17, 9], [-18, -1], [-6, 34], [65, 11], [0, 87], [5, 125], [-1, 172], [-62, 36], [-72, 125], [-65, 216], [4, 182], [14, 162], [2, 177], [3, 198], [6, 155], [7, 291], [-38, 350], [-59, 162], [-43, 112], [-106, 52], [154, 20], [213, 21], [141, -53], [23, -60], [62, -65], [260, -62], [241, -49], [251, -45], [220, -36], [209, -57], [223, -65], [209, -45], [181, -67], [190, -83], [221, -88], [264, -87], [274, -95], [263, -106], [255, -106], [237, -110], [248, -124], [239, -65], [221, -49], [189, -94], [263, -55], [271, -44], [278, -61], [246, -51], [240, -55], [226, -43], [228, -39], [208, -49], [248, -65], [227, -70], [230, -17], [210, 12], [269, 33], [275, 156], [66, -210], [125, -49], [-106, 46], [-98, 44], [-97, 55], [-108, -67], [92, -26], [73, -29], [110, -11], [3, -26], [-19, -52], [70, -36], [-35, -82], [-23, -90], [-19, -118], [-169, 19], [20, 160], [36, 92], [-62, 91], [-112, 181], [-114, 177], [-106, 179], [-107, 174], [-102, 167], [-108, 159], [-101, 192], [30, -29], [25, -33], [31, -36], [36, -25], [41, -38], [6, -55], [25, -79], [23, -87], [125, -54], [176, -4], [-164, 12], [-157, 19], [-7, 254], [-26, 58]];
+    const trees = [
+        'egyt/tree/oaktree3',
+        'egyt/tree/oaktree4',
+    ];
+    const tillering = [
+        'egyt/farm/wheat_i',
+        'egyt/farm/wheat_i',
+        'egyt/farm/wheat_il',
+        'egyt/farm/wheat_il',
+        'egyt/farm/wheat_il',
+        'egyt/farm/wheat_ili',
+    ];
+    const ripening = [
+        'egyt/farm/wheat_il',
+        'egyt/farm/wheat_ili',
+        'egyt/farm/wheat_ili',
+        'egyt/farm/wheat_ilil',
+        'egyt/farm/wheat_ilil',
+    ];
+    class Tree extends Obj$1 {
+        constructor() {
+            super();
+            this.rate = 10;
+            Tree.trees.push(this);
+        }
+        finish() {
+            this.rekt = new Rekt$1;
+            this.rekt.obj = this;
+            this.rekt.asset = Lumber$1.sample(trees);
+            this.rekt.tile = this.tile;
+            this.rekt.offset = [1, -1];
+            this.rekt.wh = [120, 132];
+        }
+    }
+    Tree.trees = [];
+    class Tile extends Obj$1 {
+        constructor(asset) {
+            super();
+            this.asset = 'egyt/ground/stone1';
+            //this.rtt = false;
+        }
+        finish() {
+            this.rekt = new Rekt$1;
+            this.rekt.obj = this;
+            this.rekt.asset = this.asset;
+            this.rekt.tile = this.tile;
+            this.rekt.wh = [24, 12];
+        }
+    }
+    class Wheat extends Obj$1 {
+        constructor(growth) {
+            super();
+            this.growth = growth;
+            this.flick = false;
+            this.rate = 2.0;
+        }
+        finish() {
+            this.rekt = new Rekt$1;
+            this.rekt.obj = this;
+            this.rekt.asset =
+                this.growth == 1 ? Lumber$1.sample(tillering) :
+                    this.growth == 2 ? Lumber$1.sample(ripening) :
+                        this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
+            this.rekt.tile = this.tile;
+            this.rekt.wh = [22, 22];
         }
     }
 
@@ -958,14 +1026,14 @@ var lumber = (function (THREE) {
             tobaccoshop.tile = [-14, 2];
             tobaccoshop.wh = [144, 144];
             tobaccoshop.asset = 'egyt/building/redstore';
-            granary.use();
+            //granary.use();
             tobaccoshop.use();
             //Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));
-            Agriculture$1.area_wheat(2, new aabb2([5, -4], [5 + 50 - 2, -12]));
-            Agriculture$1.area_wheat(2, new aabb2([5 + 50, -4], [5 + 50 - 2 + 50, -12]));
-            Agriculture$1.area_wheat(3, new aabb2([5, -14], [5 + 50 - 2, -22]));
-            Agriculture$1.area_wheat(3, new aabb2([5 + 50, -14], [5 + 50 - 2 + 50, -22]));
-            Agriculture$1.area_wheat(3, new aabb2([-42, 21], [-80, 183]));
+            Ploppables.area_wheat(2, new aabb2([5, -4], [5 + 50 - 2, -12]));
+            Ploppables.area_wheat(2, new aabb2([5 + 50, -4], [5 + 50 - 2 + 50, -12]));
+            Ploppables.area_wheat(3, new aabb2([5, -14], [5 + 50 - 2, -22]));
+            Ploppables.area_wheat(3, new aabb2([5 + 50, -14], [5 + 50 - 2 + 50, -22]));
+            Ploppables.area_wheat(3, new aabb2([-42, 21], [-80, 183]));
             //Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
             //Agriculture.plop_wheat_area(3, new aabb3([-4, -4, 0], [20, -39, 0]));
             //Agriculture.plop_wheat_area(2, new aabb3([-25, 14, 0], [5, 50, 0]));
@@ -979,16 +1047,16 @@ var lumber = (function (THREE) {
                 'egyt/ground/gravel1',
                 'egyt/ground/gravel2',
             ];
-            Tilization$1.area_sample(30, gravels, new aabb2([-1, 0], [2, -22]));
+            Ploppables.area_tile_sampled(30, gravels, new aabb2([-1, 0], [2, -22]));
             // lots gravels
             //Tilization.area_sample(66, gravels, new aabb2([-20, -10], [50, 80]));
             // long road se
-            Tilization$1.area_sample(50, stones, new aabb2([-13, 0], [400, -3]));
+            Ploppables.area_tile_sampled(50, stones, new aabb2([-13, 0], [400, -3]));
             // long road ne
-            Tilization$1.area_sample(50, stones, new aabb2([-14, 0], [-12, 400]));
+            Ploppables.area_tile_sampled(50, stones, new aabb2([-14, 0], [-12, 400]));
             // farms se
-            Agriculture$1.area_wheat(1, new aabb2([-15, 21], [-40, 101]));
-            Agriculture$1.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
+            Ploppables.area_wheat(1, new aabb2([-15, 21], [-40, 101]));
+            Ploppables.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
         }
     }
     (function (World) {
@@ -1006,391 +1074,223 @@ var lumber = (function (THREE) {
     })(World || (World = {}));
     var World$1 = World;
 
-    const fragmentPost = `
-// Todo add effect
-varying vec2 vUv;
-uniform sampler2D tDiffuse;
-void main() {
-	vec4 clr = texture2D( tDiffuse, vUv );
-	clr.rgb = mix(clr.rgb, vec3(0.5), 0.0);
-	gl_FragColor = clr;
-}`;
-    const vertexScreen = `
-varying vec2 vUv;
-void main() {
-	vUv = uv;
-	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-}`;
-    // three quarter
-    var Renderer;
-    (function (Renderer) {
-        Renderer.delta = 0;
-        //export var ambientLight: AmbientLight
-        //export var directionalLight: DirectionalLight
-        function update() {
-            Renderer.delta = Renderer.clock.getDelta();
-            //filmic.composer.render();
+    var Board;
+    (function (Board) {
+        var body;
+        function load_sheet(file) {
+            let link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = file;
+            document.head.appendChild(link);
         }
-        Renderer.update = update;
-        var reset = 0;
-        var frames = 0;
-        // https://github.com/mrdoob/stats.js/blob/master/src/Stats.js#L71
-        function calc() {
-            const s = Date.now() / 1000;
-            frames++;
-            if (s - reset >= 1) {
-                reset = s;
-                Renderer.fps = frames;
-                frames = 0;
-            }
-            Renderer.memory = window.performance.memory;
+        Board.load_sheet = load_sheet;
+        function collapse() {
         }
-        Renderer.calc = calc;
-        function render() {
-            calc();
-            Renderer.renderer.setRenderTarget(Renderer.target);
-            Renderer.renderer.clear();
-            Renderer.renderer.render(Renderer.scene, Renderer.camera);
-            Renderer.renderer.setRenderTarget(null); // Naar scherm
-            Renderer.renderer.clear();
-            Renderer.renderer.render(Renderer.scene2, Renderer.camera);
-        }
-        Renderer.render = render;
-        function init() {
-            console.log('ThreeQuarter Init');
-            Renderer.clock = new THREE.Clock();
-            Renderer.scene = new THREE.Scene();
-            Renderer.scene.background = new THREE.Color('rgb(40, 72, 42)');
-            Renderer.scene2 = new THREE.Scene();
-            Renderer.rttscene = new THREE.Scene();
-            Renderer.ndpi = window.devicePixelRatio;
-            console.log(`window innerWidth, innerHeight ${window.innerWidth} x ${window.innerHeight}`);
-            if (Renderer.ndpi > 1) {
-                console.warn('Dpi i> 1. Game may scale.');
-            }
-            Renderer.target = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
-                minFilter: THREE__default['default'].NearestFilter,
-                magFilter: THREE__default['default'].NearestFilter,
-                format: THREE__default['default'].RGBFormat
-            });
-            Renderer.renderer = new THREE.WebGLRenderer({ antialias: false });
-            Renderer.renderer.setPixelRatio(1);
-            Renderer.renderer.setSize(window.innerWidth, window.innerHeight);
-            Renderer.renderer.autoClear = true;
-            Renderer.renderer.setClearColor(0xffffff, 0);
-            document.body.appendChild(Renderer.renderer.domElement);
-            window.addEventListener('resize', onWindowResize, false);
-            someMore();
-            onWindowResize();
-            window.Renderer = Renderer;
-        }
-        Renderer.init = init;
-        function someMore() {
-            /*materialBg = new ShaderMaterial({
-                uniforms: { time: { value: 0.0 } },
-                vertexShader: vertexScreen,
-                fragmentShader: fragmentBackdrop
-            });*/
-            Renderer.materialPost = new THREE.ShaderMaterial({
-                uniforms: { tDiffuse: { value: Renderer.target.texture } },
-                vertexShader: vertexScreen,
-                fragmentShader: fragmentPost,
-                depthWrite: false
-            });
-            Renderer.plane = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
-            /*let quad = new Mesh(plane, materialBg);
-            quad.position.z = -100;
-            scene.add(quad);*/
-            Renderer.quadPost = new THREE.Mesh(Renderer.plane, Renderer.materialPost);
-            Renderer.quadPost.position.z = -100;
-            Renderer.scene2.add(Renderer.quadPost);
-        }
-        function onWindowResize() {
-            Renderer.w = window.innerWidth;
-            Renderer.h = window.innerHeight;
-            if (Renderer.w % 2 != 0) ;
-            if (Renderer.h % 2 != 0) ;
-            let targetwidth = Renderer.w;
-            let targetheight = Renderer.h;
-            //if (ndpi == 2) {
-            //	targetwidth *= ndpi;
-            //	targetheight *= ndpi;
-            //}
-            Renderer.plane = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
-            Renderer.quadPost.geometry = Renderer.plane;
-            Renderer.target.setSize(targetwidth, targetheight);
-            Renderer.camera = ortographiccamera(Renderer.w, Renderer.h);
-            Renderer.camera.updateProjectionMatrix();
-            Renderer.renderer.setSize(Renderer.w, Renderer.h);
-        }
-        let mem = [];
-        function loadtexture(file, key, cb) {
-            if (mem[key || file])
-                return mem[key || file];
-            let texture = new THREE.TextureLoader().load(file + `?v=${App$1.salt}`, cb);
-            texture.magFilter = THREE__default['default'].NearestFilter;
-            texture.minFilter = THREE__default['default'].NearestFilter;
-            mem[key || file] = texture;
-            return texture;
-        }
-        Renderer.loadtexture = loadtexture;
-        function rendertarget(w, h) {
-            const o = {
-                minFilter: THREE.NearestFilter,
-                magFilter: THREE.NearestFilter,
-                format: THREE.RGBAFormat
+        Board.collapse = collapse;
+        Board.collapsed = {};
+        function rig_charges(nyan) {
+            // In Vsc
+            // View -> Toggle Word Wrap
+            /*
+                A hyperlink and a paragraph form a collapser
+            */
+            const _collapse = (jay) => {
+                Board.collapsed[jay.text()] = !!jay.hasClass('toggle');
             };
-            let target = new THREE.WebGLRenderTarget(w, h, o);
-            return target;
-        }
-        Renderer.rendertarget = rendertarget;
-        function ortographiccamera(w, h) {
-            let camera = new THREE.OrthographicCamera(w / -2, w / 2, h / 2, h / -2, -100, 100);
-            camera.updateProjectionMatrix();
-            return camera;
-        }
-        Renderer.ortographiccamera = ortographiccamera;
-        function erase_children(group) {
-            while (group.children.length > 0)
-                group.remove(group.children[0]);
-        }
-        Renderer.erase_children = erase_children;
-    })(Renderer || (Renderer = {}));
-    var Renderer$1 = Renderer;
-
-    class Rekt {
-        constructor() {
-            this.tiled = true;
-            this.tile = [0, 0];
-            this.offset = [0, 0];
-            this.wh = [1, 1];
-            this.opacity = 1;
-            this.center = [0, 0];
-            this.position = [0, 0, 0];
-            this.used = false;
-            this.flick = false;
-            this.plain = false;
-            Rekt.num++;
-        }
-        unset() {
-            Rekt.num--;
-        }
-        paint_alternate() {
-            var _a;
-            if (!Lumber$1.PAINT_OBJ_TICK_RATE)
-                return;
-            if (!this.used)
-                return;
-            this.flick = !this.flick;
-            this.material.color.set(new THREE.Color(this.flick ? 'red' : 'blue'));
-            if ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk)
-                this.obj.chunk.changed = true;
-        }
-        unuse() {
-            if (!this.used)
-                return;
-            this.used = false;
-            this.getgroup().remove(this.mesh);
-            Rekt.active--;
-            this.geometry.dispose();
-            this.material.dispose();
-        }
-        use() {
-            var _a, _b;
-            if (this.used)
-                console.warn('rekt already inuse');
-            Rekt.active++;
-            this.used = true;
-            this.geometry = new THREE.PlaneBufferGeometry(this.wh[0], this.wh[1], 1, 1);
-            let map;
-            if (this.asset)
-                map = Renderer$1.loadtexture(`assets/${this.asset}.png`);
-            this.material = new THREE.MeshBasicMaterial({
-                map: map,
-                transparent: true,
-                opacity: this.opacity,
-                color: ((_b = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk) === null || _b === void 0 ? void 0 : _b.childobjscolor) || this.color || 0xffffff
+            nyan.find('a').next('div').addClass('bar').prev().addClass('foo').click(function () {
+                let jay = $(this);
+                jay.toggleClass("toggle").next('.bar').toggleClass('toggle');
+                _collapse(jay);
+            }).append('<span>');
+            nyan.find('a.foo').each((i, e) => {
+                let jay = $(e);
+                window.afoo = jay;
+                if (jay.attr('collapse') == "") {
+                    jay.addClass('toggle').next().addClass('toggle');
+                    _collapse(jay);
+                }
             });
-            this.mesh = new THREE.Mesh(this.geometry, this.material);
-            this.mesh.frustumCulled = false;
-            this.mesh.matrixAutoUpdate = false;
-            this.mesh.scale.set(1, 1, 1);
-            if (this.flip)
-                this.mesh.scale.x = -this.mesh.scale.x;
-            //UV.FlipPlane(this.geometry, 0, true);
-            this.now_update_pos();
-            this.getgroup().add(this.mesh);
+            /*
+                A div with two spans is an rpg item.
+            */
+            nyan.find('div').children().find('span').next('span').parent().addClass('rpgitem');
         }
-        getgroup() {
-            var _a, _b;
-            let c;
-            if (c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk)
-                if (((_b = this.obj) === null || _b === void 0 ? void 0 : _b.rtt) && Lumber$1.USE_CHUNK_RT)
-                    return c.grouprt;
-                else
-                    return c.group;
-            else
-                return Renderer$1.scene;
+        Board.rig_charges = rig_charges;
+        function messageslide(title, message) {
+            let jay = $('<div>').addClass('messageslide').append(`<span>${title}`).append(`<span>${message}`);
+            Board.win.append(jay);
         }
-        dual() {
-            let xy = pts.add(this.tile, this.offset);
-            return xy;
+        Board.messageslide = messageslide;
+        function init() {
+            window.Chains = Board;
+            body = $('body');
+            Board.win = $('#win');
         }
-        now_update_pos() {
-            var _a;
-            let x, y;
-            let xy = pts.add(this.tile, this.offset);
-            const depth = Rekt.depth(this.tile);
-            if (this.tiled) {
-                xy = Rekt.mult(xy);
-            }
-            if (this.plain) {
-                x = xy[0];
-                y = xy[1];
-            }
-            else {
-                if (Lumber$1.OFFSET_CHUNK_OBJ_REKT) {
-                    let c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk;
-                    if (c) {
-                        xy = pts.subtract(xy, c.rekt_offset);
-                    }
-                }
-                x = xy[0] / 2 + xy[1] / 2;
-                y = xy[1] / 4 - xy[0] / 4;
-                this.center = [x, y];
-                // middle bottom
-                const w = this.wh[0] / 2;
-                const h = this.wh[1] / 2;
-                y += h;
-            }
-            this.position = [x, y, 0];
-            if (this.mesh) {
-                this.mesh.renderOrder = depth;
-                this.mesh.position.fromArray(this.position);
-                this.mesh.updateMatrix();
+        Board.init = init;
+        function update() {
+            if (Board.collapsed.Stats) {
+                Board.win.find('#fpsStat').text(`Fps: ${parseInt(Renderer$1.fps)}`);
+                //Board.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
+                Board.win.find('#gameZoom').html(`Scale: <span>${Lumber$1.world.scale} / ndpi ${Lumber$1.world.dpi} / ${window.devicePixelRatio}`);
+                Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber$1.world.view.min[0]}, ${Lumber$1.world.view.min[1]} x ${Lumber$1.world.view.max[0]}, ${Lumber$1.world.view.max[1]}`);
+                //Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
+                Board.win.find('#numChunks').text(`Num chunks: ${Lumber$1.world.chunkMaster.fitter.shown.length} / ${Lumber$1.world.chunkMaster.total}`);
+                Board.win.find('#numObjs').html(`Num objs: ${Obj$1.active} / ${Obj$1.num}`);
+                Board.win.find('#numRekts').html(`Num rekts: ${Rekt$1.active} / ${Rekt$1.num}`);
+                let b = Lumber$1.world.chunkMaster.big(Lumber$1.world.mouse_tiled);
+                let c = Lumber$1.world.chunkMaster.at(b[0], b[1]);
+                Board.win.find('#square').text(`Mouse: ${pts.to_string(Lumber$1.world.mouse_tiled)}`);
+                Board.win.find('#squareChunk').text(`Mouse chunk: ${pts.to_string(b)}`);
+                Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${(c === null || c === void 0 ? void 0 : c.rt) ? 'true' : 'false'}`);
+                Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber$1.world.chunkMaster.fitter.lines}`);
+                Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber$1.world.chunkMaster.fitter.total}`);
             }
         }
-    }
-    (function (Rekt) {
-        Rekt.num = 0;
-        Rekt.active = 0;
-        //export type Struct = Rekt['struct']
-        function depth(t) {
-            return -t[1] + t[0];
+        Board.update = update;
+        function raw(html) {
+            let nyan = $('<nyan>');
+            let jay = $(html);
+            nyan.append(jay);
+            rig_charges(nyan);
+            Board.win.append(jay);
+            return nyan;
         }
-        Rekt.depth = depth;
-        function mult(t) {
-            return pts.mult(t, Lumber$1.EVEN);
-        }
-        Rekt.mult = mult;
-    })(Rekt || (Rekt = {}));
-    var Rekt$1 = Rekt;
+        Board.raw = raw;
+    })(Board || (Board = {}));
 
-    class pts {
-        static pt(a) {
-            return { x: a[0], y: a[1] };
+    var Lumber;
+    (function (Lumber) {
+        Lumber.USE_CHUNK_RT = true;
+        Lumber.OFFSET_CHUNK_OBJ_REKT = true;
+        Lumber.PAINT_OBJ_TICK_RATE = false;
+        Lumber.MINIMUM_REKTS_BEFORE_RT = 0;
+        Lumber.EVEN = 24; // very evenly divisible
+        Lumber.YUM = Lumber.EVEN;
+        var started = false;
+        function sample(a) {
+            return a[Math.floor(Math.random() * a.length)];
         }
-        static clone(zx) {
-            return [zx[0], zx[1]];
+        Lumber.sample = sample;
+        function clamp(val, min, max) {
+            return val > max ? max : val < min ? min : val;
         }
-        static make(n, m) {
-            return [n, m];
+        Lumber.clamp = clamp;
+        let RESOURCES;
+        (function (RESOURCES) {
+            RESOURCES[RESOURCES["RC_UNDEFINED"] = 0] = "RC_UNDEFINED";
+            RESOURCES[RESOURCES["POPULAR_ASSETS"] = 1] = "POPULAR_ASSETS";
+            RESOURCES[RESOURCES["READY"] = 2] = "READY";
+            RESOURCES[RESOURCES["COUNT"] = 3] = "COUNT";
+        })(RESOURCES = Lumber.RESOURCES || (Lumber.RESOURCES = {}));
+        let resources_loaded = 0b0;
+        function resourced(word) {
+            resources_loaded |= 0b1 << RESOURCES[word];
+            try_start();
         }
-        static area_every(bb, callback) {
-            let y = bb.min[1];
-            for (; y <= bb.max[1]; y++) {
-                let x = bb.max[0];
-                for (; x >= bb.min[0]; x--) {
-                    callback([x, y]);
-                }
-            }
+        Lumber.resourced = resourced;
+        function try_start() {
+            let count = 0;
+            let i = 0;
+            for (; i < RESOURCES.COUNT; i++)
+                (resources_loaded & 0b1 << i) ? count++ : void (0);
+            if (count == RESOURCES.COUNT)
+                start();
         }
-        static project(a) {
-            return [a[0] / 2 + a[1] / 2, a[1] / 4 - a[0] / 4];
+        function critical(mask) {
+            // Couldn't load
+            console.error('resource', mask);
         }
-        static unproject(a) {
-            return [a[0] - a[1] * 2, a[1] * 2 + a[0]];
+        Lumber.critical = critical;
+        function init() {
+            console.log('egyt init');
+            Lumber.world = World$1.rig();
+            resourced('RC_UNDEFINED');
+            resourced('READY');
+            window['Lumber'] = Lumber;
         }
-        static to_string(a) {
-            const pr = (b) => b != undefined ? `, ${b}` : '';
-            return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
-        }
-        static floor(a) {
-            return [Math.floor(a[0]), Math.floor(a[1])];
-        }
-        static ceil(a) {
-            return [Math.ceil(a[0]), Math.ceil(a[1])];
-        }
-        static inv(a) {
-            return [-a[0], -a[1]];
-        }
-        static mult(a, n, m) {
-            return [a[0] * n, a[1] * (m || n)];
-        }
-        static divide(a, n, m) {
-            return [a[0] / n, a[1] / (m || n)];
-        }
-        static subtract(a, b) {
-            return [a[0] - b[0], a[1] - b[1]];
-        }
-        static add(a, b) {
-            return [a[0] + b[0], a[1] + b[1]];
-        }
-        static abs(a) {
-            return [Math.abs(a[0]), Math.abs(a[1])];
-        }
-        static min(a, b) {
-            return [Math.min(a[0], b[0]), Math.min(a[1], b[1])];
-        }
-        static max(a, b) {
-            return [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
-        }
-        static together(zx) {
-            return zx[0] + zx[1];
-        }
-    }
+        Lumber.init = init;
+        function start() {
+            if (started)
+                return;
+            console.log('lumber starting');
+            if (window.location.href.indexOf("#nochunkrt") != -1)
+                Lumber.USE_CHUNK_RT = false;
+            Lumber.world.populate();
+            Ploppables.plant_trees();
+            Board.init();
+            Board.raw(`
+		<div>May have to reload for latest version<br/>
+		<br />
+		<div class="region small">
+			<a>Tutorial</a>
+			<div>
+				Move the view with <key>W</key> <key>A</key> <key>S</key> <key>D</key>.
+				Scrollwheel to zoom. Hold <key>X</key> to go faster.
+			</div>
 
-    var TEST;
-    (function (TEST) {
-        TEST[TEST["Outside"] = 0] = "Outside";
-        TEST[TEST["Inside"] = 1] = "Inside";
-        TEST[TEST["Overlap"] = 2] = "Overlap";
-    })(TEST || (TEST = {}));
-    class aabb2 {
-        constructor(a, b) {
-            this.min = this.max = a;
-            if (b) {
-                this.extend(b);
-            }
+			<a>World editing</a>
+			<div>
+				You can plop objects with these shortcuts.
+				<br/><br/>
+				<key>T</key> tree<br/>
+				<key>Y</key> tile<br/>
+				<key>U</key> tile area<br/>
+				<key>X</key> delete<br/>
+				<key>Esc</key> cancel<br/>
+			</div>
+
+			<a>Settings</a>
+			<div>
+				Nothing here yet
+			</div>
+
+			<a collapse>Stats</a>
+			<div class="stats">
+				<span id="fpsStat">xx</span><br/>
+				<span id="memoryStat">xx</span><br/>
+				<br/>
+				<span id="gameZoom"></span><br/>
+				<span id="gameAabb"></span><br/>
+				<br/>
+				<span id="numChunks"></span><br/>
+				<span id="numObjs"></span><br/>
+				<span id="numRekts"></span><br/>
+				<br/>
+				<span id="square"></span><br/>
+				<span id="squareChunk"></span><br/>
+				<span id="squareChunkRt">xx</span><br/>
+				<br />
+				<span id="snakeTurns"></span><br/>
+				<span id="snakeTotal"></span><br/>
+				<br/>
+				<span id="USE_CHUNK_RTT">USE_CHUNK_RTT: ${Lumber.USE_CHUNK_RT}</span><br/>
+				<span id="OFFSET_CHUNK_OBJ_REKT">OFFSET_CHUNK_OBJ_REKT: ${Lumber.OFFSET_CHUNK_OBJ_REKT}</span><br/>
+				<span id="PAINT_OBJ_TICK_RATE">PAINT_OBJ_TICK_RATE: ${Lumber.PAINT_OBJ_TICK_RATE}</span><br/>
+				<span id="PAINT_OBJ_TICK_RATE">MINIMUM_REKTS_BEFORE_RT: ${Lumber.MINIMUM_REKTS_BEFORE_RT}</span><br/>
+
+			</div>
+
+			<a>Items Demo</a>
+			<div>
+				<div>
+					<span>Coral Orb</span>
+					<span>It used to belong to an elemental spirit. It has the ability to summon rainstorms.</span>
+				</div>
+			</div>
+		</div>`);
+            //setTimeout(() => Win.messageslide('', 'You get one cheap set of shoes, and a well-kept shovel.'), 1000);
+            started = true;
         }
-        static dupe(bb) {
-            return new aabb2(bb.min, bb.max);
+        function update() {
+            if (!started)
+                return;
+            Lumber.world.update();
+            Board.update();
         }
-        extend(v) {
-            this.min = pts.min(this.min, v);
-            this.max = pts.max(this.max, v);
-        }
-        diagonal() {
-            return pts.subtract(this.max, this.min);
-        }
-        center() {
-            return pts.add(this.min, pts.mult(this.diagonal(), 0.5));
-        }
-        translate(v) {
-            this.min = pts.add(this.min, v);
-            this.max = pts.add(this.max, v);
-        }
-        test(v) {
-            if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
-                this.min[1] <= v.min[1] && this.max[1] >= v.max[1])
-                return aabb2.TEST.Inside;
-            if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
-                this.max[1] < v.min[1] || this.min[1] > v.max[1])
-                return aabb2.TEST.Outside;
-            return aabb2.TEST.Overlap;
-        }
-    }
-    aabb2.TEST = TEST;
+        Lumber.update = update;
+    })(Lumber || (Lumber = {}));
+    var Lumber$1 = Lumber;
 
     var App;
     (function (App) {

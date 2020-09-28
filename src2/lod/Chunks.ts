@@ -1,4 +1,10 @@
-import { Lumber, Renderer, World, Rekt, Obj, pts, aabb2 } from "./../Re-exports";
+import Lumber from "../Lumber";
+import World from "./World";
+import Renderer from "../Renderer";
+import Obj from "../objrekt/Obj";
+import Rekt from "../objrekt/Rekt";
+import pts from "../lib/pts";
+import aabb2 from "../lib/aabb2";
 
 import {  Group, WebGLRenderTarget, OrthographicCamera } from "three";
 

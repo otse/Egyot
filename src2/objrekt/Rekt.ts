@@ -1,4 +1,8 @@
-import { Lumber, Renderer, World, Obj, aabb2, pts } from "./../Re-exports";
+import Lumber from "../Lumber";
+import Renderer from "../Renderer";
+import Obj from "./Obj";
+
+import pts from "../lib/pts";
 
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3, Color } from "three";
 

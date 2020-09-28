@@ -1,4 +1,9 @@
-import { Lumber, Renderer, World, Obj, Rekt, aabb2, pts } from "./../Re-exports";
+import Lumber from "../Lumber";
+import Renderer from "../Renderer";
+import Obj from "../objrekt/Obj";
+import Rekt from "../objrekt/Rekt";
+import pts from "../lib/pts";
+
 
 namespace Board {
 	export var win;
