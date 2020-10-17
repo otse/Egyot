@@ -5,7 +5,6 @@ import Rekt from "./Rekt";
 class Obj {
 	order = 0
 	rate = 1
-	//using = false
 	rtt = true
 	rekt: Rekt | null = null
 	chunk: Chunk | null = null

@@ -12,14 +12,6 @@ namespace Board {
 
 	var bloobs;
 
-	export function load_sheet(file: string) {
-		let link = document.createElement('link');
-		link.rel = 'stylesheet';
-		link.type = 'text/css';
-		link.href = file;
-		document.head.appendChild(link);
-	}
-
 	export function collapse() {
 
 	}
@@ -27,9 +19,6 @@ namespace Board {
 	export var collapsed: { [href: string]: boolean } = {};
 
 	export function rig_charges(nyan: JQuery) {
-
-		// In Vsc
-		// View -> Toggle Word Wrap
 
 		/*
 			A hyperlink and a paragraph form a collapser
@@ -110,4 +99,4 @@ namespace Board {
 	}
 }
 
-export { Board as Win };
+export { Board };

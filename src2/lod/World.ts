@@ -25,14 +25,16 @@ class World {
 	pos: vec2 = [0, 0]
 	scale: number = 1
 	dpi: number = 1
-
+	
 	focal: vec3
 	view: aabb2
 	frustum: Rekt
-
+	
 	chunkMaster: ChunkMaster<Chunk>
-
+	bigChunks: ChunkMaster<Chunk>
+	
 	mouse_tiled: vec2 = [0, 0]
+	wheelable = true
 
 	constructor() {
 		this.init();
@@ -43,7 +45,7 @@ class World {
 			this.frustum = new Rekt;
 			this.frustum.name = 'Frustum';
 			this.frustum.tile = [0, 0];
-			this.frustum.wh = [1, 1];
+			this.frustum.size = [1, 1];
 			this.frustum.asset = 'egyt/128';
 
 			this.frustum.plain = true;
@@ -73,7 +75,9 @@ class World {
 	}
 	update() {
 		this.move();
+		this.mark_mouse();
 		this.chunkMaster.update();
+		this.bigChunks.update();
 	}
 	getChunkAt(zx: vec2 | vec3) {
 		return this.chunkMaster.which(<vec2>zx);
@@ -93,6 +97,7 @@ class World {
 	}
 	init() {
 		this.chunkMaster = new ChunkMaster<Chunk>(Chunk, 20);
+		this.bigChunks = new ChunkMaster<Chunk>(Chunk, 40);
 
 		Lumber.ply = new Ply;
 		Lumber.ply.tile = [0, 0]
@@ -114,7 +119,7 @@ class World {
 		function preload_textures(strs: string[]) {
 			textures = strs.length;
 			for (let str of strs)
-			Renderer.loadtexture(str, undefined, callback);
+				Renderer.loadtexture(str, undefined, callback);
 		}
 		preload_textures([
 			'assets/egyt/tileorange.png',
@@ -146,7 +151,7 @@ class World {
 
 		this.pos = <vec2>[...p];
 
-		if (App.wheel > 0) {
+		if (this.wheelable && App.wheel > 0) {
 			if (this.scale < 1) {
 				this.scale = 1;
 			}
@@ -156,15 +161,15 @@ class World {
 			if (this.scale > 2 / this.dpi)
 				this.scale = 2 / this.dpi;
 
-			console.log('scale up', this.scale);
+			//console.log('scale up', this.scale);
 		}
 
-		else if (App.wheel < 0) {
+		else if (this.wheelable && App.wheel < 0) {
 			this.scale -= factor;
 			if (this.scale < .5 / this.dpi)
 				this.scale = .5 / this.dpi;
 
-			console.log('scale down', this.scale);
+			//console.log('scale down', this.scale);
 		}
 
 		Renderer.scene.scale.set(this.scale, this.scale, 1);
@@ -199,30 +204,46 @@ class World {
 		}
 	}
 	populate() {
+		
+		const every = (pos: vec2) => {
+			let obj = new Obj;
+			obj.rtt = false;
+			obj.rekt = new Rekt;
+			obj.rekt.low = true;
+			obj.rekt.size = [480, 240];
+			obj.rekt.offset = [19, 0];
+			obj.tile = obj.rekt.tile = pts.mult(pos, 20);
+			obj.rekt.asset = 'balmora/desert1010'
+			Lumber.world.add(obj);
+		}
+
+		//pts.area_every(new aabb2([-10, -10], [10, 10]), every);
+
+		let building1 = new Rekt;
+		building1.tile = [6, -1];
+		building1.size = [181, 146];
+		building1.asset = 'balmora/building1';
+		building1.use();
+
+		return;
 		let granary = new Rekt;
 		granary.tile = [6, -1];
-		granary.wh = [216, 168];
+		granary.size = [216, 168];
 		granary.asset = 'egyt/building/granary';
 
 		let tobaccoshop = new Rekt;
 		tobaccoshop.tile = [-14, 2];
-		tobaccoshop.wh = [144, 144];
+		tobaccoshop.size = [144, 144];
 		tobaccoshop.asset = 'egyt/building/redstore';
 
 		//granary.use();
 		tobaccoshop.use();
 
-		//Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));
 		Ploppables.area_wheat(2, new aabb2([5, -4], [5 + 50 - 2, -12]));
 		Ploppables.area_wheat(2, new aabb2([5 + 50, -4], [5 + 50 - 2 + 50, -12]));
 		Ploppables.area_wheat(3, new aabb2([5, -14], [5 + 50 - 2, -22]));
 		Ploppables.area_wheat(3, new aabb2([5 + 50, -14], [5 + 50 - 2 + 50, -22]));
 		Ploppables.area_wheat(3, new aabb2([-42, 21], [-80, 183]));
-		//Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
-		//Agriculture.plop_wheat_area(3, new aabb3([-4, -4, 0], [20, -39, 0]));
-		//Agriculture.plop_wheat_area(2, new aabb3([-25, 14, 0], [5, 50, 0]));
-		//Agriculture.plop_wheat_area(3, new aabb3([-9, -52, 0], [2, -300, 0]));
-		//Agriculture.plop_wheat_area(3, new aabb3([-20, -302, 0], [11, -600, 0]));
 
 		const stones = [
 			'egyt/ground/stone1',
@@ -246,6 +267,8 @@ class World {
 		// farms se
 		Ploppables.area_wheat(1, new aabb2([-15, 21], [-40, 101]));
 		Ploppables.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
+
+		Ploppables.area_fort(0, new aabb2([5, 20], [13, 32]));
 	}
 }
 

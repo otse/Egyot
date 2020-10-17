@@ -157,6 +157,44 @@ void main() {
     })(Renderer || (Renderer = {}));
     var Renderer$1 = Renderer;
 
+    class Obj {
+        constructor() {
+            this.order = 0;
+            this.rate = 1;
+            this.rtt = true;
+            this.rekt = null;
+            this.chunk = null;
+            this.tile = [0, 0];
+            Obj.num++;
+        }
+        update() {
+            var _a;
+            if (Lumber$1.PAINT_OBJ_TICK_RATE)
+                (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.paint_alternate();
+        }
+        comes() {
+            var _a;
+            Obj.active++;
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.use();
+        }
+        goes() {
+            var _a;
+            Obj.active--;
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unuse();
+        }
+        unset() {
+            var _a;
+            Obj.num--;
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unset();
+        }
+    }
+    (function (Obj) {
+        Obj.active = 0;
+        Obj.num = 0;
+        //export type Struct = Obj['struct']
+    })(Obj || (Obj = {}));
+    var Obj$1 = Obj;
+
     class pts {
         static pt(a) {
             return { x: a[0], y: a[1] };
@@ -223,10 +261,11 @@ void main() {
 
     class Rekt {
         constructor() {
+            this.low = false;
             this.tiled = true;
             this.tile = [0, 0];
             this.offset = [0, 0];
-            this.wh = [1, 1];
+            this.size = [1, 1];
             this.opacity = 1;
             this.center = [0, 0];
             this.position = [0, 0, 0];
@@ -264,7 +303,7 @@ void main() {
                 console.warn('rekt already inuse');
             Rekt.active++;
             this.used = true;
-            this.geometry = new THREE.PlaneBufferGeometry(this.wh[0], this.wh[1], 1, 1);
+            this.geometry = new THREE.PlaneBufferGeometry(this.size[0], this.size[1], 1, 1);
             let map;
             if (this.asset)
                 map = Renderer$1.loadtexture(`assets/${this.asset}.png`);
@@ -303,7 +342,9 @@ void main() {
             var _a;
             let x, y;
             let xy = pts.add(this.tile, this.offset);
-            const depth = Rekt.depth(this.tile);
+            let depth = Rekt.depth(this.tile);
+            if (this.low)
+                depth = Rekt.depth(pts.subtract(this.tile, this.size));
             if (this.tiled) {
                 xy = Rekt.mult(xy);
             }
@@ -322,8 +363,8 @@ void main() {
                 y = xy[1] / 4 - xy[0] / 4;
                 this.center = [x, y];
                 // middle bottom
-                const w = this.wh[0] / 2;
-                const h = this.wh[1] / 2;
+                const w = this.size[0] / 2;
+                const h = this.size[1] / 2;
                 y += h;
             }
             this.position = [x, y, 0];
@@ -687,7 +728,7 @@ void main() {
             let t = pts.mult(this.chunk.p2, this.chunk.master.span);
             this.rekt = new Rekt$1;
             this.rekt.tile = t;
-            this.rekt.wh = [this.width, this.height];
+            this.rekt.size = [this.width, this.height];
             this.rekt.asset = 'egyt/tenbyten';
         }
         // todo pool the rts?
@@ -712,45 +753,6 @@ void main() {
             this.rekt.material.map = this.target.texture;
         }
     }
-
-    class Obj {
-        constructor() {
-            this.order = 0;
-            this.rate = 1;
-            //using = false
-            this.rtt = true;
-            this.rekt = null;
-            this.chunk = null;
-            this.tile = [0, 0];
-            Obj.num++;
-        }
-        update() {
-            var _a;
-            if (Lumber$1.PAINT_OBJ_TICK_RATE)
-                (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.paint_alternate();
-        }
-        comes() {
-            var _a;
-            Obj.active++;
-            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.use();
-        }
-        goes() {
-            var _a;
-            Obj.active--;
-            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unuse();
-        }
-        unset() {
-            var _a;
-            Obj.num--;
-            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unset();
-        }
-    }
-    (function (Obj) {
-        Obj.active = 0;
-        Obj.num = 0;
-        //export type Struct = Obj['struct']
-    })(Obj || (Obj = {}));
-    var Obj$1 = Obj;
 
     class Man extends Obj$1 {
         constructor() {
@@ -778,9 +780,47 @@ void main() {
         }
     }
 
+    class Building extends Obj$1 {
+        constructor(pst) {
+            super();
+            this.pst = pst;
+            //this.rtt = false;
+        }
+        finish() {
+            this.rekt = new Rekt$1;
+            this.rekt.obj = this;
+            this.rekt.tile = this.tile;
+            this.rekt.asset = this.pst.asset;
+            this.rekt.size = this.pst.size;
+        }
+    }
+    (function (Building) {
+        Building.SandHovel1 = {
+            asset: 'balmora/sandhovel1',
+            size: [181, 146]
+        };
+    })(Building || (Building = {}));
+    var Building$1 = Building;
+
     var Ploppables;
     (function (Ploppables) {
+        Ploppables.cycling = true;
+        Ploppables.ghost = null;
+        function update() {
+            if (App$1.keys['b'] == 1) {
+                console.log('building or structure');
+                let obj = new Building$1(Building$1.SandHovel1);
+                obj.tile = Lumber$1.world.mouse_tiled;
+                obj.finish();
+                Lumber$1.world.add(obj);
+                Ploppables.ghost = obj;
+            }
+            if (Ploppables.cycling && App$1.wheel > 0) ;
+            else if (Ploppables.cycling && App$1.wheel < 0) ;
+        }
+        Ploppables.update = update;
         function plant_trees() {
+            //return;
             console.log(`add ${tree_positions.length} trees from save`);
             for (let pos of tree_positions) {
                 let tree = new Tree;
@@ -812,7 +852,7 @@ void main() {
         }
         Ploppables.area_tile_sampled = area_tile_sampled;
         function place_wheat(growth, tile) {
-            if (Math.random() > .99)
+            if (Math.random() > 99 / 100)
                 return;
             let crop = new Wheat(growth);
             crop.tile = tile;
@@ -826,6 +866,21 @@ void main() {
             pts.area_every(aabb, every);
         }
         Ploppables.area_wheat = area_wheat;
+        function place_old_wall(growth, tile) {
+            if (Math.random() > 50 / 100)
+                return;
+            let crop = new Wheat(growth);
+            crop.tile = tile;
+            crop.finish();
+            Lumber$1.world.add(crop);
+            return crop;
+        }
+        Ploppables.place_old_wall = place_old_wall;
+        function area_fort(something, aabb) {
+            const every = (pos) => place_wheat(1, pos);
+            pts.area_every(aabb, every);
+        }
+        Ploppables.area_fort = area_fort;
     })(Ploppables || (Ploppables = {}));
     let tree_positions = [[12, 5], [20, 7], [16, 4], [8, 11], [28, 7], [40, 8], [39, 13], [17, 32], [-21, 11], [-18, 16], [-19, -28], [-24, -29], [-27, -13], [-17, 9], [-18, -1], [-6, 34], [65, 11], [0, 87], [5, 125], [-1, 172], [-62, 36], [-72, 125], [-65, 216], [4, 182], [14, 162], [2, 177], [3, 198], [6, 155], [7, 291], [-38, 350], [-59, 162], [-43, 112], [-106, 52], [154, 20], [213, 21], [141, -53], [23, -60], [62, -65], [260, -62], [241, -49], [251, -45], [220, -36], [209, -57], [223, -65], [209, -45], [181, -67], [190, -83], [221, -88], [264, -87], [274, -95], [263, -106], [255, -106], [237, -110], [248, -124], [239, -65], [221, -49], [189, -94], [263, -55], [271, -44], [278, -61], [246, -51], [240, -55], [226, -43], [228, -39], [208, -49], [248, -65], [227, -70], [230, -17], [210, 12], [269, 33], [275, 156], [66, -210], [125, -49], [-106, 46], [-98, 44], [-97, 55], [-108, -67], [92, -26], [73, -29], [110, -11], [3, -26], [-19, -52], [70, -36], [-35, -82], [-23, -90], [-19, -118], [-169, 19], [20, 160], [36, 92], [-62, 91], [-112, 181], [-114, 177], [-106, 179], [-107, 174], [-102, 167], [-108, 159], [-101, 192], [30, -29], [25, -33], [31, -36], [36, -25], [41, -38], [6, -55], [25, -79], [23, -87], [125, -54], [176, -4], [-164, 12], [-157, 19], [-7, 254], [-26, 58]];
     const trees = [
@@ -859,7 +914,7 @@ void main() {
             this.rekt.asset = Lumber$1.sample(trees);
             this.rekt.tile = this.tile;
             this.rekt.offset = [1, -1];
-            this.rekt.wh = [120, 132];
+            this.rekt.size = [120, 132];
         }
     }
     Tree.trees = [];
@@ -874,7 +929,7 @@ void main() {
             this.rekt.obj = this;
             this.rekt.asset = this.asset;
             this.rekt.tile = this.tile;
-            this.rekt.wh = [24, 12];
+            this.rekt.size = [24, 12];
         }
     }
     class Wheat extends Obj$1 {
@@ -892,7 +947,7 @@ void main() {
                     this.growth == 2 ? Lumber$1.sample(ripening) :
                         this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
             this.rekt.tile = this.tile;
-            this.rekt.wh = [22, 22];
+            this.rekt.size = [22, 22];
         }
     }
 
@@ -902,6 +957,7 @@ void main() {
             this.scale = 1;
             this.dpi = 1;
             this.mouse_tiled = [0, 0];
+            this.wheelable = true;
             this.init();
             this.view = new aabb2([0, 0], [0, 0]);
             console.log('world');
@@ -923,7 +979,9 @@ void main() {
         }
         update() {
             this.move();
+            this.mark_mouse();
             this.chunkMaster.update();
+            this.bigChunks.update();
         }
         getChunkAt(zx) {
             return this.chunkMaster.which(zx);
@@ -939,6 +997,7 @@ void main() {
         }
         init() {
             this.chunkMaster = new ChunkMaster(Chunk, 20);
+            this.bigChunks = new ChunkMaster(Chunk, 40);
             Lumber$1.ply = new Ply;
             Lumber$1.ply.tile = [0, 0];
             Lumber$1.ply.comes();
@@ -987,7 +1046,7 @@ void main() {
             if (App$1.keys['d'])
                 p[0] -= speed;
             this.pos = [...p];
-            if (App$1.wheel > 0) {
+            if (this.wheelable && App$1.wheel > 0) {
                 if (this.scale < 1) {
                     this.scale = 1;
                 }
@@ -996,13 +1055,13 @@ void main() {
                 }
                 if (this.scale > 2 / this.dpi)
                     this.scale = 2 / this.dpi;
-                console.log('scale up', this.scale);
+                //console.log('scale up', this.scale);
             }
-            else if (App$1.wheel < 0) {
+            else if (this.wheelable && App$1.wheel < 0) {
                 this.scale -= factor;
                 if (this.scale < .5 / this.dpi)
                     this.scale = .5 / this.dpi;
-                console.log('scale down', this.scale);
+                //console.log('scale down', this.scale);
             }
             Renderer$1.scene.scale.set(this.scale, this.scale, 1);
             let p2 = pts.mult(this.pos, this.scale);
@@ -1018,45 +1077,13 @@ void main() {
             this.focal = [-p[0], -p[1], 0];
         }
         populate() {
-            let granary = new Rekt$1;
-            granary.tile = [6, -1];
-            granary.wh = [216, 168];
-            granary.asset = 'egyt/building/granary';
-            let tobaccoshop = new Rekt$1;
-            tobaccoshop.tile = [-14, 2];
-            tobaccoshop.wh = [144, 144];
-            tobaccoshop.asset = 'egyt/building/redstore';
-            //granary.use();
-            tobaccoshop.use();
-            //Agriculture.area_wheat(1, new aabb3([-9, -4, 0], [3, -22, 0]));
-            Ploppables.area_wheat(2, new aabb2([5, -4], [5 + 50 - 2, -12]));
-            Ploppables.area_wheat(2, new aabb2([5 + 50, -4], [5 + 50 - 2 + 50, -12]));
-            Ploppables.area_wheat(3, new aabb2([5, -14], [5 + 50 - 2, -22]));
-            Ploppables.area_wheat(3, new aabb2([5 + 50, -14], [5 + 50 - 2 + 50, -22]));
-            Ploppables.area_wheat(3, new aabb2([-42, 21], [-80, 183]));
-            //Agriculture.plop_wheat_area(2, new aabb3([-9, -12, 0], [2, -14, 0]));
-            //Agriculture.plop_wheat_area(3, new aabb3([-4, -4, 0], [20, -39, 0]));
-            //Agriculture.plop_wheat_area(2, new aabb3([-25, 14, 0], [5, 50, 0]));
-            //Agriculture.plop_wheat_area(3, new aabb3([-9, -52, 0], [2, -300, 0]));
-            //Agriculture.plop_wheat_area(3, new aabb3([-20, -302, 0], [11, -600, 0]));
-            const stones = [
-                'egyt/ground/stone1',
-                'egyt/ground/stone2',
-            ];
-            const gravels = [
-                'egyt/ground/gravel1',
-                'egyt/ground/gravel2',
-            ];
-            Ploppables.area_tile_sampled(30, gravels, new aabb2([-1, 0], [2, -22]));
-            // lots gravels
-            //Tilization.area_sample(66, gravels, new aabb2([-20, -10], [50, 80]));
-            // long road se
-            Ploppables.area_tile_sampled(50, stones, new aabb2([-13, 0], [400, -3]));
-            // long road ne
-            Ploppables.area_tile_sampled(50, stones, new aabb2([-14, 0], [-12, 400]));
-            // farms se
-            Ploppables.area_wheat(1, new aabb2([-15, 21], [-40, 101]));
-            Ploppables.area_wheat(1, new aabb2([-15, 103], [-40, 183]));
+            //pts.area_every(new aabb2([-10, -10], [10, 10]), every);
+            let building1 = new Rekt$1;
+            building1.tile = [6, -1];
+            building1.size = [181, 146];
+            building1.asset = 'balmora/building1';
+            building1.use();
+            return;
         }
     }
     (function (World) {
@@ -1077,21 +1104,11 @@ void main() {
     var Board;
     (function (Board) {
         var body;
-        function load_sheet(file) {
-            let link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.href = file;
-            document.head.appendChild(link);
-        }
-        Board.load_sheet = load_sheet;
         function collapse() {
         }
         Board.collapse = collapse;
         Board.collapsed = {};
         function rig_charges(nyan) {
-            // In Vsc
-            // View -> Toggle Word Wrap
             /*
                 A hyperlink and a paragraph form a collapser
             */
@@ -1220,13 +1237,13 @@ void main() {
             Ploppables.plant_trees();
             Board.init();
             Board.raw(`
-		<div>May have to reload for latest version<br/>
+		<!-- <div>May have to reload for latest version<br/> -->
 		<br />
 		<div class="region small">
 			<a>Tutorial</a>
 			<div>
 				Move the view with <key>W</key> <key>A</key> <key>S</key> <key>D</key>.
-				Scrollwheel to zoom. Hold <key>X</key> to go faster.
+				Hold <key>X</key> to go faster. Scrollwheel to zoom. 
 			</div>
 
 			<a>World editing</a>
@@ -1248,7 +1265,7 @@ void main() {
 			<a collapse>Stats</a>
 			<div class="stats">
 				<span id="fpsStat">xx</span><br/>
-				<span id="memoryStat">xx</span><br/>
+				<!-- <span id="memoryStat">xx</span><br/> -->
 				<br/>
 				<span id="gameZoom"></span><br/>
 				<span id="gameAabb"></span><br/>
@@ -1268,18 +1285,8 @@ void main() {
 				<span id="OFFSET_CHUNK_OBJ_REKT">OFFSET_CHUNK_OBJ_REKT: ${Lumber.OFFSET_CHUNK_OBJ_REKT}</span><br/>
 				<span id="PAINT_OBJ_TICK_RATE">PAINT_OBJ_TICK_RATE: ${Lumber.PAINT_OBJ_TICK_RATE}</span><br/>
 				<span id="PAINT_OBJ_TICK_RATE">MINIMUM_REKTS_BEFORE_RT: ${Lumber.MINIMUM_REKTS_BEFORE_RT}</span><br/>
-
-			</div>
-
-			<a>Items Demo</a>
-			<div>
-				<div>
-					<span>Coral Orb</span>
-					<span>It used to belong to an elemental spirit. It has the ability to summon rainstorms.</span>
-				</div>
-			</div>
-		</div>`);
-            //setTimeout(() => Win.messageslide('', 'You get one cheap set of shoes, and a well-kept shovel.'), 1000);
+			</div>`);
+            //setTimeout(() => Board.messageslide('', 'You get one cheap set of shoes, and a well-kept shovel.'), 1000);
             started = true;
         }
         function update() {
@@ -1287,6 +1294,7 @@ void main() {
                 return;
             Lumber.world.update();
             Board.update();
+            Ploppables.update();
         }
         Lumber.update = update;
     })(Lumber || (Lumber = {}));

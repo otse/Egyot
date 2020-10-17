@@ -1,7 +1,7 @@
 import World from "./lod/World";
 import Obj from "./objrekt/Obj";
 
-import { Win } from "./nested/Board";
+import { Board } from "./nested/Board";
 import { Ploppables } from "./lod/Ploppables";
 
 
@@ -73,16 +73,16 @@ export namespace Lumber {
 		
 		Ploppables.plant_trees();
 
-		Win.init();
+		Board.init();
 
-		Win.raw(`
-		<div>May have to reload for latest version<br/>
+		Board.raw(`
+		<!-- <div>May have to reload for latest version<br/> -->
 		<br />
 		<div class="region small">
 			<a>Tutorial</a>
 			<div>
 				Move the view with <key>W</key> <key>A</key> <key>S</key> <key>D</key>.
-				Scrollwheel to zoom. Hold <key>X</key> to go faster.
+				Hold <key>X</key> to go faster. Scrollwheel to zoom. 
 			</div>
 
 			<a>World editing</a>
@@ -104,7 +104,7 @@ export namespace Lumber {
 			<a collapse>Stats</a>
 			<div class="stats">
 				<span id="fpsStat">xx</span><br/>
-				<span id="memoryStat">xx</span><br/>
+				<!-- <span id="memoryStat">xx</span><br/> -->
 				<br/>
 				<span id="gameZoom"></span><br/>
 				<span id="gameAabb"></span><br/>
@@ -124,19 +124,9 @@ export namespace Lumber {
 				<span id="OFFSET_CHUNK_OBJ_REKT">OFFSET_CHUNK_OBJ_REKT: ${OFFSET_CHUNK_OBJ_REKT}</span><br/>
 				<span id="PAINT_OBJ_TICK_RATE">PAINT_OBJ_TICK_RATE: ${PAINT_OBJ_TICK_RATE}</span><br/>
 				<span id="PAINT_OBJ_TICK_RATE">MINIMUM_REKTS_BEFORE_RT: ${MINIMUM_REKTS_BEFORE_RT}</span><br/>
+			</div>`);
 
-			</div>
-
-			<a>Items Demo</a>
-			<div>
-				<div>
-					<span>Coral Orb</span>
-					<span>It used to belong to an elemental spirit. It has the ability to summon rainstorms.</span>
-				</div>
-			</div>
-		</div>`);
-
-		//setTimeout(() => Win.messageslide('', 'You get one cheap set of shoes, and a well-kept shovel.'), 1000);
+		//setTimeout(() => Board.messageslide('', 'You get one cheap set of shoes, and a well-kept shovel.'), 1000);
 
 		started = true;
 	}
@@ -148,7 +138,9 @@ export namespace Lumber {
 
 		world.update();
 
-		Win.update();
+		Board.update();
+
+		Ploppables.update();
 	}
 
 }

@@ -14,7 +14,7 @@ class Man extends Obj {
         return;
         this.rekt = new Rekt;
         this.rekt.tile = this.tile;
-        this.rekt.wh = [22, 25];
+        this.rekt.size = [22, 25];
         this.rekt.asset = 'egyt/pumpkin'
 
         this.rekt.use();

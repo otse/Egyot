@@ -4,11 +4,37 @@ import Rekt from "../objrekt/Rekt";
 
 import pts from "../lib/pts";
 import aabb2 from "../lib/aabb2";
+import App from "../App";
+import Building from "../objs/Building";
+import World from "./World";
 
 
 export namespace Ploppables {
 
+	export var cycling = true;
+	export var ghost: Obj | null = null;
+
+	export function update() {
+		if (App.keys['b'] == 1)
+		{
+			console.log('building or structure');
+			let obj = new Building(Building.SandHovel1);
+			obj.tile = Lumber.world.mouse_tiled;
+			obj.finish();
+			Lumber.world.add(obj);
+			ghost = obj;
+		};
+		
+		if (cycling && App.wheel > 0) {
+			
+		}
+		else if (cycling && App.wheel < 0) {
+			
+		}
+	}
+
 	export function plant_trees() {
+		//return;
 		console.log(`add ${tree_positions.length} trees from save`);
 		for (let pos of tree_positions) {
 			let tree = new Tree;
@@ -42,7 +68,7 @@ export namespace Ploppables {
 	}
 
 	export function place_wheat(growth, tile: vec2) {
-		if (Math.random() > .99)
+		if (Math.random() > 99 / 100)
 			return;
 		let crop = new Wheat(growth);
 		crop.tile = tile;
@@ -53,6 +79,22 @@ export namespace Ploppables {
 
 	export function area_wheat(growth: number, aabb: aabb2) {
 		const every = (pos: vec2) => place_wheat(growth, pos);
+
+		pts.area_every(aabb, every);
+	}
+
+	export function place_old_wall(growth, tile: vec2) {
+		if (Math.random() > 50 / 100)
+			return;
+		let crop = new Wheat(growth);
+		crop.tile = tile;
+		crop.finish();
+		Lumber.world.add(crop);
+		return crop;
+	}
+
+	export function area_fort(something: number, aabb: aabb2) {
+		const every = (pos: vec2) => place_wheat(1, pos);
 
 		pts.area_every(aabb, every);
 	}
@@ -100,7 +142,7 @@ export class Tree extends Obj {
 		this.rekt.asset = Lumber.sample(trees);
 		this.rekt.tile = this.tile;
 		this.rekt.offset = [1, -1];
-		this.rekt.wh = [120, 132];
+		this.rekt.size = [120, 132];
 	}
 }
 
@@ -115,7 +157,7 @@ export class Tile extends Obj {
 		this.rekt.obj = this;
 		this.rekt.asset = this.asset;
 		this.rekt.tile = this.tile;
-		this.rekt.wh = [24, 12];
+		this.rekt.size = [24, 12];
 	}
 }
 
@@ -134,6 +176,21 @@ export class Wheat extends Obj {
 			this.growth == 2 ? Lumber.sample(ripening) :
 			this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
 			this.rekt.tile = this.tile;
-			this.rekt.wh = [22, 22];
+			this.rekt.size = [22, 22];
+	}
+}
+
+export class Wall extends Obj {
+	asset: string = 'egyt/ground/stone1'
+	constructor(asset) {
+		super();
+		//this.rtt = false;
+	}
+	finish() {
+		this.rekt = new Rekt;
+		this.rekt.obj = this;
+		this.rekt.asset = this.asset;
+		this.rekt.tile = this.tile;
+		this.rekt.size = [24, 12];
 	}
 }

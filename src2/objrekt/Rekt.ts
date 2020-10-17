@@ -11,10 +11,11 @@ import { Chunk } from "../lod/Chunks";
 class Rekt {
 
 	name: string
-	tiled: boolean = true
+	low = false
+	tiled = true
 	tile: vec2 = [0, 0]
 	offset: vec2 = [0, 0]
-	wh: vec2 = [1, 1]
+	size: vec2 = [1, 1]
 	obj?: Obj
 	asset?: string
 	color?: string
@@ -68,7 +69,7 @@ class Rekt {
 		this.used = true;
 
 		this.geometry = new PlaneBufferGeometry(
-			this.wh[0], this.wh[1], 1, 1);
+			this.size[0], this.size[1], 1, 1);
 
 		let map;
 		if (this.asset)
@@ -114,7 +115,10 @@ class Rekt {
 
 		let xy = pts.add(this.tile, this.offset);
 		
-		const depth = Rekt.depth(this.tile);
+		let depth = Rekt.depth(this.tile);
+
+		if (this.low)
+			depth = Rekt.depth(pts.subtract(this.tile, this.size));
 
 		if (this.tiled) {
 			xy = Rekt.mult(xy);
@@ -137,8 +141,8 @@ class Rekt {
 			this.center = [x, y];
 
 			// middle bottom
-			const w = this.wh[0] / 2;
-			const h = this.wh[1] / 2;
+			const w = this.size[0] / 2;
+			const h = this.size[1] / 2;
 
 			y += h;
 		}

@@ -374,7 +374,7 @@ class RtChunk {
 
 		this.rekt = new Rekt;
 		this.rekt.tile = t;
-		this.rekt.wh = [this.width, this.height];
+		this.rekt.size = [this.width, this.height];
 		this.rekt.asset = 'egyt/tenbyten';
 	}
 	// todo pool the rts?
