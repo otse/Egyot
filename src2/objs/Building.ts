@@ -29,6 +29,11 @@ namespace Building
 		asset: 'balmora/sandhovel1',
 		size: [181, 146]
 	}
+
+	export var SandHovel2: Preset = {
+		asset: 'balmora/sandhovel2',
+		size: [158, 140]
+	}
 }
 
 export default Building;

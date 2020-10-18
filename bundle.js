@@ -187,6 +187,7 @@ void main() {
             Obj.num--;
             (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unset();
         }
+        finish() { }
     }
     (function (Obj) {
         Obj.active = 0;
@@ -276,6 +277,7 @@ void main() {
         }
         unset() {
             Rekt.num--;
+            this.unuse();
         }
         paint_alternate() {
             var _a;
@@ -799,26 +801,94 @@ void main() {
             asset: 'balmora/sandhovel1',
             size: [181, 146]
         };
+        Building.SandHovel2 = {
+            asset: 'balmora/sandhovel2',
+            size: [158, 140]
+        };
     })(Building || (Building = {}));
     var Building$1 = Building;
 
     var Ploppables;
     (function (Ploppables) {
-        Ploppables.cycling = true;
+        Ploppables.types = [
+            'building_sandhovel1',
+            'building_sandhovel2',
+            'tree'
+        ];
+        Ploppables.index = 0;
         Ploppables.ghost = null;
         function update() {
-            if (App$1.keys['b'] == 1) {
-                console.log('building or structure');
-                let obj = new Building$1(Building$1.SandHovel1);
-                obj.tile = Lumber$1.world.mouse_tiled;
+            var _a;
+            let remake = false;
+            let obj = null;
+            if (Ploppables.ghost && App$1.wheel > 0) {
+                if (Ploppables.index + 1 < Ploppables.types.length) {
+                    Ploppables.index++;
+                    remake = true;
+                }
+            }
+            else if (Ploppables.ghost && App$1.wheel < 0) {
+                if (Ploppables.index - 1 >= 0) {
+                    Ploppables.index--;
+                    remake = true;
+                }
+            }
+            if (!Ploppables.ghost) {
+                if (App$1.keys['b'] == 1) {
+                    Ploppables.index = 0;
+                    remake = true;
+                }
+                if (App$1.keys['t'] == 1) {
+                    Ploppables.index = 2;
+                    remake = true;
+                }
+            }
+            if (remake) {
+                Lumber$1.world.wheelable = false;
+                obj = factory(Ploppables.types[Ploppables.index]);
                 obj.finish();
-                Lumber$1.world.add(obj);
+                obj.comes();
+                obj.update();
+                if (Ploppables.ghost) {
+                    if (Ploppables.ghost.rekt)
+                        Renderer$1.scene.remove(Ploppables.ghost.rekt.mesh);
+                    Ploppables.ghost.unset();
+                    Ploppables.ghost = null;
+                }
                 Ploppables.ghost = obj;
             }
-            if (Ploppables.cycling && App$1.wheel > 0) ;
-            else if (Ploppables.cycling && App$1.wheel < 0) ;
+            if (Ploppables.ghost) {
+                Ploppables.ghost.tile = Lumber$1.world.mouse_tiled;
+                if (Ploppables.ghost.rekt)
+                    Ploppables.ghost.rekt.tile = Ploppables.ghost.tile;
+                (_a = Ploppables.ghost.rekt) === null || _a === void 0 ? void 0 : _a.now_update_pos();
+            }
+            if (Ploppables.ghost && App$1.buttons[0]) {
+                Lumber$1.world.wheelable = true;
+                console.log('plop');
+                Ploppables.ghost.goes();
+                Lumber$1.world.add(Ploppables.ghost);
+                Ploppables.ghost = null;
+            }
+            if (Ploppables.ghost && App$1.keys['escape'] == 1) {
+                Lumber$1.world.wheelable = true;
+                console.log('unplop');
+                Ploppables.ghost.unset();
+                Ploppables.ghost = null;
+            }
         }
         Ploppables.update = update;
+        function factory(type) {
+            if (type == 'building_sandhovel1')
+                return new Building$1(Building$1.SandHovel1);
+            else if (type == 'building_sandhovel2')
+                return new Building$1(Building$1.SandHovel2);
+            else if (type == 'tree')
+                return new Tree();
+            else
+                return new Obj$1;
+        }
+        Ploppables.factory = factory;
         function plant_trees() {
             //return;
             console.log(`add ${tree_positions.length} trees from save`);
@@ -1248,7 +1318,7 @@ void main() {
 
 			<a>World editing</a>
 			<div>
-				You can plop objects with these shortcuts.
+				Very simple. Once you got an object following the curor, you can use scrollwheel to change it.
 				<br/><br/>
 				<key>T</key> tree<br/>
 				<key>Y</key> tile<br/>

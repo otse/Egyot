@@ -40,6 +40,7 @@ class Rekt {
 	}
 	unset() {
 		Rekt.num--;
+		this.unuse();
 	}
 	paint_alternate() {
 		if (!Lumber.PAINT_OBJ_TICK_RATE)

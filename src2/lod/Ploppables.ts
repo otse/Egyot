@@ -7,30 +7,94 @@ import aabb2 from "../lib/aabb2";
 import App from "../App";
 import Building from "../objs/Building";
 import World from "./World";
+import Renderer from "../Renderer";
 
 
 export namespace Ploppables {
 
-	export var cycling = true;
+	export var types = [
+		'building_sandhovel1',
+		'building_sandhovel2',
+		'tree'
+	]
+	export var index = 0;
 	export var ghost: Obj | null = null;
 
 	export function update() {
-		if (App.keys['b'] == 1)
-		{
-			console.log('building or structure');
-			let obj = new Building(Building.SandHovel1);
-			obj.tile = Lumber.world.mouse_tiled;
+		let remake = false;
+		let obj: Obj | null = null;
+
+		if (ghost && App.wheel > 0) {
+			if (index + 1 < types.length) {
+				index++;
+				remake = true;
+			}
+		}
+		else if (ghost && App.wheel < 0) {
+			if (index - 1 >= 0) {
+				index--;
+				remake = true;
+			}
+		}
+
+		if (!ghost) {
+			if (App.keys['b'] == 1) {
+				index = 0;
+				remake = true;
+			}
+			if (App.keys['t'] == 1) {
+				index = 2;
+				remake = true;
+			}
+		}
+
+		if (remake) {
+			Lumber.world.wheelable = false;
+			obj = factory(types[index]);
 			obj.finish();
-			Lumber.world.add(obj);
+			obj.comes();
+			obj.update();
+			if (ghost) {
+				if (ghost.rekt)
+					Renderer.scene.remove(ghost.rekt.mesh);
+				ghost.unset();
+				ghost = null;
+			}
 			ghost = obj;
-		};
-		
-		if (cycling && App.wheel > 0) {
-			
 		}
-		else if (cycling && App.wheel < 0) {
-			
+
+		if (ghost) {
+			ghost.tile = Lumber.world.mouse_tiled;
+			if (ghost.rekt)
+				ghost.rekt.tile = ghost.tile;
+			ghost.rekt?.now_update_pos();
 		}
+
+		if (ghost && App.buttons[0]) {
+			Lumber.world.wheelable = true;
+			console.log('plop');
+			ghost.goes();
+			Lumber.world.add(ghost);
+			ghost = null;
+		}
+
+		if (ghost && App.keys['escape'] == 1) {
+			Lumber.world.wheelable = true;
+			console.log('unplop');
+			ghost.unset();
+			ghost = null;
+		}
+	}
+
+	export function factory(type: string): Obj {
+		if (type == 'building_sandhovel1')
+			return new Building(Building.SandHovel1);
+		else if (type == 'building_sandhovel2')
+			return new Building(Building.SandHovel2);
+		else if (type == 'tree')
+			return new Tree();
+		else
+			return new Obj;
 	}
 
 	export function plant_trees() {
@@ -173,10 +237,10 @@ export class Wheat extends Obj {
 		this.rekt.obj = this;
 		this.rekt.asset =
 			this.growth == 1 ? Lumber.sample(tillering) :
-			this.growth == 2 ? Lumber.sample(ripening) :
-			this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
-			this.rekt.tile = this.tile;
-			this.rekt.size = [22, 22];
+				this.growth == 2 ? Lumber.sample(ripening) :
+					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
+		this.rekt.tile = this.tile;
+		this.rekt.size = [22, 22];
 	}
 }
 

@@ -87,7 +87,7 @@ export namespace Lumber {
 
 			<a>World editing</a>
 			<div>
-				You can plop objects with these shortcuts.
+				Very simple. Once you got an object following the curor, you can use scrollwheel to change it.
 				<br/><br/>
 				<key>T</key> tree<br/>
 				<key>Y</key> tile<br/>

@@ -29,6 +29,7 @@ class Obj {
 		Obj.num--;
 		this.rekt?.unset();
 	}
+	finish() {}
 }
 
 namespace Obj {
