@@ -811,8 +811,8 @@ void main() {
     var Ploppables;
     (function (Ploppables) {
         Ploppables.types = [
-            'building_sandhovel1',
-            'building_sandhovel2',
+            'sandhovel1',
+            'sandhovel2',
             'tree'
         ];
         Ploppables.index = 0;
@@ -821,27 +821,23 @@ void main() {
             var _a;
             let remake = false;
             let obj = null;
-            if (Ploppables.ghost && App$1.wheel > 0) {
-                if (Ploppables.index + 1 < Ploppables.types.length) {
+            if (Ploppables.ghost) {
+                if (App$1.wheel < 0 && Ploppables.index + 1 < Ploppables.types.length) {
                     Ploppables.index++;
                     remake = true;
                 }
-            }
-            else if (Ploppables.ghost && App$1.wheel < 0) {
-                if (Ploppables.index - 1 >= 0) {
+                else if (App$1.wheel > 0 && Ploppables.index - 1 >= 0) {
                     Ploppables.index--;
                     remake = true;
                 }
             }
-            if (!Ploppables.ghost) {
-                if (App$1.keys['b'] == 1) {
-                    Ploppables.index = 0;
-                    remake = true;
-                }
-                if (App$1.keys['t'] == 1) {
-                    Ploppables.index = 2;
-                    remake = true;
-                }
+            if (App$1.keys['b'] == 1) {
+                Ploppables.index = Ploppables.types.indexOf('sandhovel1');
+                remake = true;
+            }
+            else if (App$1.keys['t'] == 1) {
+                Ploppables.index = Ploppables.types.indexOf('tree');
+                remake = true;
             }
             if (remake) {
                 Lumber$1.world.wheelable = false;
@@ -849,12 +845,7 @@ void main() {
                 obj.finish();
                 obj.comes();
                 obj.update();
-                if (Ploppables.ghost) {
-                    if (Ploppables.ghost.rekt)
-                        Renderer$1.scene.remove(Ploppables.ghost.rekt.mesh);
-                    Ploppables.ghost.unset();
-                    Ploppables.ghost = null;
-                }
+                Ploppables.ghost === null || Ploppables.ghost === void 0 ? void 0 : Ploppables.ghost.unset();
                 Ploppables.ghost = obj;
             }
             if (Ploppables.ghost) {
@@ -879,9 +870,9 @@ void main() {
         }
         Ploppables.update = update;
         function factory(type) {
-            if (type == 'building_sandhovel1')
+            if (type == 'sandhovel1')
                 return new Building$1(Building$1.SandHovel1);
-            else if (type == 'building_sandhovel2')
+            else if (type == 'sandhovel2')
                 return new Building$1(Building$1.SandHovel2);
             else if (type == 'tree')
                 return new Tree();
@@ -1320,11 +1311,12 @@ void main() {
 			<div>
 				Very simple. Once you got an object following the curor, you can use scrollwheel to change it.
 				<br/><br/>
-				<key>T</key> tree<br/>
-				<key>Y</key> tile<br/>
-				<key>U</key> tile area<br/>
-				<key>X</key> delete<br/>
-				<key>Esc</key> cancel<br/>
+				<key>b</key> structure<br/>
+				<key>t</key> tree<br/>
+				<key>y</key> tile<br/>
+				<key>u</key> tile area<br/>
+				<key>x</key> delete<br/>
+				<key>esc</key> cancel<br/>
 			</div>
 
 			<a>Settings</a>

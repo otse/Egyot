@@ -89,11 +89,12 @@ export namespace Lumber {
 			<div>
 				Very simple. Once you got an object following the curor, you can use scrollwheel to change it.
 				<br/><br/>
-				<key>T</key> tree<br/>
-				<key>Y</key> tile<br/>
-				<key>U</key> tile area<br/>
-				<key>X</key> delete<br/>
-				<key>Esc</key> cancel<br/>
+				<key>b</key> structure<br/>
+				<key>t</key> tree<br/>
+				<key>y</key> tile<br/>
+				<key>u</key> tile area<br/>
+				<key>x</key> delete<br/>
+				<key>esc</key> cancel<br/>
 			</div>
 
 			<a>Settings</a>

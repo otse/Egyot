@@ -9,12 +9,13 @@ import Building from "../objs/Building";
 import World from "./World";
 import Renderer from "../Renderer";
 
+type Factorio = 'sandhovel1' | 'sandhovel2' | 'tree';
 
 export namespace Ploppables {
 
-	export var types = [
-		'building_sandhovel1',
-		'building_sandhovel2',
+	export var types: Factorio[] = [
+		'sandhovel1',
+		'sandhovel2',
 		'tree'
 	]
 	export var index = 0;
@@ -24,28 +25,24 @@ export namespace Ploppables {
 		let remake = false;
 		let obj: Obj | null = null;
 
-		if (ghost && App.wheel > 0) {
-			if (index + 1 < types.length) {
+		if (ghost) {
+			if (App.wheel < 0 && index + 1 < types.length) {
 				index++;
 				remake = true;
 			}
-		}
-		else if (ghost && App.wheel < 0) {
-			if (index - 1 >= 0) {
+			else if (App.wheel > 0 && index - 1 >= 0) {
 				index--;
 				remake = true;
 			}
 		}
 
-		if (!ghost) {
-			if (App.keys['b'] == 1) {
-				index = 0;
-				remake = true;
-			}
-			if (App.keys['t'] == 1) {
-				index = 2;
-				remake = true;
-			}
+		if (App.keys['b'] == 1) {
+			index = types.indexOf('sandhovel1');
+			remake = true;
+		}
+		else if (App.keys['t'] == 1) {
+			index = types.indexOf('tree');
+			remake = true;
 		}
 
 		if (remake) {
@@ -54,12 +51,7 @@ export namespace Ploppables {
 			obj.finish();
 			obj.comes();
 			obj.update();
-			if (ghost) {
-				if (ghost.rekt)
-					Renderer.scene.remove(ghost.rekt.mesh);
-				ghost.unset();
-				ghost = null;
-			}
+			ghost?.unset();
 			ghost = obj;
 		}
 
@@ -86,10 +78,10 @@ export namespace Ploppables {
 		}
 	}
 
-	export function factory(type: string): Obj {
-		if (type == 'building_sandhovel1')
+	export function factory(type: Factorio): Obj {
+		if (type == 'sandhovel1')
 			return new Building(Building.SandHovel1);
-		else if (type == 'building_sandhovel2')
+		else if (type == 'sandhovel2')
 			return new Building(Building.SandHovel2);
 		else if (type == 'tree')
 			return new Tree();
