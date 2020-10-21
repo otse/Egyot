@@ -59,7 +59,7 @@ void main() {
             console.log('ThreeQuarter Init');
             Renderer.clock = new THREE.Clock();
             Renderer.scene = new THREE.Scene();
-            Renderer.scene.background = new THREE.Color('rgb(40, 72, 42)');
+            Renderer.scene.background = new THREE.Color('#292929');
             Renderer.scene2 = new THREE.Scene();
             Renderer.rttscene = new THREE.Scene();
             Renderer.ndpi = window.devicePixelRatio;
@@ -107,8 +107,12 @@ void main() {
         function onWindowResize() {
             Renderer.w = window.innerWidth;
             Renderer.h = window.innerHeight;
-            if (Renderer.w % 2 != 0) ;
-            if (Renderer.h % 2 != 0) ;
+            if (Renderer.w % 2 != 0) {
+                Renderer.w -= 1;
+            }
+            if (Renderer.h % 2 != 0) {
+                Renderer.h -= 1;
+            }
             let targetwidth = Renderer.w;
             let targetheight = Renderer.h;
             //if (ndpi == 2) {
@@ -305,7 +309,7 @@ void main() {
                 console.warn('rekt already inuse');
             Rekt.active++;
             this.used = true;
-            this.geometry = new THREE.PlaneBufferGeometry(this.size[0], this.size[1], 1, 1);
+            this.geometry = new THREE.PlaneBufferGeometry(this.size[0], this.size[1], 2, 2);
             let map;
             if (this.asset)
                 map = Renderer$1.loadtexture(`assets/${this.asset}.png`);
@@ -345,8 +349,9 @@ void main() {
             let x, y;
             let xy = pts.add(this.tile, this.offset);
             let depth = Rekt.depth(this.tile);
-            if (this.low)
+            if (this.low) {
                 depth = Rekt.depth(pts.subtract(this.tile, this.size));
+            }
             if (this.tiled) {
                 xy = Rekt.mult(xy);
             }
@@ -357,9 +362,8 @@ void main() {
             else {
                 if (Lumber$1.OFFSET_CHUNK_OBJ_REKT) {
                     let c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk;
-                    if (c) {
+                    if (c)
                         xy = pts.subtract(xy, c.rekt_offset);
-                    }
                 }
                 x = xy[0] / 2 + xy[1] / 2;
                 y = xy[1] / 4 - xy[0] / 4;
@@ -794,16 +798,31 @@ void main() {
             this.rekt.tile = this.tile;
             this.rekt.asset = this.pst.asset;
             this.rekt.size = this.pst.size;
+            this.rekt.offset = this.pst.offset || [0, 0];
         }
     }
     (function (Building) {
+        Building.FourFour = {
+            asset: 'fourfour',
+            size: [48, 24]
+        };
+        Building.SixSix = {
+            asset: 'sixsix',
+            size: [72, 36]
+        };
         Building.SandHovel1 = {
-            asset: 'balmora/sandhovel1',
-            size: [181, 146]
+            asset: 'balmora/hovel1',
+            size: [192, 149],
+            offset: [0, 0]
         };
         Building.SandHovel2 = {
-            asset: 'balmora/sandhovel2',
-            size: [158, 140]
+            asset: 'balmora/hovel2',
+            size: [168, 143]
+        };
+        Building.SandAlleyGate = {
+            asset: 'balmora/alleygate',
+            size: [144, 96],
+            offset: [0, 0]
         };
     })(Building || (Building = {}));
     var Building$1 = Building;
@@ -811,8 +830,11 @@ void main() {
     var Ploppables;
     (function (Ploppables) {
         Ploppables.types = [
+            'fourfour',
+            'sixsix',
             'sandhovel1',
             'sandhovel2',
+            'sandalleygate',
             'tree'
         ];
         Ploppables.index = 0;
@@ -831,20 +853,23 @@ void main() {
                     remake = true;
                 }
             }
-            if (App$1.keys['b'] == 1) {
-                Ploppables.index = Ploppables.types.indexOf('sandhovel1');
-                remake = true;
-            }
-            else if (App$1.keys['t'] == 1) {
-                Ploppables.index = Ploppables.types.indexOf('tree');
-                remake = true;
+            const shortcuts = {
+                'y': 'fourfour',
+                'b': 'sandhovel1',
+                't': 'tree'
+            };
+            for (const s in shortcuts) {
+                if (App$1.keys[s]) {
+                    Ploppables.index = Ploppables.types.indexOf(shortcuts[s]);
+                    remake = true;
+                    break;
+                }
             }
             if (remake) {
                 Lumber$1.world.wheelable = false;
                 obj = factory(Ploppables.types[Ploppables.index]);
                 obj.finish();
                 obj.comes();
-                obj.update();
                 Ploppables.ghost === null || Ploppables.ghost === void 0 ? void 0 : Ploppables.ghost.unset();
                 Ploppables.ghost = obj;
             }
@@ -853,6 +878,7 @@ void main() {
                 if (Ploppables.ghost.rekt)
                     Ploppables.ghost.rekt.tile = Ploppables.ghost.tile;
                 (_a = Ploppables.ghost.rekt) === null || _a === void 0 ? void 0 : _a.now_update_pos();
+                Ploppables.ghost.update();
             }
             if (Ploppables.ghost && App$1.buttons[0]) {
                 Lumber$1.world.wheelable = true;
@@ -870,10 +896,16 @@ void main() {
         }
         Ploppables.update = update;
         function factory(type) {
-            if (type == 'sandhovel1')
+            if (type == 'fourfour')
+                return new Building$1(Building$1.FourFour);
+            else if (type == 'sixsix')
+                return new Building$1(Building$1.SixSix);
+            else if (type == 'sandhovel1')
                 return new Building$1(Building$1.SandHovel1);
             else if (type == 'sandhovel2')
                 return new Building$1(Building$1.SandHovel2);
+            else if (type == 'sandalleygate')
+                return new Building$1(Building$1.SandAlleyGate);
             else if (type == 'tree')
                 return new Tree();
             else
@@ -1239,8 +1271,8 @@ void main() {
 
     var Lumber;
     (function (Lumber) {
-        Lumber.USE_CHUNK_RT = true;
-        Lumber.OFFSET_CHUNK_OBJ_REKT = true;
+        Lumber.USE_CHUNK_RT = false;
+        Lumber.OFFSET_CHUNK_OBJ_REKT = false;
         Lumber.PAINT_OBJ_TICK_RATE = false;
         Lumber.MINIMUM_REKTS_BEFORE_RT = 0;
         Lumber.EVEN = 24; // very evenly divisible

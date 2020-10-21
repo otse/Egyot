@@ -7,8 +7,8 @@ import { Ploppables } from "./lod/Ploppables";
 
 export namespace Lumber {
 
-	export var USE_CHUNK_RT = true;
-	export var OFFSET_CHUNK_OBJ_REKT = true;
+	export var USE_CHUNK_RT = false;
+	export var OFFSET_CHUNK_OBJ_REKT = false;
 	export var PAINT_OBJ_TICK_RATE = false;
 	export var MINIMUM_REKTS_BEFORE_RT = 0;
 

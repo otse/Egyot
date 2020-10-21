@@ -9,13 +9,16 @@ import Building from "../objs/Building";
 import World from "./World";
 import Renderer from "../Renderer";
 
-type Factorio = 'sandhovel1' | 'sandhovel2' | 'tree';
+type Factorio = 'fourfour' | 'sixsix' | 'sandhovel1' | 'sandhovel2' | 'sandalleygate' | 'tree';
 
 export namespace Ploppables {
 
 	export var types: Factorio[] = [
+		'fourfour',
+		'sixsix',
 		'sandhovel1',
 		'sandhovel2',
+		'sandalleygate',
 		'tree'
 	]
 	export var index = 0;
@@ -36,13 +39,18 @@ export namespace Ploppables {
 			}
 		}
 
-		if (App.keys['b'] == 1) {
-			index = types.indexOf('sandhovel1');
-			remake = true;
+		const shortcuts: { [key: string]: Factorio } = {
+			'y': 'fourfour',
+			'b': 'sandhovel1',
+			't': 'tree'
 		}
-		else if (App.keys['t'] == 1) {
-			index = types.indexOf('tree');
-			remake = true;
+
+		for (const s in shortcuts) {
+			if (App.keys[s]) {
+				index = types.indexOf(shortcuts[s]);
+				remake = true;
+				break;
+			}
 		}
 
 		if (remake) {
@@ -50,7 +58,6 @@ export namespace Ploppables {
 			obj = factory(types[index]);
 			obj.finish();
 			obj.comes();
-			obj.update();
 			ghost?.unset();
 			ghost = obj;
 		}
@@ -60,6 +67,7 @@ export namespace Ploppables {
 			if (ghost.rekt)
 				ghost.rekt.tile = ghost.tile;
 			ghost.rekt?.now_update_pos();
+			ghost.update();
 		}
 
 		if (ghost && App.buttons[0]) {
@@ -79,10 +87,16 @@ export namespace Ploppables {
 	}
 
 	export function factory(type: Factorio): Obj {
-		if (type == 'sandhovel1')
+		if (type == 'fourfour')
+			return new Building(Building.FourFour);
+		else if (type == 'sixsix')
+			return new Building(Building.SixSix);
+		else if (type == 'sandhovel1')
 			return new Building(Building.SandHovel1);
 		else if (type == 'sandhovel2')
 			return new Building(Building.SandHovel2);
+		else if (type == 'sandalleygate')
+			return new Building(Building.SandAlleyGate);
 		else if (type == 'tree')
 			return new Tree();
 		else

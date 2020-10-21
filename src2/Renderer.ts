@@ -102,7 +102,7 @@ namespace Renderer {
 		clock = new Clock();
 
 		scene = new Scene();
-		scene.background = new Color('rgb(40, 72, 42)');
+		scene.background = new Color('#292929');
 		scene2 = new Scene();
 		rttscene = new Scene();
 
@@ -170,10 +170,10 @@ namespace Renderer {
 		w = window.innerWidth;
 		h = window.innerHeight;
 		if (w % 2 != 0) {
-			//w -= 1;
+			w -= 1;
 		}
 		if (h % 2 != 0) {
-			//h -= 1;
+			h -= 1;
 		}
 		let targetwidth = w;
 		let targetheight = h;

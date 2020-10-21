@@ -70,7 +70,7 @@ class Rekt {
 		this.used = true;
 
 		this.geometry = new PlaneBufferGeometry(
-			this.size[0], this.size[1], 1, 1);
+			this.size[0], this.size[1], 2, 2);
 
 		let map;
 		if (this.asset)
@@ -118,9 +118,10 @@ class Rekt {
 		
 		let depth = Rekt.depth(this.tile);
 
-		if (this.low)
+		if (this.low) {
 			depth = Rekt.depth(pts.subtract(this.tile, this.size));
-
+		}
+		
 		if (this.tiled) {
 			xy = Rekt.mult(xy);
 		}
@@ -132,9 +133,8 @@ class Rekt {
 		else {
 			if (Lumber.OFFSET_CHUNK_OBJ_REKT) {
 				let c = this.obj?.chunk;
-				if (c) {
+				if (c)
 					xy = pts.subtract(xy, c.rekt_offset);
-				}
 			}
 			x = xy[0] / 2 + xy[1] / 2;
 			y = xy[1] / 4 - xy[0] / 4;

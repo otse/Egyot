@@ -6,6 +6,7 @@ interface Preset
 {
 	asset: string;
 	size: vec2;
+	offset?: vec2;
 };
 
 class Building extends Obj {
@@ -20,19 +21,38 @@ class Building extends Obj {
 		this.rekt.tile = this.tile;
 		this.rekt.asset = this.pst.asset;
 		this.rekt.size = this.pst.size;
+		this.rekt.offset = this.pst.offset || [0, 0];
 	}
 }
 
 namespace Building
 {
+	export var FourFour: Preset = {
+		asset: 'fourfour',
+		size: [48, 24]
+	}
+
+	export var SixSix: Preset = {
+		asset: 'sixsix',
+		size: [72, 36]
+	}
+
 	export var SandHovel1: Preset = {
-		asset: 'balmora/sandhovel1',
-		size: [181, 146]
+		asset: 'balmora/hovel1',
+		size: [192, 149],
+		offset: [0, 0]
 	}
 
 	export var SandHovel2: Preset = {
-		asset: 'balmora/sandhovel2',
-		size: [158, 140]
+		asset: 'balmora/hovel2',
+		size: [168, 143]
+	}
+
+	export var SandAlleyGate: Preset = {
+		asset: 'balmora/alleygate',
+		size: [144, 96],
+		offset: [0, 0]
+
 	}
 }
 
