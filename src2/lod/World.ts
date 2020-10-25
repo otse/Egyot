@@ -25,14 +25,14 @@ class World {
 	pos: vec2 = [0, 0]
 	scale: number = 1
 	dpi: number = 1
-	
+
 	focal: vec3
 	view: aabb2
 	frustum: Rekt
-	
+
 	chunkMaster: ChunkMaster<Chunk>
 	bigChunks: ChunkMaster<Chunk>
-	
+
 	mouse_tiled: vec2 = [0, 0]
 	wheelable = true
 
@@ -59,9 +59,7 @@ class World {
 	add(obj: Obj) {
 		let c = this.getChunkAt(obj.tile);
 
-		let succeed = c.objs.add(obj);
-
-		if (succeed) {
+		if (c.objs.add(obj)) {
 			obj.chunk = c;
 
 			c.changed = true;
@@ -71,7 +69,10 @@ class World {
 			obj.comes();
 	}
 	remove(obj: Obj) {
-
+		if (obj.chunk?.objs.remove(obj)) {
+			obj.goes();
+			obj.chunk.changed = true;
+		}
 	}
 	update() {
 		this.move();
@@ -204,7 +205,7 @@ class World {
 		}
 	}
 	populate() {
-		
+
 		const every = (pos: vec2) => {
 			let obj = new Obj;
 			obj.rtt = false;

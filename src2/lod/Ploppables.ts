@@ -89,9 +89,19 @@ export namespace Ploppables {
 		}
 
 		if (App.keys['x'] == 1) {
-			let b = Lumber.world.chunkMaster.big(Lumber.world.mouse_tiled);
-			let c = Lumber.world.chunkMaster.at(b[0], b[1]);
+			console.log('x');
+			let ct = Lumber.world.chunkMaster.big(Lumber.world.mouse_tiled);
 
+			let c = Lumber.world.chunkMaster.at(ct[0], ct[1]);
+			if (c) {
+				let obj = c.objs.get(Lumber.world.mouse_tiled);
+				if (obj) {
+					Lumber.world.remove(obj);
+					obj.unset();
+				}
+				else
+					console.log('no obj there at', pts.to_string(Lumber.world.mouse_tiled));
+			}
 		}
 	}
 

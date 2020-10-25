@@ -39,6 +39,10 @@ class pts {
 		return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
 	}
 
+	static equals(a: vec2, b: vec2): boolean {
+		return a[0] == b[0] && a[1] == b[1];
+	}
+
 	static floor(a: vec2): vec2 {
 		return [Math.floor(a[0]), Math.floor(a[1])];
 	}

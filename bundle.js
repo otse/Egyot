@@ -229,6 +229,9 @@ void main() {
             const pr = (b) => b != undefined ? `, ${b}` : '';
             return `${a[0]}, ${a[1]}` + pr(a[2]) + pr(a[3]);
         }
+        static equals(a, b) {
+            return a[0] == b[0] && a[1] == b[1];
+        }
         static floor(a) {
             return [Math.floor(a[0]), Math.floor(a[1])];
         }
@@ -574,6 +577,11 @@ void main() {
         add(obj) {
             return this.table.add([obj, this.rate(obj)]);
         }
+        get(tile) {
+            for (let t of this.table.t)
+                if (pts.equals(t[0].tile, tile))
+                    return t[0];
+        }
         remove(obj) {
             return this.table.remove(obj);
         }
@@ -909,8 +917,18 @@ void main() {
                 Ploppables.ghost = null;
             }
             if (App$1.keys['x'] == 1) {
-                let b = Lumber$1.world.chunkMaster.big(Lumber$1.world.mouse_tiled);
-                let c = Lumber$1.world.chunkMaster.at(b[0], b[1]);
+                console.log('x');
+                let ct = Lumber$1.world.chunkMaster.big(Lumber$1.world.mouse_tiled);
+                let c = Lumber$1.world.chunkMaster.at(ct[0], ct[1]);
+                if (c) {
+                    let obj = c.objs.get(Lumber$1.world.mouse_tiled);
+                    if (obj) {
+                        Lumber$1.world.remove(obj);
+                        obj.unset();
+                    }
+                    else
+                        console.log('no obj there at', pts.to_string(Lumber$1.world.mouse_tiled));
+                }
             }
         }
         Ploppables.update = update;
@@ -1077,8 +1095,7 @@ void main() {
         }
         add(obj) {
             let c = this.getChunkAt(obj.tile);
-            let succeed = c.objs.add(obj);
-            if (succeed) {
+            if (c.objs.add(obj)) {
                 obj.chunk = c;
                 c.changed = true;
             }
@@ -1086,6 +1103,11 @@ void main() {
                 obj.comes();
         }
         remove(obj) {
+            var _a;
+            if ((_a = obj.chunk) === null || _a === void 0 ? void 0 : _a.objs.remove(obj)) {
+                obj.goes();
+                obj.chunk.changed = true;
+            }
         }
         update() {
             this.move();

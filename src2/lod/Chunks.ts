@@ -190,6 +190,11 @@ class Objs {
 	add(obj: Obj) {
 		return this.table.add([obj, this.rate(obj)]);
 	}
+	get(tile: vec2) {
+		for (let t of this.table.t)
+			if(pts.equals(t[0].tile, tile))
+				return t[0];
+	}
 	remove(obj: Obj) {
 		return this.table.remove(obj);
 	}
