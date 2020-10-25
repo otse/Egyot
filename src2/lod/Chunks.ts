@@ -108,11 +108,8 @@ class Chunk {
 	comes_pt2() {
 		if (!Lumber.USE_CHUNK_RT)
 			return;
-		if (Lumber.MINIMUM_REKTS_BEFORE_RT) {
-			let rtt = count(this, 'rtt');
-			if (rtt <= Lumber.MINIMUM_REKTS_BEFORE_RT)
-				return;
-		}
+		if (Lumber.MINIMUM_REKTS_BEFORE_RT <= count(this, 'rtt'))
+			return;
 		if (!this.rt)
 			this.rt = new RtChunk(this);
 		this.rt.comes();
@@ -162,21 +159,21 @@ class Tuple<T = []> {
 			if (this.t[i][k] == v)
 				return i;
 	}
-	add(t: T, k = this.key): boolean {
+	add(t: T, k = this.key) {
 		let i = this.search(k, t[k]);
 		if (i == undefined) {
 			this.t.push(t);
-			return !!1;
+			return true;
 		}
-		return !!0;
+		return false;
 	}
-	remove(v: any, k = this.key): boolean {
+	remove(v: any, k = this.key) {
 		let i = this.search(k, v);
 		if (i != undefined) {
 			this.t.splice(i, 1);
-			return !!1;
+			return true;
 		}
-		return !!0;
+		return false;
 	}
 }
 

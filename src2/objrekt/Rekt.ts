@@ -150,7 +150,7 @@ class Rekt {
 
 		this.position = [x, y, 0];
 
-		if (this.mesh) {			
+		if (this.mesh) {
 			this.mesh.renderOrder = depth;
 			this.mesh.position.fromArray(this.position);
 			this.mesh.updateMatrix();

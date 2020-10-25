@@ -497,11 +497,8 @@ void main() {
         comes_pt2() {
             if (!Lumber$1.USE_CHUNK_RT)
                 return;
-            if (Lumber$1.MINIMUM_REKTS_BEFORE_RT) {
-                let rtt = count(this, 'rtt');
-                if (rtt <= Lumber$1.MINIMUM_REKTS_BEFORE_RT)
-                    return;
-            }
+            if (Lumber$1.MINIMUM_REKTS_BEFORE_RT <= count(this, 'rtt'))
+                return;
             if (!this.rt)
                 this.rt = new RtChunk(this);
             this.rt.comes();
@@ -552,17 +549,17 @@ void main() {
             let i = this.search(k, t[k]);
             if (i == undefined) {
                 this.t.push(t);
-                return !!1;
+                return true;
             }
-            return !!0;
+            return false;
         }
         remove(v, k = this.key) {
             let i = this.search(k, v);
             if (i != undefined) {
                 this.t.splice(i, 1);
-                return !!1;
+                return true;
             }
-            return !!0;
+            return false;
         }
     }
     class Objs {
@@ -824,6 +821,21 @@ void main() {
             size: [144, 96],
             offset: [0, 0]
         };
+        Building.Stairs2 = {
+            asset: 'balmora/stairs2',
+            size: [120, 72],
+            offset: [0, 0]
+        };
+        Building.Stairs3 = {
+            asset: 'balmora/stairs3',
+            size: [120, 72],
+            offset: [0, 0]
+        };
+        Building.Platform22 = {
+            asset: 'balmora/platform22',
+            size: [48, 52],
+            offset: [0, 0]
+        };
     })(Building || (Building = {}));
     var Building$1 = Building;
 
@@ -835,6 +847,9 @@ void main() {
             'sandhovel1',
             'sandhovel2',
             'sandalleygate',
+            'stairs2',
+            'stairs3',
+            'platform22',
             'tree'
         ];
         Ploppables.index = 0;
@@ -893,6 +908,10 @@ void main() {
                 Ploppables.ghost.unset();
                 Ploppables.ghost = null;
             }
+            if (App$1.keys['x'] == 1) {
+                let b = Lumber$1.world.chunkMaster.big(Lumber$1.world.mouse_tiled);
+                let c = Lumber$1.world.chunkMaster.at(b[0], b[1]);
+            }
         }
         Ploppables.update = update;
         function factory(type) {
@@ -906,6 +925,12 @@ void main() {
                 return new Building$1(Building$1.SandHovel2);
             else if (type == 'sandalleygate')
                 return new Building$1(Building$1.SandAlleyGate);
+            else if (type == 'stairs2')
+                return new Building$1(Building$1.Stairs2);
+            else if (type == 'stairs3')
+                return new Building$1(Building$1.Stairs3);
+            else if (type == 'platform22')
+                return new Building$1(Building$1.Platform22);
             else if (type == 'tree')
                 return new Tree();
             else
@@ -913,14 +938,7 @@ void main() {
         }
         Ploppables.factory = factory;
         function plant_trees() {
-            //return;
-            console.log(`add ${tree_positions.length} trees from save`);
-            for (let pos of tree_positions) {
-                let tree = new Tree;
-                tree.tile = pos;
-                tree.finish();
-                Lumber$1.world.add(tree);
-            }
+            return;
         }
         Ploppables.plant_trees = plant_trees;
         function place_tile(chance, asset, pos) {
@@ -975,7 +993,6 @@ void main() {
         }
         Ploppables.area_fort = area_fort;
     })(Ploppables || (Ploppables = {}));
-    let tree_positions = [[12, 5], [20, 7], [16, 4], [8, 11], [28, 7], [40, 8], [39, 13], [17, 32], [-21, 11], [-18, 16], [-19, -28], [-24, -29], [-27, -13], [-17, 9], [-18, -1], [-6, 34], [65, 11], [0, 87], [5, 125], [-1, 172], [-62, 36], [-72, 125], [-65, 216], [4, 182], [14, 162], [2, 177], [3, 198], [6, 155], [7, 291], [-38, 350], [-59, 162], [-43, 112], [-106, 52], [154, 20], [213, 21], [141, -53], [23, -60], [62, -65], [260, -62], [241, -49], [251, -45], [220, -36], [209, -57], [223, -65], [209, -45], [181, -67], [190, -83], [221, -88], [264, -87], [274, -95], [263, -106], [255, -106], [237, -110], [248, -124], [239, -65], [221, -49], [189, -94], [263, -55], [271, -44], [278, -61], [246, -51], [240, -55], [226, -43], [228, -39], [208, -49], [248, -65], [227, -70], [230, -17], [210, 12], [269, 33], [275, 156], [66, -210], [125, -49], [-106, 46], [-98, 44], [-97, 55], [-108, -67], [92, -26], [73, -29], [110, -11], [3, -26], [-19, -52], [70, -36], [-35, -82], [-23, -90], [-19, -118], [-169, 19], [20, 160], [36, 92], [-62, 91], [-112, 181], [-114, 177], [-106, 179], [-107, 174], [-102, 167], [-108, 159], [-101, 192], [30, -29], [25, -33], [31, -36], [36, -25], [41, -38], [6, -55], [25, -79], [23, -87], [125, -54], [176, -4], [-164, 12], [-157, 19], [-7, 254], [-26, 58]];
     const trees = [
         'egyt/tree/oaktree3',
         'egyt/tree/oaktree4',

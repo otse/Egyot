@@ -9,7 +9,7 @@ import Building from "../objs/Building";
 import World from "./World";
 import Renderer from "../Renderer";
 
-type Factorio = 'fourfour' | 'sixsix' | 'sandhovel1' | 'sandhovel2' | 'sandalleygate' | 'tree';
+type Factorio = 'fourfour' | 'sixsix' | 'sandhovel1' | 'sandhovel2' | 'sandalleygate' | 'stairs2' | 'stairs3' | 'platform22' | 'tree';
 
 export namespace Ploppables {
 
@@ -19,6 +19,9 @@ export namespace Ploppables {
 		'sandhovel1',
 		'sandhovel2',
 		'sandalleygate',
+		'stairs2',
+		'stairs3',
+		'platform22',
 		'tree'
 	]
 	export var index = 0;
@@ -84,6 +87,12 @@ export namespace Ploppables {
 			ghost.unset();
 			ghost = null;
 		}
+
+		if (App.keys['x'] == 1) {
+			let b = Lumber.world.chunkMaster.big(Lumber.world.mouse_tiled);
+			let c = Lumber.world.chunkMaster.at(b[0], b[1]);
+
+		}
 	}
 
 	export function factory(type: Factorio): Obj {
@@ -97,6 +106,12 @@ export namespace Ploppables {
 			return new Building(Building.SandHovel2);
 		else if (type == 'sandalleygate')
 			return new Building(Building.SandAlleyGate);
+		else if (type == 'stairs2')
+			return new Building(Building.Stairs2);
+		else if (type == 'stairs3')
+			return new Building(Building.Stairs3);
+		else if (type == 'platform22')
+			return new Building(Building.Platform22);
 		else if (type == 'tree')
 			return new Tree();
 		else
@@ -104,7 +119,7 @@ export namespace Ploppables {
 	}
 
 	export function plant_trees() {
-		//return;
+		return;
 		console.log(`add ${tree_positions.length} trees from save`);
 		for (let pos of tree_positions) {
 			let tree = new Tree;

@@ -54,6 +54,25 @@ namespace Building
 		offset: [0, 0]
 
 	}
+
+	export var Stairs2: Preset = {
+		asset: 'balmora/stairs2',
+		size: [120, 72],
+		offset: [0, 0]
+	}
+
+	export var Stairs3: Preset = {
+		asset: 'balmora/stairs3',
+		size: [120, 72],
+		offset: [0, 0]
+	}
+
+	export var Platform22: Preset = {
+		asset: 'balmora/platform22',
+		size: [48, 52],
+		offset: [0, 0]
+
+	}
 }
 
 export default Building;
