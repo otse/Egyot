@@ -2,8 +2,7 @@ import Lumber from "../Lumber";
 import Obj from "../objrekt/Obj";
 import Rekt from "../objrekt/Rekt";
 
-interface Preset
-{
+interface Preset {
 	asset: string;
 	size: vec2;
 	offset?: vec2;
@@ -25,8 +24,7 @@ class Building extends Obj {
 	}
 }
 
-namespace Building
-{
+namespace Building {
 	export var FourFour: Preset = {
 		asset: 'fourfour',
 		size: [48, 24]
@@ -52,7 +50,6 @@ namespace Building
 		asset: 'balmora/alleygate',
 		size: [144, 96],
 		offset: [0, 0]
-
 	}
 
 	export var Stairs2: Preset = {
@@ -71,7 +68,12 @@ namespace Building
 		asset: 'balmora/platform22',
 		size: [48, 52],
 		offset: [0, 0]
+	}
 
+	export var Platform23: Preset = {
+		asset: 'balmora/platform23',
+		size: [72, 65],
+		offset: [0, 0]
 	}
 }
 

@@ -844,6 +844,11 @@ void main() {
             size: [48, 52],
             offset: [0, 0]
         };
+        Building.Platform23 = {
+            asset: 'balmora/platform23',
+            size: [72, 65],
+            offset: [0, 0]
+        };
     })(Building || (Building = {}));
     var Building$1 = Building;
 
@@ -858,6 +863,7 @@ void main() {
             'stairs2',
             'stairs3',
             'platform22',
+            'platform23',
             'tree'
         ];
         Ploppables.index = 0;
@@ -949,6 +955,8 @@ void main() {
                 return new Building$1(Building$1.Stairs3);
             else if (type == 'platform22')
                 return new Building$1(Building$1.Platform22);
+            else if (type == 'platform23')
+                return new Building$1(Building$1.Platform23);
             else if (type == 'tree')
                 return new Tree();
             else
@@ -1097,10 +1105,10 @@ void main() {
             let c = this.getChunkAt(obj.tile);
             if (c.objs.add(obj)) {
                 obj.chunk = c;
-                c.changed = true;
+                obj.chunk.changed = true;
+                if (c.on)
+                    obj.comes();
             }
-            if (c.on)
-                obj.comes();
         }
         remove(obj) {
             var _a;

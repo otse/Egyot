@@ -61,12 +61,10 @@ class World {
 
 		if (c.objs.add(obj)) {
 			obj.chunk = c;
-
-			c.changed = true;
+			obj.chunk.changed = true;
+			if (c.on)
+				obj.comes();
 		}
-
-		if (c.on)
-			obj.comes();
 	}
 	remove(obj: Obj) {
 		if (obj.chunk?.objs.remove(obj)) {

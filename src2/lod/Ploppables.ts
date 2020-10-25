@@ -9,7 +9,7 @@ import Building from "../objs/Building";
 import World from "./World";
 import Renderer from "../Renderer";
 
-type Factorio = 'fourfour' | 'sixsix' | 'sandhovel1' | 'sandhovel2' | 'sandalleygate' | 'stairs2' | 'stairs3' | 'platform22' | 'tree';
+type Factorio = 'fourfour' | 'sixsix' | 'sandhovel1' | 'sandhovel2' | 'sandalleygate' | 'stairs2' | 'stairs3' | 'platform22' | 'platform23' | 'tree';
 
 export namespace Ploppables {
 
@@ -22,6 +22,7 @@ export namespace Ploppables {
 		'stairs2',
 		'stairs3',
 		'platform22',
+		'platform23',
 		'tree'
 	]
 	export var index = 0;
@@ -122,6 +123,8 @@ export namespace Ploppables {
 			return new Building(Building.Stairs3);
 		else if (type == 'platform22')
 			return new Building(Building.Platform22);
+		else if (type == 'platform23')
+			return new Building(Building.Platform23);
 		else if (type == 'tree')
 			return new Tree();
 		else
@@ -267,9 +270,9 @@ export class Wheat extends Obj {
 		this.rekt = new Rekt;
 		this.rekt.obj = this;
 		this.rekt.asset =
-			this.growth == 1 ? Lumber.sample(tillering) :
-				this.growth == 2 ? Lumber.sample(ripening) :
-					this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
+		this.growth == 1 ? Lumber.sample(tillering) :
+		this.growth == 2 ? Lumber.sample(ripening) :
+		this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
 		this.rekt.tile = this.tile;
 		this.rekt.size = [22, 22];
 	}
