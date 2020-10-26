@@ -66,22 +66,22 @@ namespace Board {
 			Board.win.find('#fpsStat').text(`Fps: ${parseInt(Renderer.fps)}`);
 			//Board.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
 
-			Board.win.find('#gameZoom').html(`Scale: <span>${Lumber.world.scale} / ndpi ${Lumber.world.dpi} / ${window.devicePixelRatio}`);
-			Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber.world.view.min[0]}, ${Lumber.world.view.min[1]} x ${Lumber.world.view.max[0]}, ${Lumber.world.view.max[1]}`);
+			Board.win.find('#gameZoom').html(`Scale: <span>${Lumber.wlrd.scale} / ndpi ${Lumber.wlrd.dpi} / ${window.devicePixelRatio}`);
+			Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber.wlrd.view.min[0]}, ${Lumber.wlrd.view.min[1]} x ${Lumber.wlrd.view.max[0]}, ${Lumber.wlrd.view.max[1]}`);
 			//Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
 
-			Board.win.find('#numChunks').text(`Num chunks: ${Lumber.world.chunkMaster.fitter.shown.length} / ${Lumber.world.chunkMaster.total}`);
+			Board.win.find('#numChunks').text(`Num chunks: ${Lumber.wlrd.foreground.fitter.shown.length} / ${Lumber.wlrd.foreground.total}`);
 			Board.win.find('#numObjs').html(`Num objs: ${Obj.active} / ${Obj.num}`);
 			Board.win.find('#numRekts').html(`Num rekts: ${Rekt.active} / ${Rekt.num}`);
 
-			let b = Lumber.world.chunkMaster.big(Lumber.world.mouse_tiled);
-			let c = Lumber.world.chunkMaster.at(b[0], b[1]);
+			let b = Lumber.wlrd.foreground.big(Lumber.wlrd.mtil);
+			let c = Lumber.wlrd.foreground.at(b[0], b[1]);
 				
-			Board.win.find('#square').text(`Mouse: ${pts.to_string(Lumber.world.mouse_tiled)}`);
+			Board.win.find('#square').text(`Mouse: ${pts.to_string(Lumber.wlrd.mtil)}`);
 			Board.win.find('#squareChunk').text(`Mouse chunk: ${pts.to_string(b)}`);
 			Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${c?.rt ? 'true' : 'false'}`);
-			Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber.world.chunkMaster.fitter.lines}`);
-			Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber.world.chunkMaster.fitter.total}`);
+			Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber.wlrd.foreground.fitter.lines}`);
+			Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber.wlrd.foreground.fitter.total}`);
 		}
 	}
 

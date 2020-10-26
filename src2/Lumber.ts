@@ -13,9 +13,10 @@ export namespace Lumber {
 	export var MINIMUM_REKTS_BEFORE_RT = 0;
 
 	export const EVEN = 24; // very evenly divisible
+	export const HALVE = EVEN / 2;
 	export const YUM = EVEN;
 
-	export var world: World;
+	export var wlrd: World;
 	export var ply: Obj;
 
 	var started = false;
@@ -55,7 +56,7 @@ export namespace Lumber {
 	}
 	export function init() {
 		console.log('egyt init');
-		world = World.rig();
+		wlrd = World.rig();
 		
 		resourced('RC_UNDEFINED');
 		resourced('READY');
@@ -69,7 +70,7 @@ export namespace Lumber {
 		if (window.location.href.indexOf("#nochunkrt") != -1)
 			USE_CHUNK_RT = false;
 
-		world.populate();
+		wlrd.populate();
 		
 		Ploppables.plant_trees();
 
@@ -137,7 +138,7 @@ export namespace Lumber {
 		if (!started)
 			return;
 
-		world.update();
+		wlrd.update();
 
 		Board.update();
 

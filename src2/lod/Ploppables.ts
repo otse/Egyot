@@ -9,13 +9,13 @@ import Building from "../objs/Building";
 import World from "./World";
 import Renderer from "../Renderer";
 
-type Factorio = 'fourfour' | 'sixsix' | 'sandhovel1' | 'sandhovel2' | 'sandalleygate' | 'stairs2' | 'stairs3' | 'platform22' | 'platform23' | 'tree';
+type Factorio = 'twotwo' | 'threethree' | 'sandhovel1' | 'sandhovel2' | 'sandalleygate' | 'stairs2' | 'stairs3' | 'platform22' | 'platform23' | 'tree';
 
 export namespace Ploppables {
 
 	export var types: Factorio[] = [
-		'fourfour',
-		'sixsix',
+		'twotwo',
+		'threethree',
 		'sandhovel1',
 		'sandhovel2',
 		'sandalleygate',
@@ -44,7 +44,7 @@ export namespace Ploppables {
 		}
 
 		const shortcuts: { [key: string]: Factorio } = {
-			'y': 'fourfour',
+			'y': 'twotwo',
 			'b': 'sandhovel1',
 			't': 'tree'
 		}
@@ -58,7 +58,7 @@ export namespace Ploppables {
 		}
 
 		if (remake) {
-			Lumber.world.wheelable = false;
+			Lumber.wlrd.wheelable = false;
 			obj = factory(types[index]);
 			obj.finish();
 			obj.comes();
@@ -67,50 +67,49 @@ export namespace Ploppables {
 		}
 
 		if (ghost) {
-			ghost.tile = Lumber.world.mouse_tiled;
+			ghost.tile = Lumber.wlrd.mtil;
 			if (ghost.rekt)
 				ghost.rekt.tile = ghost.tile;
-			ghost.rekt?.now_update_pos();
+			ghost.manualupdate();
 			ghost.update();
 		}
 
 		if (ghost && App.buttons[0]) {
-			Lumber.world.wheelable = true;
+			Lumber.wlrd.wheelable = true;
 			console.log('plop');
 			ghost.goes();
-			Lumber.world.add(ghost);
+			Lumber.wlrd.add(ghost);
 			ghost = null;
 		}
 
 		if (ghost && App.keys['escape'] == 1) {
-			Lumber.world.wheelable = true;
+			Lumber.wlrd.wheelable = true;
 			console.log('unplop');
 			ghost.unset();
 			ghost = null;
 		}
 
 		if (App.keys['x'] == 1) {
-			console.log('x');
-			let ct = Lumber.world.chunkMaster.big(Lumber.world.mouse_tiled);
-
-			let c = Lumber.world.chunkMaster.at(ct[0], ct[1]);
+			let ct = Lumber.wlrd.foreground.big(Lumber.wlrd.mtil);
+			
+			let c = Lumber.wlrd.foreground.at(ct[0], ct[1]);
 			if (c) {
-				let obj = c.objs.get(Lumber.world.mouse_tiled);
+				let obj = c.objs.get(Lumber.wlrd.mtil);
 				if (obj) {
-					Lumber.world.remove(obj);
+					Lumber.wlrd.remove(obj);
 					obj.unset();
 				}
 				else
-					console.log('no obj there at', pts.to_string(Lumber.world.mouse_tiled));
+					console.log('no obj there at', pts.to_string(Lumber.wlrd.mtil));
 			}
 		}
 	}
 
 	export function factory(type: Factorio): Obj {
-		if (type == 'fourfour')
-			return new Building(Building.FourFour);
-		else if (type == 'sixsix')
-			return new Building(Building.SixSix);
+		if (type == 'twotwo')
+			return new Building(Building.TwoTwo);
+		else if (type == 'threethree')
+			return new Building(Building.ThreeThree);
 		else if (type == 'sandhovel1')
 			return new Building(Building.SandHovel1);
 		else if (type == 'sandhovel2')
@@ -138,7 +137,7 @@ export namespace Ploppables {
 			let tree = new Tree;
 			tree.tile = pos;
 			tree.finish();
-			Lumber.world.add(tree);
+			Lumber.wlrd.add(tree);
 		}
 	}
 
@@ -149,7 +148,7 @@ export namespace Ploppables {
 		tile.tile = pos;
 		tile.asset = asset;
 		tile.finish();
-		Lumber.world.add(tile);
+		Lumber.wlrd.add(tile);
 		return tile;
 	}
 
@@ -171,7 +170,7 @@ export namespace Ploppables {
 		let crop = new Wheat(growth);
 		crop.tile = tile;
 		crop.finish();
-		Lumber.world.add(crop);
+		Lumber.wlrd.add(crop);
 		return crop;
 	}
 
@@ -187,7 +186,7 @@ export namespace Ploppables {
 		let crop = new Wheat(growth);
 		crop.tile = tile;
 		crop.finish();
-		Lumber.world.add(crop);
+		Lumber.wlrd.add(crop);
 		return crop;
 	}
 

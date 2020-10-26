@@ -30,10 +30,10 @@ class World {
 	view: aabb2
 	frustum: Rekt
 
-	chunkMaster: ChunkMaster<Chunk>
-	bigChunks: ChunkMaster<Chunk>
+	foreground: ChunkMaster<Chunk>
+	background: ChunkMaster<Chunk>
 
-	mouse_tiled: vec2 = [0, 0]
+	mtil: vec2 = [0, 0]
 	wheelable = true
 
 	constructor() {
@@ -57,7 +57,7 @@ class World {
 		console.log('world');
 	}
 	add(obj: Obj) {
-		let c = this.getChunkAt(obj.tile);
+		let c = this.foreground.attile(obj.tile);
 
 		if (c.objs.add(obj)) {
 			obj.chunk = c;
@@ -75,28 +75,25 @@ class World {
 	update() {
 		this.move();
 		this.mark_mouse();
-		this.chunkMaster.update();
-		this.bigChunks.update();
-	}
-	getChunkAt(zx: vec2 | vec3) {
-		return this.chunkMaster.which(<vec2>zx);
+		this.foreground.update();
+		this.background.update();
 	}
 
 	mark_mouse() {
 		let m: vec2 = [App.pos.x, App.pos.y];
 		m[1] = -m[1];
-		m = pts.divide(m, Lumber.world.scale);
+		m = pts.divide(m, Lumber.wlrd.scale);
 
-		let p = <vec2>[Lumber.world.view.min[0], Lumber.world.view.max[1]];
+		let p = <vec2>[Lumber.wlrd.view.min[0], Lumber.wlrd.view.max[1]];
 		p = pts.add(p, m);
 
 		const unprojected = World.unproject(p);
 
-		this.mouse_tiled = unprojected.tiled;;
+		this.mtil = unprojected.tiled;;
 	}
 	init() {
-		this.chunkMaster = new ChunkMaster<Chunk>(Chunk, 20);
-		this.bigChunks = new ChunkMaster<Chunk>(Chunk, 40);
+		this.foreground = new ChunkMaster<Chunk>(Chunk, 20);
+		this.background = new ChunkMaster<Chunk>(Chunk, 20);
 
 		Lumber.ply = new Ply;
 		Lumber.ply.tile = [0, 0]
@@ -199,7 +196,7 @@ class World {
 		if (SHOW_FRUSTUM) {
 			this.frustum.mesh.scale.set(w2, h2, 1);
 			this.frustum.tile = pts.divide(<vec2><unknown>this.focal, Lumber.EVEN);
-			this.frustum.now_update_pos();
+			this.frustum.update();
 		}
 	}
 	populate() {
@@ -208,12 +205,12 @@ class World {
 			let obj = new Obj;
 			obj.rtt = false;
 			obj.rekt = new Rekt;
-			obj.rekt.low = true;
+			//obj.rekt.low = true;
 			obj.rekt.size = [480, 240];
 			obj.rekt.offset = [19, 0];
 			obj.tile = obj.rekt.tile = pts.mult(pos, 20);
 			obj.rekt.asset = 'balmora/desert1010'
-			Lumber.world.add(obj);
+			Lumber.wlrd.add(obj);
 		}
 
 		//pts.area_every(new aabb2([-10, -10], [10, 10]), every);

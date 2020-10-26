@@ -161,45 +161,6 @@ void main() {
     })(Renderer || (Renderer = {}));
     var Renderer$1 = Renderer;
 
-    class Obj {
-        constructor() {
-            this.order = 0;
-            this.rate = 1;
-            this.rtt = true;
-            this.rekt = null;
-            this.chunk = null;
-            this.tile = [0, 0];
-            Obj.num++;
-        }
-        update() {
-            var _a;
-            if (Lumber$1.PAINT_OBJ_TICK_RATE)
-                (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.paint_alternate();
-        }
-        comes() {
-            var _a;
-            Obj.active++;
-            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.use();
-        }
-        goes() {
-            var _a;
-            Obj.active--;
-            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unuse();
-        }
-        unset() {
-            var _a;
-            Obj.num--;
-            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unset();
-        }
-        finish() { }
-    }
-    (function (Obj) {
-        Obj.active = 0;
-        Obj.num = 0;
-        //export type Struct = Obj['struct']
-    })(Obj || (Obj = {}));
-    var Obj$1 = Obj;
-
     class pts {
         static pt(a) {
             return { x: a[0], y: a[1] };
@@ -269,14 +230,13 @@ void main() {
 
     class Rekt {
         constructor() {
-            this.low = false;
-            this.tiled = true;
             this.tile = [0, 0];
             this.offset = [0, 0];
             this.size = [1, 1];
             this.opacity = 1;
             this.center = [0, 0];
             this.position = [0, 0, 0];
+            //low = false
             this.used = false;
             this.flick = false;
             this.plain = false;
@@ -329,7 +289,7 @@ void main() {
             if (this.flip)
                 this.mesh.scale.x = -this.mesh.scale.x;
             //UV.FlipPlane(this.geometry, 0, true);
-            this.now_update_pos();
+            this.update();
             this.getgroup().add(this.mesh);
         }
         getgroup() {
@@ -347,27 +307,20 @@ void main() {
             let xy = pts.add(this.tile, this.offset);
             return xy;
         }
-        now_update_pos() {
+        update() {
             var _a;
             let x, y;
             let xy = pts.add(this.tile, this.offset);
-            let depth = Rekt.depth(this.tile);
-            if (this.low) {
-                depth = Rekt.depth(pts.subtract(this.tile, this.size));
-            }
-            if (this.tiled) {
-                xy = Rekt.mult(xy);
-            }
+            //let squared = this.size[0] / 2 / Lumber.HALVE;
+            //console.log('squared',squared);
             if (this.plain) {
                 x = xy[0];
                 y = xy[1];
             }
             else {
-                if (Lumber$1.OFFSET_CHUNK_OBJ_REKT) {
-                    let c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk;
-                    if (c)
-                        xy = pts.subtract(xy, c.rekt_offset);
-                }
+                xy = pts.mult(xy, Lumber$1.EVEN);
+                if (Lumber$1.OFFSET_CHUNK_OBJ_REKT && ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk))
+                    xy = pts.subtract(xy, this.obj.chunk.rekt_offset);
                 x = xy[0] / 2 + xy[1] / 2;
                 y = xy[1] / 4 - xy[0] / 4;
                 this.center = [x, y];
@@ -378,9 +331,16 @@ void main() {
             }
             this.position = [x, y, 0];
             if (this.mesh) {
-                this.mesh.renderOrder = depth;
+                this.setdepth();
                 this.mesh.position.fromArray(this.position);
                 this.mesh.updateMatrix();
+            }
+        }
+        setdepth() {
+            var _a;
+            if (this.mesh) {
+                let depth = ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.depth) || Rekt.simpledepth(this.tile);
+                this.mesh.renderOrder = depth;
             }
         }
     }
@@ -388,14 +348,10 @@ void main() {
         Rekt.num = 0;
         Rekt.active = 0;
         //export type Struct = Rekt['struct']
-        function depth(t) {
+        function simpledepth(t) {
             return -t[1] + t[0];
         }
-        Rekt.depth = depth;
-        function mult(t) {
-            return pts.mult(t, Lumber$1.EVEN);
-        }
-        Rekt.mult = mult;
+        Rekt.simpledepth = simpledepth;
     })(Rekt || (Rekt = {}));
     var Rekt$1 = Rekt;
 
@@ -441,9 +397,92 @@ void main() {
     }
     aabb2.TEST = TEST;
 
+    class Obj {
+        //screen: aabb2 | null = null
+        //height_in_halves = 0
+        constructor() {
+            this.depth = 0;
+            this.rate = 1;
+            this.rtt = true;
+            this.area = [1, 1];
+            this.tile = [0, 0];
+            this.rekt = null;
+            this.chunk = null;
+            Obj.num++;
+        }
+        comes() {
+            var _a;
+            Obj.active++;
+            this.manualupdate();
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.use();
+        }
+        goes() {
+            var _a;
+            Obj.active--;
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unuse();
+        }
+        unset() {
+            var _a;
+            Obj.num--;
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unset();
+        }
+        finish() {
+            this.setarea();
+        }
+        setarea() {
+            this.bound = new aabb2([0, 0], this.area);
+            this.bound.translate(this.tile);
+        }
+        update() {
+            var _a;
+            if (Lumber$1.PAINT_OBJ_TICK_RATE)
+                (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.paint_alternate();
+        }
+        manualupdate() {
+            var _a;
+            this.setarea();
+            this.fitarea();
+            (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.update();
+        }
+        fitarea() {
+            //const mult = pts.mult(this.tile, Lumber.EVEN);
+            //const pt = pts.pt(mult);
+            //this.screen = new aabb2(
+            //	[pt.x, pt.x + this.size[0]],
+            //	[pt.y, pt.y + this.size[1]]);
+            this.depth = Rekt$1.simpledepth(this.tile);
+            if (!this.bound || !this.rekt)
+                return;
+            const around = [
+                [-1, 1], [0, 1], [1, 1],
+                [-1, 0], [0, 0], [1, 0],
+                [-1, -1], [0, -1], [1, -1]
+            ];
+            let big = /*this.chunk || */ Lumber$1.wlrd.foreground.big(this.tile);
+            for (const a of around) {
+                let p = pts.add(big, a);
+                let c = Lumber$1.wlrd.foreground.at(p[0], p[1]);
+                if (c) {
+                    for (const t of c.objs.tuple.tuple) {
+                        const obj = t[0];
+                        let test = obj.bound.test(this.bound);
+                        if (test)
+                            console.log('test', test);
+                    }
+                }
+            }
+        }
+    }
+    (function (Obj) {
+        Obj.active = 0;
+        Obj.num = 0;
+        //export type Struct = Obj['struct']
+    })(Obj || (Obj = {}));
+    var Obj$1 = Obj;
+
     const count = (c, prop) => {
         let num = 0;
-        for (let t of c.objs.table.t)
+        for (let t of c.objs.tuple.tuple)
             if (t[0][prop])
                 num++;
         return num;
@@ -477,16 +516,16 @@ void main() {
                 const zxc = [...zx, 0];
                 this.group.position.fromArray(zxc);
                 this.grouprt.position.fromArray(zxc);
-                const depth = Rekt$1.depth(this.order_tile);
+                const depth = Rekt$1.simpledepth(this.order_tile);
                 this.group.renderOrder = depth;
                 this.grouprt.renderOrder = depth;
             }
             // note: non screen bound not used anymore
-            this.bound = new aabb2([pt.x * this.master.span, pt.y * this.master.span], [(pt.x + 1) * this.master.span, (pt.y + 1) * this.master.span]);
+            this.dimetricBoundCurrentlyNotUsed = new aabb2([pt.x * this.master.span, pt.y * this.master.span], [(pt.x + 1) * this.master.span, (pt.y + 1) * this.master.span]);
             this.screen = Chunk.Sscreen(pt.x, pt.y, this.master);
         }
         empty() {
-            return this.objs.table.t.length < 1;
+            return this.objs.tuple.tuple.length < 1;
         }
         comes() {
             if (this.on || this.empty())
@@ -519,7 +558,7 @@ void main() {
             this.on = false;
         }
         oob() {
-            return Lumber$1.world.view.test(this.screen) == aabb2.TEST.Outside;
+            return Lumber$1.wlrd.view.test(this.screen) == aabb2.TEST.Outside;
         }
         update() {
             var _a;
@@ -540,18 +579,18 @@ void main() {
     class Tuple {
         constructor(key = 0) {
             this.key = key;
-            this.t = [];
+            this.tuple = [];
         }
         search(k = this.key, v) {
-            let i = this.t.length;
+            let i = this.tuple.length;
             while (i--)
-                if (this.t[i][k] == v)
+                if (this.tuple[i][k] == v)
                     return i;
         }
         add(t, k = this.key) {
             let i = this.search(k, t[k]);
             if (i == undefined) {
-                this.t.push(t);
+                this.tuple.push(t);
                 return true;
             }
             return false;
@@ -559,7 +598,7 @@ void main() {
         remove(v, k = this.key) {
             let i = this.search(k, v);
             if (i != undefined) {
-                this.t.splice(i, 1);
+                this.tuple.splice(i, 1);
                 return true;
             }
             return false;
@@ -569,24 +608,24 @@ void main() {
         constructor(chunk) {
             this.chunk = chunk;
             this.rtts = 0;
-            this.table = new Tuple;
+            this.tuple = new Tuple;
         }
         rate(obj) {
-            return this.table.t.length * obj.rate;
+            return this.tuple.tuple.length * obj.rate;
         }
         add(obj) {
-            return this.table.add([obj, this.rate(obj)]);
+            return this.tuple.add([obj, this.rate(obj)]);
         }
         get(tile) {
-            for (let t of this.table.t)
+            for (let t of this.tuple.tuple)
                 if (pts.equals(t[0].tile, tile))
                     return t[0];
         }
         remove(obj) {
-            return this.table.remove(obj);
+            return this.tuple.remove(obj);
         }
         updates() {
-            for (let t of this.table.t) {
+            for (let t of this.tuple.tuple) {
                 let rate = t[1]--;
                 if (rate <= 0) {
                     t[0].update();
@@ -595,11 +634,11 @@ void main() {
             }
         }
         comes() {
-            for (let t of this.table.t)
+            for (let t of this.tuple.tuple)
                 t[0].comes();
         }
         goes() {
-            for (let t of this.table.t)
+            for (let t of this.tuple.tuple)
                 t[0].goes();
         }
     }
@@ -623,27 +662,24 @@ void main() {
             return pts.floor(pts.divide(zx, this.span));
         }
         at(x, y) {
-            let c;
             if (this.arrays[y] == undefined)
                 this.arrays[y] = [];
-            c = this.arrays[y][x];
+            return this.arrays[y][x];
+        }
+        atmake(x, y) {
+            return this.at(x, y) || this.make(x, y);
+        }
+        attile(t) {
+            let b = this.big(t);
+            let c = this.atmake(b[0], b[1]);
             return c;
         }
         make(x, y) {
-            let c;
-            c = this.at(x, y);
+            let c = this.at(x, y);
             if (c)
                 return c;
             c = this.arrays[y][x] = new this.testType(x, y, this);
             return c;
-        }
-        which(t) {
-            let b = this.big(t);
-            let c = this.guarantee(b[0], b[1]);
-            return c;
-        }
-        guarantee(x, y) {
-            return this.at(x, y) || this.make(x, y);
         }
     }
     class Tailorer {
@@ -665,7 +701,7 @@ void main() {
             }
         }
         update() {
-            let middle = World$1.unproject(Lumber$1.world.view.center()).tiled;
+            let middle = World$1.unproject(Lumber$1.wlrd.view.center()).tiled;
             let b = this.master.big(middle);
             this.lines = this.total = 0;
             this.off();
@@ -678,7 +714,7 @@ void main() {
             while (true) {
                 i++;
                 let c;
-                c = this.master.guarantee(x, y);
+                c = this.master.atmake(x, y);
                 if (!c.on && c.oob()) {
                     if (s > 2) {
                         if (j == 0) {
@@ -745,7 +781,7 @@ void main() {
         // todo pool the rts?
         comes() {
             this.rekt.use();
-            this.rekt.mesh.renderOrder = Rekt$1.depth(this.chunk.order_tile);
+            this.rekt.mesh.renderOrder = Rekt$1.simpledepth(this.chunk.order_tile);
             this.target = Renderer$1.rendertarget(this.width, this.height);
         }
         goes() {
@@ -780,7 +816,7 @@ void main() {
     class Ply extends Man {
         constructor() {
             super();
-            this.order = 9;
+            this.depth = 9;
         }
         produce() {
             super.produce();
@@ -798,56 +834,70 @@ void main() {
             //this.rtt = false;
         }
         finish() {
+            this.area = this.pst.area;
             this.rekt = new Rekt$1;
             this.rekt.obj = this;
             this.rekt.tile = this.tile;
             this.rekt.asset = this.pst.asset;
             this.rekt.size = this.pst.size;
-            this.rekt.offset = this.pst.offset || [0, 0];
+            this.rekt.offset = this.pst.offset;
+            super.finish();
         }
     }
     (function (Building) {
-        Building.FourFour = {
-            asset: 'fourfour',
-            size: [48, 24]
+        Building.TwoTwo = {
+            asset: 'twotwo',
+            size: [48, 24],
+            area: [2, 2],
+            offset: [0, 0],
         };
-        Building.SixSix = {
-            asset: 'sixsix',
-            size: [72, 36]
+        Building.ThreeThree = {
+            asset: 'threethree',
+            size: [72, 36],
+            area: [3, 3],
+            offset: [0, 0],
         };
         Building.SandHovel1 = {
             asset: 'balmora/hovel1',
             size: [192, 149],
-            offset: [0, 0]
+            area: [6, 8],
+            offset: [0, 0],
         };
         Building.SandHovel2 = {
             asset: 'balmora/hovel2',
-            size: [168, 143]
+            size: [168, 143],
+            area: [6, 7],
+            offset: [0, 0],
         };
         Building.SandAlleyGate = {
             asset: 'balmora/alleygate',
             size: [144, 96],
-            offset: [0, 0]
+            area: [1, 4],
+            offset: [0, 0],
         };
         Building.Stairs2 = {
             asset: 'balmora/stairs2',
             size: [120, 72],
-            offset: [0, 0]
+            area: [4, 2],
+            offset: [0, 0],
         };
         Building.Stairs3 = {
             asset: 'balmora/stairs3',
             size: [120, 72],
-            offset: [0, 0]
+            area: [0, 0],
+            offset: [0, 0],
         };
         Building.Platform22 = {
             asset: 'balmora/platform22',
             size: [48, 52],
-            offset: [0, 0]
+            area: [0, 0],
+            offset: [0, 0],
         };
         Building.Platform23 = {
             asset: 'balmora/platform23',
             size: [72, 65],
-            offset: [0, 0]
+            area: [0, 0],
+            offset: [0, 0],
         };
     })(Building || (Building = {}));
     var Building$1 = Building;
@@ -855,8 +905,8 @@ void main() {
     var Ploppables;
     (function (Ploppables) {
         Ploppables.types = [
-            'fourfour',
-            'sixsix',
+            'twotwo',
+            'threethree',
             'sandhovel1',
             'sandhovel2',
             'sandalleygate',
@@ -869,7 +919,6 @@ void main() {
         Ploppables.index = 0;
         Ploppables.ghost = null;
         function update() {
-            var _a;
             let remake = false;
             let obj = null;
             if (Ploppables.ghost) {
@@ -883,7 +932,7 @@ void main() {
                 }
             }
             const shortcuts = {
-                'y': 'fourfour',
+                'y': 'twotwo',
                 'b': 'sandhovel1',
                 't': 'tree'
             };
@@ -895,7 +944,7 @@ void main() {
                 }
             }
             if (remake) {
-                Lumber$1.world.wheelable = false;
+                Lumber$1.wlrd.wheelable = false;
                 obj = factory(Ploppables.types[Ploppables.index]);
                 obj.finish();
                 obj.comes();
@@ -903,46 +952,45 @@ void main() {
                 Ploppables.ghost = obj;
             }
             if (Ploppables.ghost) {
-                Ploppables.ghost.tile = Lumber$1.world.mouse_tiled;
+                Ploppables.ghost.tile = Lumber$1.wlrd.mtil;
                 if (Ploppables.ghost.rekt)
                     Ploppables.ghost.rekt.tile = Ploppables.ghost.tile;
-                (_a = Ploppables.ghost.rekt) === null || _a === void 0 ? void 0 : _a.now_update_pos();
+                Ploppables.ghost.manualupdate();
                 Ploppables.ghost.update();
             }
             if (Ploppables.ghost && App$1.buttons[0]) {
-                Lumber$1.world.wheelable = true;
+                Lumber$1.wlrd.wheelable = true;
                 console.log('plop');
                 Ploppables.ghost.goes();
-                Lumber$1.world.add(Ploppables.ghost);
+                Lumber$1.wlrd.add(Ploppables.ghost);
                 Ploppables.ghost = null;
             }
             if (Ploppables.ghost && App$1.keys['escape'] == 1) {
-                Lumber$1.world.wheelable = true;
+                Lumber$1.wlrd.wheelable = true;
                 console.log('unplop');
                 Ploppables.ghost.unset();
                 Ploppables.ghost = null;
             }
             if (App$1.keys['x'] == 1) {
-                console.log('x');
-                let ct = Lumber$1.world.chunkMaster.big(Lumber$1.world.mouse_tiled);
-                let c = Lumber$1.world.chunkMaster.at(ct[0], ct[1]);
+                let ct = Lumber$1.wlrd.foreground.big(Lumber$1.wlrd.mtil);
+                let c = Lumber$1.wlrd.foreground.at(ct[0], ct[1]);
                 if (c) {
-                    let obj = c.objs.get(Lumber$1.world.mouse_tiled);
+                    let obj = c.objs.get(Lumber$1.wlrd.mtil);
                     if (obj) {
-                        Lumber$1.world.remove(obj);
+                        Lumber$1.wlrd.remove(obj);
                         obj.unset();
                     }
                     else
-                        console.log('no obj there at', pts.to_string(Lumber$1.world.mouse_tiled));
+                        console.log('no obj there at', pts.to_string(Lumber$1.wlrd.mtil));
                 }
             }
         }
         Ploppables.update = update;
         function factory(type) {
-            if (type == 'fourfour')
-                return new Building$1(Building$1.FourFour);
-            else if (type == 'sixsix')
-                return new Building$1(Building$1.SixSix);
+            if (type == 'twotwo')
+                return new Building$1(Building$1.TwoTwo);
+            else if (type == 'threethree')
+                return new Building$1(Building$1.ThreeThree);
             else if (type == 'sandhovel1')
                 return new Building$1(Building$1.SandHovel1);
             else if (type == 'sandhovel2')
@@ -974,7 +1022,7 @@ void main() {
             tile.tile = pos;
             tile.asset = asset;
             tile.finish();
-            Lumber$1.world.add(tile);
+            Lumber$1.wlrd.add(tile);
             return tile;
         }
         Ploppables.place_tile = place_tile;
@@ -994,7 +1042,7 @@ void main() {
             let crop = new Wheat(growth);
             crop.tile = tile;
             crop.finish();
-            Lumber$1.world.add(crop);
+            Lumber$1.wlrd.add(crop);
             return crop;
         }
         Ploppables.place_wheat = place_wheat;
@@ -1009,7 +1057,7 @@ void main() {
             let crop = new Wheat(growth);
             crop.tile = tile;
             crop.finish();
-            Lumber$1.world.add(crop);
+            Lumber$1.wlrd.add(crop);
             return crop;
         }
         Ploppables.place_old_wall = place_old_wall;
@@ -1092,7 +1140,7 @@ void main() {
             this.pos = [0, 0];
             this.scale = 1;
             this.dpi = 1;
-            this.mouse_tiled = [0, 0];
+            this.mtil = [0, 0];
             this.wheelable = true;
             this.init();
             this.view = new aabb2([0, 0], [0, 0]);
@@ -1102,7 +1150,7 @@ void main() {
             return new World;
         }
         add(obj) {
-            let c = this.getChunkAt(obj.tile);
+            let c = this.foreground.attile(obj.tile);
             if (c.objs.add(obj)) {
                 obj.chunk = c;
                 obj.chunk.changed = true;
@@ -1120,24 +1168,21 @@ void main() {
         update() {
             this.move();
             this.mark_mouse();
-            this.chunkMaster.update();
-            this.bigChunks.update();
-        }
-        getChunkAt(zx) {
-            return this.chunkMaster.which(zx);
+            this.foreground.update();
+            this.background.update();
         }
         mark_mouse() {
             let m = [App$1.pos.x, App$1.pos.y];
             m[1] = -m[1];
-            m = pts.divide(m, Lumber$1.world.scale);
-            let p = [Lumber$1.world.view.min[0], Lumber$1.world.view.max[1]];
+            m = pts.divide(m, Lumber$1.wlrd.scale);
+            let p = [Lumber$1.wlrd.view.min[0], Lumber$1.wlrd.view.max[1]];
             p = pts.add(p, m);
             const unprojected = World.unproject(p);
-            this.mouse_tiled = unprojected.tiled;
+            this.mtil = unprojected.tiled;
         }
         init() {
-            this.chunkMaster = new ChunkMaster(Chunk, 20);
-            this.bigChunks = new ChunkMaster(Chunk, 40);
+            this.foreground = new ChunkMaster(Chunk, 20);
+            this.background = new ChunkMaster(Chunk, 20);
             Lumber$1.ply = new Ply;
             Lumber$1.ply.tile = [0, 0];
             Lumber$1.ply.comes();
@@ -1289,19 +1334,19 @@ void main() {
             if (Board.collapsed.Stats) {
                 Board.win.find('#fpsStat').text(`Fps: ${parseInt(Renderer$1.fps)}`);
                 //Board.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
-                Board.win.find('#gameZoom').html(`Scale: <span>${Lumber$1.world.scale} / ndpi ${Lumber$1.world.dpi} / ${window.devicePixelRatio}`);
-                Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber$1.world.view.min[0]}, ${Lumber$1.world.view.min[1]} x ${Lumber$1.world.view.max[0]}, ${Lumber$1.world.view.max[1]}`);
+                Board.win.find('#gameZoom').html(`Scale: <span>${Lumber$1.wlrd.scale} / ndpi ${Lumber$1.wlrd.dpi} / ${window.devicePixelRatio}`);
+                Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber$1.wlrd.view.min[0]}, ${Lumber$1.wlrd.view.min[1]} x ${Lumber$1.wlrd.view.max[0]}, ${Lumber$1.wlrd.view.max[1]}`);
                 //Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
-                Board.win.find('#numChunks').text(`Num chunks: ${Lumber$1.world.chunkMaster.fitter.shown.length} / ${Lumber$1.world.chunkMaster.total}`);
+                Board.win.find('#numChunks').text(`Num chunks: ${Lumber$1.wlrd.foreground.fitter.shown.length} / ${Lumber$1.wlrd.foreground.total}`);
                 Board.win.find('#numObjs').html(`Num objs: ${Obj$1.active} / ${Obj$1.num}`);
                 Board.win.find('#numRekts').html(`Num rekts: ${Rekt$1.active} / ${Rekt$1.num}`);
-                let b = Lumber$1.world.chunkMaster.big(Lumber$1.world.mouse_tiled);
-                let c = Lumber$1.world.chunkMaster.at(b[0], b[1]);
-                Board.win.find('#square').text(`Mouse: ${pts.to_string(Lumber$1.world.mouse_tiled)}`);
+                let b = Lumber$1.wlrd.foreground.big(Lumber$1.wlrd.mtil);
+                let c = Lumber$1.wlrd.foreground.at(b[0], b[1]);
+                Board.win.find('#square').text(`Mouse: ${pts.to_string(Lumber$1.wlrd.mtil)}`);
                 Board.win.find('#squareChunk').text(`Mouse chunk: ${pts.to_string(b)}`);
                 Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${(c === null || c === void 0 ? void 0 : c.rt) ? 'true' : 'false'}`);
-                Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber$1.world.chunkMaster.fitter.lines}`);
-                Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber$1.world.chunkMaster.fitter.total}`);
+                Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber$1.wlrd.foreground.fitter.lines}`);
+                Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber$1.wlrd.foreground.fitter.total}`);
             }
         }
         Board.update = update;
@@ -1323,6 +1368,7 @@ void main() {
         Lumber.PAINT_OBJ_TICK_RATE = false;
         Lumber.MINIMUM_REKTS_BEFORE_RT = 0;
         Lumber.EVEN = 24; // very evenly divisible
+        Lumber.HALVE = Lumber.EVEN / 2;
         Lumber.YUM = Lumber.EVEN;
         var started = false;
         function sample(a) {
@@ -1361,7 +1407,7 @@ void main() {
         Lumber.critical = critical;
         function init() {
             console.log('egyt init');
-            Lumber.world = World$1.rig();
+            Lumber.wlrd = World$1.rig();
             resourced('RC_UNDEFINED');
             resourced('READY');
             window['Lumber'] = Lumber;
@@ -1373,7 +1419,7 @@ void main() {
             console.log('lumber starting');
             if (window.location.href.indexOf("#nochunkrt") != -1)
                 Lumber.USE_CHUNK_RT = false;
-            Lumber.world.populate();
+            Lumber.wlrd.populate();
             Ploppables.plant_trees();
             Board.init();
             Board.raw(`
@@ -1433,7 +1479,7 @@ void main() {
         function update() {
             if (!started)
                 return;
-            Lumber.world.update();
+            Lumber.wlrd.update();
             Board.update();
             Ploppables.update();
         }

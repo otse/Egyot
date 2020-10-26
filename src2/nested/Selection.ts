@@ -63,7 +63,7 @@ class Selection {
 	}
 
 	View(mouse: vec2) {
-		pts.subtract(mouse, Lumber.world.pos);
+		pts.subtract(mouse, Lumber.wlrd.pos);
 
 		pts.subtract(
 			mouse, pts.divide(
@@ -71,7 +71,7 @@ class Selection {
 
 		let scale = 1;
 
-		if (Lumber.world.scale == 0.5)
+		if (Lumber.wlrd.scale == 0.5)
 			scale = 2;
 
 		pts.mult(

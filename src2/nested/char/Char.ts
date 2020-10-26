@@ -36,7 +36,7 @@ class Ply extends Man {
     constructor() {
         super();
 
-        this.order = 9;
+        this.depth = 9;
     }
 
     produce() {

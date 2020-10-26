@@ -10,7 +10,7 @@ import {  Group, WebGLRenderTarget, OrthographicCamera } from "three";
 
 const count = (c: Chunk, prop: string) => {
 	let num = 0;
-	for (let t of c.objs.table.t)
+	for (let t of c.objs.tuple.tuple)
 		if (t[0][prop])
 			num++;
 	return num;
@@ -30,7 +30,7 @@ class Chunk {
 	north: vec2
 	tile_s: vec2
 
-	bound: aabb2
+	dimetricBoundCurrentlyNotUsed: aabb2
 	screen: aabb2
 	rekt_offset: vec2
 
@@ -79,7 +79,7 @@ class Chunk {
 			this.group.position.fromArray(zxc);
 			this.grouprt.position.fromArray(zxc);
 
-			const depth = Rekt.depth(this.order_tile);
+			const depth = Rekt.simpledepth(this.order_tile);
 
 			this.group.renderOrder = depth;
 			this.grouprt.renderOrder = depth;
@@ -87,14 +87,14 @@ class Chunk {
 
 		// note: non screen bound not used anymore
 
-		this.bound = new aabb2(
+		this.dimetricBoundCurrentlyNotUsed = new aabb2(
 			[pt.x * this.master.span, pt.y * this.master.span],
 			[(pt.x + 1) * this.master.span, (pt.y + 1) * this.master.span]);
 
 		this.screen = Chunk.Sscreen(pt.x, pt.y, this.master);
 	}
 	empty() {
-		return this.objs.table.t.length < 1;
+		return this.objs.tuple.tuple.length < 1;
 	}
 	comes() {
 		if (this.on || this.empty())
@@ -126,7 +126,7 @@ class Chunk {
 		this.on = false;
 	}
 	oob() {
-		return Lumber.world.view.test(this.screen) == aabb2.TEST.Outside;
+		return Lumber.wlrd.view.test(this.screen) == aabb2.TEST.Outside;
 	}
 	update() {
 		this.objs.updates();
@@ -135,6 +135,7 @@ class Chunk {
 		this.changed = false;
 	}
 }
+
 namespace Chunk {
 	export function Sscreen(x, y, master) {
 
@@ -150,19 +151,19 @@ namespace Chunk {
 }
 
 class Tuple<T = []> {
-	public readonly t: T[] = []
+	public readonly tuple: T[] = []
 	constructor(private key = 0) {
 	}
 	search(k = this.key, v: any): number | undefined {
-		let i = this.t.length;
+		let i = this.tuple.length;
 		while (i--)
-			if (this.t[i][k] == v)
+			if (this.tuple[i][k] == v)
 				return i;
 	}
 	add(t: T, k = this.key) {
 		let i = this.search(k, t[k]);
 		if (i == undefined) {
-			this.t.push(t);
+			this.tuple.push(t);
 			return true;
 		}
 		return false;
@@ -170,36 +171,35 @@ class Tuple<T = []> {
 	remove(v: any, k = this.key) {
 		let i = this.search(k, v);
 		if (i != undefined) {
-			this.t.splice(i, 1);
+			this.tuple.splice(i, 1);
 			return true;
 		}
 		return false;
 	}
 }
 
-
 class Objs {
 	public rtts = 0
-	public readonly table: Tuple<[Obj, number]>
+	public readonly tuple: Tuple<[Obj, number]>
 	constructor(private chunk: Chunk) {
-		this.table = new Tuple;
+		this.tuple = new Tuple;
 	}
 	rate(obj: Obj) {
-		return this.table.t.length * obj.rate;
+		return this.tuple.tuple.length * obj.rate;
 	}
 	add(obj: Obj) {
-		return this.table.add([obj, this.rate(obj)]);
+		return this.tuple.add([obj, this.rate(obj)]);
 	}
 	get(tile: vec2) {
-		for (let t of this.table.t)
+		for (let t of this.tuple.tuple)
 			if(pts.equals(t[0].tile, tile))
 				return t[0];
 	}
 	remove(obj: Obj) {
-		return this.table.remove(obj);
+		return this.tuple.remove(obj);
 	}
 	updates() {
-		for (let t of this.table.t) {
+		for (let t of this.tuple.tuple) {
 			let rate = t[1]--;
 			if (rate <= 0) {
 				t[0].update();
@@ -208,11 +208,11 @@ class Objs {
 		}
 	}
 	comes() {
-		for (let t of this.table.t)
+		for (let t of this.tuple.tuple)
 			t[0].comes();
 	}
 	goes() {
-		for (let t of this.table.t)
+		for (let t of this.tuple.tuple)
 			t[0].goes();
 	}
 }
@@ -224,7 +224,7 @@ class ChunkMaster<T extends Chunk> {
 	readonly height: number
 
 	total: number = 0
-	arrays: T | null[][] = []
+	arrays: T[][] = []
 
 	refit = true
 	fitter: Tailorer<T>
@@ -234,7 +234,6 @@ class ChunkMaster<T extends Chunk> {
 		this.span2 = span * span;
 		this.width = span * Lumber.EVEN;
 		this.height = span * Lumber.EVEN / 2;
-
 		this.fitter = new Tailorer<T>(this);
 	}
 	update() {
@@ -244,29 +243,27 @@ class ChunkMaster<T extends Chunk> {
 	big(zx: vec2): vec2 {
 		return pts.floor(pts.divide(zx, this.span));
 	}
-	at(x, y): T | null {
-		let c;
+	at(x, y): T | undefined {
 		if (this.arrays[y] == undefined)
 			this.arrays[y] = [];
-		c = this.arrays[y][x];
+		return this.arrays[y][x];
+	}
+	atmake(x, y): T {
+		return this.at(x, y) || this.make(x, y);
+	}
+	attile(t: vec2): T {
+		let b = this.big(t);
+		let c = this.atmake(b[0], b[1]);
 		return c;
 	}
 	make(x, y): T {
-		let c: T | null;
-		c = this.at(x, y);
+		let c = this.at(x, y);
 		if (c)
 			return c;
 		c = this.arrays[y][x] = new this.testType(x, y, this);
 		return c;
 	}
-	which(t: vec2): T {
-		let b = this.big(t);
-		let c = this.guarantee(b[0], b[1]);
-		return c;
-	}
-	guarantee(x, y): T {
-		return this.at(x, y) || this.make(x, y);
-	}
+
 	//static probe<T>() {
 
 	//}
@@ -296,7 +293,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 		}
 	}
 	update() {
-		let middle = World.unproject(Lumber.world.view.center()).tiled;
+		let middle = World.unproject(Lumber.wlrd.view.center()).tiled;
 		let b = this.master.big(middle);
 		this.lines = this.total = 0;
 		this.off();
@@ -309,7 +306,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 		while (true) {
 			i++;
 			let c: T;
-			c = this.master.guarantee(x, y);
+			c = this.master.atmake(x, y);
 			if (!c.on && c.oob()) {
 				if (s > 2) {
 					if (j == 0) { j = 1; }
@@ -382,7 +379,7 @@ class RtChunk {
 	// todo pool the rts?
 	comes() {
 		this.rekt.use();
-		this.rekt.mesh.renderOrder = Rekt.depth(this.chunk.order_tile);
+		this.rekt.mesh.renderOrder = Rekt.simpledepth(this.chunk.order_tile);
 		this.target = Renderer.rendertarget(this.width, this.height);
 	}
 	goes() {

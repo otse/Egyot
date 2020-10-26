@@ -7,21 +7,20 @@ import pts from "../lib/pts";
 import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3, Color } from "three";
 
 import { Chunk } from "../lod/Chunks";
+import aabb2 from "../lib/aabb2";
 
 class Rekt {
-
 	name: string
-	low = false
-	tiled = true
 	tile: vec2 = [0, 0]
 	offset: vec2 = [0, 0]
 	size: vec2 = [1, 1]
+	screen: aabb2
 	obj?: Obj
 	asset?: string
 	color?: string
-	opacity?: number = 1
 	flip?: boolean
-	
+	opacity: number = 1
+
 	mesh: Mesh
 	meshShadow: Mesh
 
@@ -31,6 +30,7 @@ class Rekt {
 	center: vec2 = [0, 0]
 	position: vec3 = [0, 0, 0]
 
+	//low = false
 	used = false
 	flick = false
 	plain = false
@@ -92,7 +92,7 @@ class Rekt {
 
 		//UV.FlipPlane(this.geometry, 0, true);
 
-		this.now_update_pos();
+		this.update();
 
 		this.getgroup().add(this.mesh);
 	}
@@ -111,31 +111,24 @@ class Rekt {
 
 		return xy;
 	}
-	now_update_pos() {
+	update() {
 		let x, y;
 
 		let xy = pts.add(this.tile, this.offset);
-		
-		let depth = Rekt.depth(this.tile);
 
-		if (this.low) {
-			depth = Rekt.depth(pts.subtract(this.tile, this.size));
-		}
-		
-		if (this.tiled) {
-			xy = Rekt.mult(xy);
-		}
+		//let squared = this.size[0] / 2 / Lumber.HALVE;
+		//console.log('squared',squared);
 
 		if (this.plain) {
 			x = xy[0];
 			y = xy[1];
 		}
 		else {
-			if (Lumber.OFFSET_CHUNK_OBJ_REKT) {
-				let c = this.obj?.chunk;
-				if (c)
-					xy = pts.subtract(xy, c.rekt_offset);
-			}
+			xy = pts.mult(xy, Lumber.EVEN);
+
+			if (Lumber.OFFSET_CHUNK_OBJ_REKT && this.obj?.chunk)
+				xy = pts.subtract(xy, this.obj.chunk.rekt_offset);
+
 			x = xy[0] / 2 + xy[1] / 2;
 			y = xy[1] / 4 - xy[0] / 4;
 
@@ -151,9 +144,15 @@ class Rekt {
 		this.position = [x, y, 0];
 
 		if (this.mesh) {
-			this.mesh.renderOrder = depth;
+			this.setdepth();
 			this.mesh.position.fromArray(this.position);
 			this.mesh.updateMatrix();
+		}
+	}
+	setdepth() {
+		if (this.mesh) {
+			let depth = this.obj?.depth || Rekt.simpledepth(this.tile);
+			this.mesh.renderOrder = depth;
 		}
 	}
 }
@@ -164,12 +163,8 @@ namespace Rekt {
 
 	//export type Struct = Rekt['struct']
 
-	export function depth(t: vec2) {
+	export function simpledepth(t: vec2) {
 		return -t[1] + t[0];
-	}
-
-	export function mult(t: vec2) {
-		return pts.mult(t, Lumber.EVEN);
 	}
 }
 
