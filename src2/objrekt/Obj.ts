@@ -37,7 +37,7 @@ class Obj {
 		this.setarea();
 	}
 	setarea() {
-		this.bound = new aabb2([0, 0], this.area);
+		this.bound = new aabb2([-this.area[0], 0], [0, this.area[1]]);
 		this.bound.translate(this.tile);
 	}
 	update() {
@@ -66,17 +66,18 @@ class Obj {
 			[-1, -1], [0, -1], [1, -1]
 		];
 
-		let big = /*this.chunk || */Lumber.wlrd.foreground.big(this.tile);
+		let big = /*this.chunk || */Lumber.wlrd.fg.big(this.tile);
 
 		for (const a of around) {
 			let p = pts.add(big, a);
 
-			let c = Lumber.wlrd.foreground.at(p[0], p[1]);
+			let c = Lumber.wlrd.fg.at(p[0], p[1]);
 			if (c) {
 				for (const t of c.objs.tuple.tuple) {
 					const obj = t[0];
-
-					let test = obj.bound.test(this.bound);
+					if (obj == this)
+						continue;
+					let test = this.bound.test(obj.bound);
 					if (test)
 					console.log('test', test);
 				}

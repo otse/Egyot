@@ -70,18 +70,18 @@ namespace Board {
 			Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber.wlrd.view.min[0]}, ${Lumber.wlrd.view.min[1]} x ${Lumber.wlrd.view.max[0]}, ${Lumber.wlrd.view.max[1]}`);
 			//Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
 
-			Board.win.find('#numChunks').text(`Num chunks: ${Lumber.wlrd.foreground.fitter.shown.length} / ${Lumber.wlrd.foreground.total}`);
+			Board.win.find('#numChunks').text(`Num chunks: ${Lumber.wlrd.fg.fitter.shown.length} / ${Lumber.wlrd.fg.total}`);
 			Board.win.find('#numObjs').html(`Num objs: ${Obj.active} / ${Obj.num}`);
 			Board.win.find('#numRekts').html(`Num rekts: ${Rekt.active} / ${Rekt.num}`);
 
-			let b = Lumber.wlrd.foreground.big(Lumber.wlrd.mtil);
-			let c = Lumber.wlrd.foreground.at(b[0], b[1]);
+			let b = Lumber.wlrd.fg.big(Lumber.wlrd.mtil);
+			let c = Lumber.wlrd.fg.at(b[0], b[1]);
 				
 			Board.win.find('#square').text(`Mouse: ${pts.to_string(Lumber.wlrd.mtil)}`);
 			Board.win.find('#squareChunk').text(`Mouse chunk: ${pts.to_string(b)}`);
 			Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${c?.rt ? 'true' : 'false'}`);
-			Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber.wlrd.foreground.fitter.lines}`);
-			Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber.wlrd.foreground.fitter.total}`);
+			Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber.wlrd.fg.fitter.lines}`);
+			Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber.wlrd.fg.fitter.total}`);
 		}
 	}
 

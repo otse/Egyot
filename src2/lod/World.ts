@@ -30,8 +30,8 @@ class World {
 	view: aabb2
 	frustum: Rekt
 
-	foreground: ChunkMaster<Chunk>
-	background: ChunkMaster<Chunk>
+	fg: ChunkMaster<Chunk>
+	bg: ChunkMaster<Chunk>
 
 	mtil: vec2 = [0, 0]
 	wheelable = true
@@ -57,7 +57,7 @@ class World {
 		console.log('world');
 	}
 	add(obj: Obj) {
-		let c = this.foreground.attile(obj.tile);
+		let c = this.fg.attile(obj.tile);
 
 		if (c.objs.add(obj)) {
 			obj.chunk = c;
@@ -75,8 +75,8 @@ class World {
 	update() {
 		this.move();
 		this.mark_mouse();
-		this.foreground.update();
-		this.background.update();
+		this.fg.update();
+		this.bg.update();
 	}
 
 	mark_mouse() {
@@ -92,8 +92,8 @@ class World {
 		this.mtil = unprojected.tiled;;
 	}
 	init() {
-		this.foreground = new ChunkMaster<Chunk>(Chunk, 20);
-		this.background = new ChunkMaster<Chunk>(Chunk, 20);
+		this.fg = new ChunkMaster<Chunk>(Chunk, 20);
+		this.bg = new ChunkMaster<Chunk>(Chunk, 20);
 
 		Lumber.ply = new Ply;
 		Lumber.ply.tile = [0, 0]

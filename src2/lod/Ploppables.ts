@@ -90,9 +90,9 @@ export namespace Ploppables {
 		}
 
 		if (App.keys['x'] == 1) {
-			let ct = Lumber.wlrd.foreground.big(Lumber.wlrd.mtil);
+			let ct = Lumber.wlrd.fg.big(Lumber.wlrd.mtil);
 			
-			let c = Lumber.wlrd.foreground.at(ct[0], ct[1]);
+			let c = Lumber.wlrd.fg.at(ct[0], ct[1]);
 			if (c) {
 				let obj = c.objs.get(Lumber.wlrd.mtil);
 				if (obj) {

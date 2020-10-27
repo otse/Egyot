@@ -363,7 +363,7 @@ void main() {
     })(TEST || (TEST = {}));
     class aabb2 {
         constructor(a, b) {
-            this.min = this.max = a;
+            this.min = this.max = [...a];
             if (b) {
                 this.extend(b);
             }
@@ -385,14 +385,14 @@ void main() {
             this.min = pts.add(this.min, v);
             this.max = pts.add(this.max, v);
         }
-        test(v) {
-            if (this.min[0] <= v.min[0] && this.max[0] >= v.max[0] &&
-                this.min[1] <= v.min[1] && this.max[1] >= v.max[1])
-                return aabb2.TEST.Inside;
-            if (this.max[0] < v.min[0] || this.min[0] > v.max[0] ||
-                this.max[1] < v.min[1] || this.min[1] > v.max[1])
-                return aabb2.TEST.Outside;
-            return aabb2.TEST.Overlap;
+        test(b) {
+            if (this.max[0] <= b.min[0] || this.min[0] >= b.max[0] ||
+                this.max[1] <= b.min[1] || this.min[1] >= b.max[1])
+                return 0;
+            if (this.min[0] <= b.min[0] && this.max[0] >= b.max[0] &&
+                this.min[1] <= b.min[1] && this.max[1] >= b.max[1])
+                return 1;
+            return 2;
         }
     }
     aabb2.TEST = TEST;
@@ -430,7 +430,7 @@ void main() {
             this.setarea();
         }
         setarea() {
-            this.bound = new aabb2([0, 0], this.area);
+            this.bound = new aabb2([-this.area[0], 0], [0, this.area[1]]);
             this.bound.translate(this.tile);
         }
         update() {
@@ -458,14 +458,16 @@ void main() {
                 [-1, 0], [0, 0], [1, 0],
                 [-1, -1], [0, -1], [1, -1]
             ];
-            let big = /*this.chunk || */ Lumber$1.wlrd.foreground.big(this.tile);
+            let big = /*this.chunk || */ Lumber$1.wlrd.fg.big(this.tile);
             for (const a of around) {
                 let p = pts.add(big, a);
-                let c = Lumber$1.wlrd.foreground.at(p[0], p[1]);
+                let c = Lumber$1.wlrd.fg.at(p[0], p[1]);
                 if (c) {
                     for (const t of c.objs.tuple.tuple) {
                         const obj = t[0];
-                        let test = obj.bound.test(this.bound);
+                        if (obj == this)
+                            continue;
+                        let test = this.bound.test(obj.bound);
                         if (test)
                             console.log('test', test);
                     }
@@ -866,7 +868,7 @@ void main() {
         Building.SandHovel2 = {
             asset: 'balmora/hovel2',
             size: [168, 143],
-            area: [6, 7],
+            area: [5, 7],
             offset: [0, 0],
         };
         Building.SandAlleyGate = {
@@ -972,8 +974,8 @@ void main() {
                 Ploppables.ghost = null;
             }
             if (App$1.keys['x'] == 1) {
-                let ct = Lumber$1.wlrd.foreground.big(Lumber$1.wlrd.mtil);
-                let c = Lumber$1.wlrd.foreground.at(ct[0], ct[1]);
+                let ct = Lumber$1.wlrd.fg.big(Lumber$1.wlrd.mtil);
+                let c = Lumber$1.wlrd.fg.at(ct[0], ct[1]);
                 if (c) {
                     let obj = c.objs.get(Lumber$1.wlrd.mtil);
                     if (obj) {
@@ -1150,7 +1152,7 @@ void main() {
             return new World;
         }
         add(obj) {
-            let c = this.foreground.attile(obj.tile);
+            let c = this.fg.attile(obj.tile);
             if (c.objs.add(obj)) {
                 obj.chunk = c;
                 obj.chunk.changed = true;
@@ -1168,8 +1170,8 @@ void main() {
         update() {
             this.move();
             this.mark_mouse();
-            this.foreground.update();
-            this.background.update();
+            this.fg.update();
+            this.bg.update();
         }
         mark_mouse() {
             let m = [App$1.pos.x, App$1.pos.y];
@@ -1181,8 +1183,8 @@ void main() {
             this.mtil = unprojected.tiled;
         }
         init() {
-            this.foreground = new ChunkMaster(Chunk, 20);
-            this.background = new ChunkMaster(Chunk, 20);
+            this.fg = new ChunkMaster(Chunk, 20);
+            this.bg = new ChunkMaster(Chunk, 20);
             Lumber$1.ply = new Ply;
             Lumber$1.ply.tile = [0, 0];
             Lumber$1.ply.comes();
@@ -1337,16 +1339,16 @@ void main() {
                 Board.win.find('#gameZoom').html(`Scale: <span>${Lumber$1.wlrd.scale} / ndpi ${Lumber$1.wlrd.dpi} / ${window.devicePixelRatio}`);
                 Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber$1.wlrd.view.min[0]}, ${Lumber$1.wlrd.view.min[1]} x ${Lumber$1.wlrd.view.max[0]}, ${Lumber$1.wlrd.view.max[1]}`);
                 //Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
-                Board.win.find('#numChunks').text(`Num chunks: ${Lumber$1.wlrd.foreground.fitter.shown.length} / ${Lumber$1.wlrd.foreground.total}`);
+                Board.win.find('#numChunks').text(`Num chunks: ${Lumber$1.wlrd.fg.fitter.shown.length} / ${Lumber$1.wlrd.fg.total}`);
                 Board.win.find('#numObjs').html(`Num objs: ${Obj$1.active} / ${Obj$1.num}`);
                 Board.win.find('#numRekts').html(`Num rekts: ${Rekt$1.active} / ${Rekt$1.num}`);
-                let b = Lumber$1.wlrd.foreground.big(Lumber$1.wlrd.mtil);
-                let c = Lumber$1.wlrd.foreground.at(b[0], b[1]);
+                let b = Lumber$1.wlrd.fg.big(Lumber$1.wlrd.mtil);
+                let c = Lumber$1.wlrd.fg.at(b[0], b[1]);
                 Board.win.find('#square').text(`Mouse: ${pts.to_string(Lumber$1.wlrd.mtil)}`);
                 Board.win.find('#squareChunk').text(`Mouse chunk: ${pts.to_string(b)}`);
                 Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${(c === null || c === void 0 ? void 0 : c.rt) ? 'true' : 'false'}`);
-                Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber$1.wlrd.foreground.fitter.lines}`);
-                Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber$1.wlrd.foreground.fitter.total}`);
+                Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber$1.wlrd.fg.fitter.lines}`);
+                Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber$1.wlrd.fg.fitter.total}`);
             }
         }
         Board.update = update;

@@ -4,9 +4,9 @@ import Rekt from "../objrekt/Rekt";
 import aabb2 from "../lib/aabb2";
 
 interface Preset {
-	asset: string;
-	size: vec2;
-	offset: vec2;
+	asset: string
+	size: vec2
+	offset: vec2
 	area: vec2
 };
 
@@ -53,7 +53,7 @@ namespace Building {
 	export var SandHovel2: Preset = {
 		asset: 'balmora/hovel2',
 		size: [168, 143],
-		area: [6, 7],
+		area: [5, 7],
 		offset: [0, 0],
 	}
 
