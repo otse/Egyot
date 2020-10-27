@@ -5,7 +5,7 @@ import { Board } from "./nested/Board";
 import { Ploppables } from "./lod/Ploppables";
 
 
-export namespace Lumber {
+export namespace LUMBER {
 
 	export var USE_CHUNK_RT = false;
 	export var OFFSET_CHUNK_OBJ_REKT = false;
@@ -60,7 +60,7 @@ export namespace Lumber {
 		
 		resourced('RC_UNDEFINED');
 		resourced('READY');
-		window['Lumber'] = Lumber;
+		window['Lumber'] = LUMBER;
 	}
 	function start() {
 		if (started)
@@ -147,4 +147,4 @@ export namespace Lumber {
 
 }
 
-export default Lumber;
+export default LUMBER;

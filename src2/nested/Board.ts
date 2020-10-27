@@ -1,4 +1,4 @@
-import Lumber from "../Lumber";
+import LUMBER from "../Lumber";
 import Renderer from "../Renderer";
 import Obj from "../objrekt/Obj";
 import Rekt from "../objrekt/Rekt";
@@ -66,22 +66,22 @@ namespace Board {
 			Board.win.find('#fpsStat').text(`Fps: ${parseInt(Renderer.fps)}`);
 			//Board.win.find('#memoryStat').text(`Memory: ${(tq.memory.usedJSHeapSize / 1048576).toFixed(4)} / ${tq.memory.jsHeapSizeLimit / 1048576}`);
 
-			Board.win.find('#gameZoom').html(`Scale: <span>${Lumber.wlrd.scale} / ndpi ${Lumber.wlrd.dpi} / ${window.devicePixelRatio}`);
-			Board.win.find('#gameAabb').html(`View bounding volume: <span>${Lumber.wlrd.view.min[0]}, ${Lumber.wlrd.view.min[1]} x ${Lumber.wlrd.view.max[0]}, ${Lumber.wlrd.view.max[1]}`);
+			Board.win.find('#gameZoom').html(`Scale: <span>${LUMBER.wlrd.scale} / ndpi ${LUMBER.wlrd.dpi} / ${window.devicePixelRatio}`);
+			Board.win.find('#gameAabb').html(`View bounding volume: <span>${LUMBER.wlrd.view.min[0]}, ${LUMBER.wlrd.view.min[1]} x ${LUMBER.wlrd.view.max[0]}, ${LUMBER.wlrd.view.max[1]}`);
 			//Board.win.find('#gamePos').text(`View pos: ${points.string(Egyt.game.pos)}`);
 
-			Board.win.find('#numChunks').text(`Num chunks: ${Lumber.wlrd.fg.fitter.shown.length} / ${Lumber.wlrd.fg.total}`);
+			Board.win.find('#numChunks').text(`Num chunks: ${LUMBER.wlrd.fg.fitter.shown.length} / ${LUMBER.wlrd.fg.total}`);
 			Board.win.find('#numObjs').html(`Num objs: ${Obj.active} / ${Obj.num}`);
 			Board.win.find('#numRekts').html(`Num rekts: ${Rekt.active} / ${Rekt.num}`);
 
-			let b = Lumber.wlrd.fg.big(Lumber.wlrd.mtil);
-			let c = Lumber.wlrd.fg.at(b[0], b[1]);
+			let b = LUMBER.wlrd.fg.big(LUMBER.wlrd.mtil);
+			let c = LUMBER.wlrd.fg.at(b[0], b[1]);
 				
-			Board.win.find('#square').text(`Mouse: ${pts.to_string(Lumber.wlrd.mtil)}`);
+			Board.win.find('#square').text(`Mouse: ${pts.to_string(LUMBER.wlrd.mtil)}`);
 			Board.win.find('#squareChunk').text(`Mouse chunk: ${pts.to_string(b)}`);
 			Board.win.find('#squareChunkRt').text(`Mouse chunk rt: ${c?.rt ? 'true' : 'false'}`);
-			Board.win.find('#snakeTurns').text(`CSnake turns: ${Lumber.wlrd.fg.fitter.lines}`);
-			Board.win.find('#snakeTotal').text(`CSnake total: ${Lumber.wlrd.fg.fitter.total}`);
+			Board.win.find('#snakeTurns').text(`CSnake turns: ${LUMBER.wlrd.fg.fitter.lines}`);
+			Board.win.find('#snakeTotal').text(`CSnake total: ${LUMBER.wlrd.fg.fitter.total}`);
 		}
 	}
 

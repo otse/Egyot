@@ -1,4 +1,4 @@
-import Lumber from "../Lumber";
+import LUMBER from "../Lumber";
 import Renderer from "../Renderer";
 import Obj from "./Obj";
 
@@ -43,7 +43,7 @@ class Rekt {
 		this.unuse();
 	}
 	paint_alternate() {
-		if (!Lumber.PAINT_OBJ_TICK_RATE)
+		if (!LUMBER.PAINT_OBJ_TICK_RATE)
 			return;
 		if (!this.used)
 			return;
@@ -80,7 +80,7 @@ class Rekt {
 			map: map,
 			transparent: true,
 			opacity: this.opacity,
-			color: this.obj?.chunk?.childobjscolor || this.color || 0xffffff
+			color: 0xffffff
 		});
 		this.mesh = new Mesh(this.geometry, this.material);
 		this.mesh.frustumCulled = false;
@@ -99,7 +99,7 @@ class Rekt {
 	getgroup() {
 		let c: Chunk | null | undefined;
 		if (c = this.obj?.chunk)
-			if (this.obj?.rtt && Lumber.USE_CHUNK_RT)
+			if (this.obj?.rtt && LUMBER.USE_CHUNK_RT)
 				return c.grouprt;
 			else
 				return c.group;
@@ -124,9 +124,9 @@ class Rekt {
 			y = xy[1];
 		}
 		else {
-			xy = pts.mult(xy, Lumber.EVEN);
+			xy = pts.mult(xy, LUMBER.EVEN);
 
-			if (Lumber.OFFSET_CHUNK_OBJ_REKT && this.obj?.chunk)
+			if (LUMBER.OFFSET_CHUNK_OBJ_REKT && this.obj?.chunk)
 				xy = pts.subtract(xy, this.obj.chunk.rekt_offset);
 
 			x = xy[0] / 2 + xy[1] / 2;
@@ -143,10 +143,12 @@ class Rekt {
 
 		this.position = [x, y, 0];
 
+		
 		if (this.mesh) {
 			this.setdepth();
 			this.mesh.position.fromArray(this.position);
 			this.mesh.updateMatrix();
+			this.material.color = new Color(this.obj?.chunk?.childobjscolor || this.color || 0xffffff);
 		}
 	}
 	setdepth() {

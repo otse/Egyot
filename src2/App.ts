@@ -1,4 +1,4 @@
-import Lumber from "./Lumber"
+import LUMBER from "./Lumber"
 import Renderer from "./Renderer"
 
 
@@ -42,7 +42,7 @@ namespace App {
 		document.onwheel = onwheel;
 
 		Renderer.init();
-		Lumber.init();
+		LUMBER.init();
 		loop(0);
 	}
 	export function delay() {
@@ -56,7 +56,7 @@ namespace App {
 	export function loop(timestamp) {
 		requestAnimationFrame(loop);
 		Renderer.update();
-		Lumber.update();
+		LUMBER.update();
 		Renderer.render();
 		wheel = 0;
 		delay();

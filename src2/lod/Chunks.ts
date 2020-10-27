@@ -1,4 +1,4 @@
-import Lumber from "../Lumber";
+import LUMBER from "../Lumber";
 import World from "./World";
 import Renderer from "../Renderer";
 import Obj from "../objrekt/Obj";
@@ -65,14 +65,14 @@ class Chunk {
 
 		let p3 = pts.clone(this.p);
 
-		this.basest_tile = pts.mult(this.p2, this.master.span * Lumber.EVEN);
-		this.north = 	   pts.mult(p3, 	 this.master.span * Lumber.EVEN);
+		this.basest_tile = pts.mult(this.p2, this.master.span * LUMBER.EVEN);
+		this.north = 	   pts.mult(p3, 	 this.master.span * LUMBER.EVEN);
 
 		this.order_tile = this.north;
 
 		this.rekt_offset = pts.clone(this.basest_tile);
 
-		if (Lumber.OFFSET_CHUNK_OBJ_REKT) {
+		if (LUMBER.OFFSET_CHUNK_OBJ_REKT) {
 			const zx = pts.project(this.basest_tile);
 			const zxc = <vec3>[...zx, 0];
 
@@ -106,9 +106,9 @@ class Chunk {
 		return true;
 	}
 	comes_pt2() {
-		if (!Lumber.USE_CHUNK_RT)
+		if (!LUMBER.USE_CHUNK_RT)
 			return;
-		if (Lumber.MINIMUM_REKTS_BEFORE_RT <= count(this, 'rtt'))
+		if (LUMBER.MINIMUM_REKTS_BEFORE_RT <= count(this, 'rtt'))
 			return;
 		if (!this.rt)
 			this.rt = new RtChunk(this);
@@ -126,11 +126,11 @@ class Chunk {
 		this.on = false;
 	}
 	oob() {
-		return Lumber.wlrd.view.test(this.screen) == aabb2.TEST.Outside;
+		return LUMBER.wlrd.view.test(this.screen) == aabb2.TEST.Outside;
 	}
 	update() {
 		this.objs.updates();
-		if (Lumber.USE_CHUNK_RT && this.changed)
+		if (LUMBER.USE_CHUNK_RT && this.changed)
 			this.rt?.render();
 		this.changed = false;
 	}
@@ -139,7 +139,7 @@ class Chunk {
 namespace Chunk {
 	export function Sscreen(x, y, master) {
 
-		let basest_tile = pts.mult([x + 1, y], master.span * Lumber.EVEN);
+		let basest_tile = pts.mult([x + 1, y], master.span * LUMBER.EVEN);
 
 		let real = pts.subtract(pts.project(basest_tile), [0, -master.height / 2]);
 
@@ -232,8 +232,8 @@ class ChunkMaster<T extends Chunk> {
 	constructor(private testType: new (x, y, m) => T, span: number) {
 		this.span = span;
 		this.span2 = span * span;
-		this.width = span * Lumber.EVEN;
-		this.height = span * Lumber.EVEN / 2;
+		this.width = span * LUMBER.EVEN;
+		this.height = span * LUMBER.EVEN / 2;
 		this.fitter = new Tailorer<T>(this);
 	}
 	update() {
@@ -293,7 +293,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 		}
 	}
 	update() {
-		let middle = World.unproject(Lumber.wlrd.view.center()).tiled;
+		let middle = World.unproject(LUMBER.wlrd.view.center()).tiled;
 		let b = this.master.big(middle);
 		this.lines = this.total = 0;
 		this.off();
@@ -351,7 +351,7 @@ class Tailorer<T extends Chunk> { // chunk-snake
 }
 
 class RtChunk {
-	readonly padding = Lumber.EVEN * 4
+	readonly padding = LUMBER.EVEN * 4
 	readonly width: number
 	readonly height: number
 

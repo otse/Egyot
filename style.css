@@ -18,7 +18,7 @@ nyan /* a workaround. the parent of the Win.raw function. expected to break some
 	height: 100%;
 	box-sizing: border-box;
 	padding: 20px;
-	font-size: 14px;
+	font-size: 20px;
     color: #ffff5c;
 	font-family: Georgia;
 	text-transform: lowercase;
@@ -34,7 +34,7 @@ nyan /* a workaround. the parent of the Win.raw function. expected to break some
 	top: 0;
 	right: 0;
 	font-family: monospace;
-	font-size: 9px;
+	font-size: 11px;
 	text-align: right;
 	padding: 5px;
 	color: white;

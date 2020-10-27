@@ -1,4 +1,4 @@
-import Lumber from "../Lumber";
+import LUMBER from "../Lumber";
 import Obj from "../objrekt/Obj";
 import Rekt from "../objrekt/Rekt";
 import aabb2 from "../lib/aabb2";
@@ -18,11 +18,12 @@ class Building extends Obj {
 	}
 	finish() {
 		this.area = this.pst.area;
+		this.size = this.pst.size;
 		this.rekt = new Rekt;
 		this.rekt.obj = this;
 		this.rekt.tile = this.tile;
+		this.rekt.size = this.size;
 		this.rekt.asset = this.pst.asset;
-		this.rekt.size = this.pst.size;
 		this.rekt.offset = this.pst.offset;
 		super.finish();
 	}
@@ -74,21 +75,21 @@ namespace Building {
 	export var Stairs3: Preset = {
 		asset: 'balmora/stairs3',
 		size: [120, 72],
-		area: [0, 0],
+		area: [5, 3],
 		offset: [0, 0],
 	}
 
 	export var Platform22: Preset = {
 		asset: 'balmora/platform22',
 		size: [48, 52],
-		area: [0, 0],
+		area: [2, 2],
 		offset: [0, 0],
 	}
 
 	export var Platform23: Preset = {
 		asset: 'balmora/platform23',
 		size: [72, 65],
-		area: [0, 0],
+		area: [3, 3],
 		offset: [0, 0],
 	}
 }

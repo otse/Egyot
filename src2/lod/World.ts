@@ -1,4 +1,4 @@
-import Lumber from "../Lumber";
+import LUMBER from "../Lumber";
 import Renderer from "../Renderer";
 import Obj from "../objrekt/Obj";
 import Rekt from "../objrekt/Rekt";
@@ -82,9 +82,9 @@ class World {
 	mark_mouse() {
 		let m: vec2 = [App.pos.x, App.pos.y];
 		m[1] = -m[1];
-		m = pts.divide(m, Lumber.wlrd.scale);
+		m = pts.divide(m, LUMBER.wlrd.scale);
 
-		let p = <vec2>[Lumber.wlrd.view.min[0], Lumber.wlrd.view.max[1]];
+		let p = <vec2>[LUMBER.wlrd.view.min[0], LUMBER.wlrd.view.max[1]];
 		p = pts.add(p, m);
 
 		const unprojected = World.unproject(p);
@@ -95,10 +95,10 @@ class World {
 		this.fg = new ChunkMaster<Chunk>(Chunk, 20);
 		this.bg = new ChunkMaster<Chunk>(Chunk, 20);
 
-		Lumber.ply = new Ply;
-		Lumber.ply.tile = [0, 0]
+		LUMBER.ply = new Ply;
+		LUMBER.ply.tile = [0, 0]
 
-		Lumber.ply.comes();
+		LUMBER.ply.comes();
 
 		this.preloads();
 		//this.populate();
@@ -109,7 +109,7 @@ class World {
 
 		function callback() {
 			if (++loaded >= textures)
-				Lumber.resourced('POPULAR_ASSETS');
+				LUMBER.resourced('POPULAR_ASSETS');
 		}
 
 		function preload_textures(strs: string[]) {
@@ -195,7 +195,7 @@ class World {
 
 		if (SHOW_FRUSTUM) {
 			this.frustum.mesh.scale.set(w2, h2, 1);
-			this.frustum.tile = pts.divide(<vec2><unknown>this.focal, Lumber.EVEN);
+			this.frustum.tile = pts.divide(<vec2><unknown>this.focal, LUMBER.EVEN);
 			this.frustum.update();
 		}
 	}
@@ -210,7 +210,7 @@ class World {
 			obj.rekt.offset = [19, 0];
 			obj.tile = obj.rekt.tile = pts.mult(pos, 20);
 			obj.rekt.asset = 'balmora/desert1010'
-			Lumber.wlrd.add(obj);
+			LUMBER.wlrd.add(obj);
 		}
 
 		//pts.area_every(new aabb2([-10, -10], [10, 10]), every);

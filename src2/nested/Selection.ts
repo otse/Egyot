@@ -1,4 +1,4 @@
-import Lumber from "../Lumber";
+import LUMBER from "../Lumber";
 import Renderer from "../Renderer";
 import pts from "../lib/pts";
 
@@ -63,7 +63,7 @@ class Selection {
 	}
 
 	View(mouse: vec2) {
-		pts.subtract(mouse, Lumber.wlrd.pos);
+		pts.subtract(mouse, LUMBER.wlrd.pos);
 
 		pts.subtract(
 			mouse, pts.divide(
@@ -71,7 +71,7 @@ class Selection {
 
 		let scale = 1;
 
-		if (Lumber.wlrd.scale == 0.5)
+		if (LUMBER.wlrd.scale == 0.5)
 			scale = 2;
 
 		pts.mult(

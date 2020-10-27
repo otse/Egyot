@@ -1,4 +1,4 @@
-import Lumber from "../Lumber";
+import LUMBER from "../Lumber";
 import Obj from "../objrekt/Obj";
 import Rekt from "../objrekt/Rekt";
 
@@ -58,7 +58,7 @@ export namespace Ploppables {
 		}
 
 		if (remake) {
-			Lumber.wlrd.wheelable = false;
+			LUMBER.wlrd.wheelable = false;
 			obj = factory(types[index]);
 			obj.finish();
 			obj.comes();
@@ -67,7 +67,7 @@ export namespace Ploppables {
 		}
 
 		if (ghost) {
-			ghost.tile = Lumber.wlrd.mtil;
+			ghost.tile = LUMBER.wlrd.mtil;
 			if (ghost.rekt)
 				ghost.rekt.tile = ghost.tile;
 			ghost.manualupdate();
@@ -75,32 +75,32 @@ export namespace Ploppables {
 		}
 
 		if (ghost && App.buttons[0]) {
-			Lumber.wlrd.wheelable = true;
+			LUMBER.wlrd.wheelable = true;
 			console.log('plop');
 			ghost.goes();
-			Lumber.wlrd.add(ghost);
+			LUMBER.wlrd.add(ghost);
 			ghost = null;
 		}
 
 		if (ghost && App.keys['escape'] == 1) {
-			Lumber.wlrd.wheelable = true;
+			LUMBER.wlrd.wheelable = true;
 			console.log('unplop');
 			ghost.unset();
 			ghost = null;
 		}
 
 		if (App.keys['x'] == 1) {
-			let ct = Lumber.wlrd.fg.big(Lumber.wlrd.mtil);
+			let ct = LUMBER.wlrd.fg.big(LUMBER.wlrd.mtil);
 			
-			let c = Lumber.wlrd.fg.at(ct[0], ct[1]);
+			let c = LUMBER.wlrd.fg.at(ct[0], ct[1]);
 			if (c) {
-				let obj = c.objs.get(Lumber.wlrd.mtil);
+				let obj = c.objs.get(LUMBER.wlrd.mtil);
 				if (obj) {
-					Lumber.wlrd.remove(obj);
+					LUMBER.wlrd.remove(obj);
 					obj.unset();
 				}
 				else
-					console.log('no obj there at', pts.to_string(Lumber.wlrd.mtil));
+					console.log('no obj there at', pts.to_string(LUMBER.wlrd.mtil));
 			}
 		}
 	}
@@ -137,7 +137,7 @@ export namespace Ploppables {
 			let tree = new Tree;
 			tree.tile = pos;
 			tree.finish();
-			Lumber.wlrd.add(tree);
+			LUMBER.wlrd.add(tree);
 		}
 	}
 
@@ -148,7 +148,7 @@ export namespace Ploppables {
 		tile.tile = pos;
 		tile.asset = asset;
 		tile.finish();
-		Lumber.wlrd.add(tile);
+		LUMBER.wlrd.add(tile);
 		return tile;
 	}
 
@@ -159,7 +159,7 @@ export namespace Ploppables {
 	}
 
 	export function area_tile_sampled(chance: number, assets: string[], aabb: aabb2) {
-		const every = (pos: vec2) => place_tile(chance, Lumber.sample(assets), pos);
+		const every = (pos: vec2) => place_tile(chance, LUMBER.sample(assets), pos);
 
 		pts.area_every(aabb, every);
 	}
@@ -170,7 +170,7 @@ export namespace Ploppables {
 		let crop = new Wheat(growth);
 		crop.tile = tile;
 		crop.finish();
-		Lumber.wlrd.add(crop);
+		LUMBER.wlrd.add(crop);
 		return crop;
 	}
 
@@ -186,7 +186,7 @@ export namespace Ploppables {
 		let crop = new Wheat(growth);
 		crop.tile = tile;
 		crop.finish();
-		Lumber.wlrd.add(crop);
+		LUMBER.wlrd.add(crop);
 		return crop;
 	}
 
@@ -236,7 +236,7 @@ export class Tree extends Obj {
 	finish() {
 		this.rekt = new Rekt;
 		this.rekt.obj = this;
-		this.rekt.asset = Lumber.sample(trees);
+		this.rekt.asset = LUMBER.sample(trees);
 		this.rekt.tile = this.tile;
 		this.rekt.offset = [1, -1];
 		this.rekt.size = [120, 132];
@@ -269,8 +269,8 @@ export class Wheat extends Obj {
 		this.rekt = new Rekt;
 		this.rekt.obj = this;
 		this.rekt.asset =
-		this.growth == 1 ? Lumber.sample(tillering) :
-		this.growth == 2 ? Lumber.sample(ripening) :
+		this.growth == 1 ? LUMBER.sample(tillering) :
+		this.growth == 2 ? LUMBER.sample(ripening) :
 		this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
 		this.rekt.tile = this.tile;
 		this.rekt.size = [22, 22];
