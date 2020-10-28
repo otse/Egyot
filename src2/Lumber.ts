@@ -71,8 +71,6 @@ export namespace LUMBER {
 			USE_CHUNK_RT = false;
 
 		wlrd.populate();
-		
-		Ploppables.plant_trees();
 
 		Board.init();
 

@@ -8,13 +8,11 @@ class Obj {
 	depth = 0
 	rate = 1
 	rtt = true
-	size: vec2 = [24, 12]
-	area: vec2 = [1, 1]
+	sst: Asset
 	tile: vec2 = [0, 0]
 	rekt: Rekt | null = null
 	chunk: Chunk | null = null
 	bound: aabb2
-	wide: aabb2
 	screen: aabb2
 	//screen: aabb2 | null = null
 	//height_in_halves = 0
@@ -24,7 +22,7 @@ class Obj {
 	}
 	comes() {
 		Obj.active++;
-		this.manualupdate();
+		this.update_manual();
 		this.rekt?.use();
 	}
 	goes() {
@@ -36,40 +34,26 @@ class Obj {
 		this.rekt?.unset();
 	}
 	finish() {
-		this.setarea();
+		if (!this.sst)
+			console.warn('obj no asset');
+		this.set_area();
 	}
-	setarea() {
-		this.bound = new aabb2([-this.area[0], 0], [0, this.area[1]]);
+	set_area() {
+		if (!this.sst.area)
+			return;
+		this.bound = new aabb2([-this.sst.area[0], 0], [0, this.sst.area[1]]);
 		this.bound.translate(this.tile);
-		this.wide = new aabb2([-this.size[0], 0], [0, this.size[1]]);
-		this.wide.translate(pts.mult(this.tile, LUMBER.EVEN));
 	}
-	update() {
+	update_tick() {
 		if (LUMBER.PAINT_OBJ_TICK_RATE)
 			this.rekt?.paint_alternate();
 	}
-	manualupdate() {
-		this.setarea();
-		this.fitarea();
+	update_manual() {
+		this.set_area();
+		this.fit_area();
 		this.rekt?.update();
 	}
-	static translate(a: aabb2, d: number, m: number) {
-		const w = [
-			[0, 1],
-			[-1, 0],
-			[0, -1],
-			[1, 0]];
-		let copy = aabb2.dupe(a);
-		if (d < 4)
-			copy.translate(pts.mult(<vec2>w[d], m));
-		return copy;
-	}
-	fitarea() {
-		//const mult = pts.mult(this.tile, Lumber.EVEN);
-		//const pt = pts.pt(mult);
-		//this.screen = new aabb2(
-		//	[pt.x, pt.x + this.size[0]],
-		//	[pt.y, pt.y + this.size[1]]);
+	fit_area() {
 		this.depth = Rekt.simpledepth(this.tile);
 
 		if (!this.bound || !this.rekt)
@@ -89,30 +73,68 @@ class Obj {
 			if (c) {
 				for (const t of c.objs.tuple.tuple) {
 					const obj = t[0];
-					if (obj == this)
+					if (obj == this || !this.rekt?.bound || !obj.rekt?.bound)
 						continue;
+					// image clip
+					if (!this.rekt.bound.test(obj.rekt.bound))
+						continue;
+					const a = this.bound;
+					const b = obj.bound;
+					// n ne e se s sw w nw
 					if (this.bound.test(obj.bound)) {
-						for (let i = 0; i <= 3; i++) {
-							let bb = Obj.translate(obj.bound, i, 1);
-							if (bb.test(this.bound)) {
-								this.rekt.color = ['blue', 'red', 'yellow', 'green'][i];
-								break;
-							}
-						}
-						/*
-						let a = this.bound.center();
-						let b = obj.bound.center();
-					let c = pts.pt(this.bound.center());
-					let d = pts.pt(obj.bound.center());
-					if (c.y >= d.y)
 						this.rekt.color = 'red';
-					else if (c.y <= d.y)
-						this.rekt.color = 'green';
-						else
-						this.rekt.color = 'white';
-						*/
-						this.rekt.update();
 					}
+					else if (a.min[0] < b.max[0] && a.max[0] > b.min[0] && a.min[1] >= b.max[1]) // n
+					{
+						this.rekt.color = 'blue';
+					}
+					else if (a.min[0] >= b.max[0] && a.min[1] >= b.max[1]) // ne
+					{
+						this.rekt.color = 'purple';
+					}
+					else if (a.min[0] >= b.max[0] && a.max[1] > b.min[1]) // e
+					{
+						this.rekt.color = 'cyan';
+					}
+					else if (a.min[0] >= b.max[0] && a.max[1] <= b.min[1]) // se
+					{
+						this.rekt.color = 'salmon';
+					}
+					else if (a.max[0] > b.min[0] && a.max[1] <= b.min[1]) // s
+					{
+						this.rekt.color = 'pink';
+					}
+					else if (a.max[0] <= b.min[0] && a.max[1] <= b.min[1]) // sw
+					{
+						this.rekt.color = 'orange';
+					}
+					else if (a.max[0] <= b.min[0] && a.min[1] < b.max[1]) // w
+					{
+						this.rekt.color = 'yellow';
+					}
+					else if (a.max[0] <= b.min[0] && a.min[1] >= b.min[1]) // nw
+					{
+						this.rekt.color = 'gold';
+					}
+					else {
+						this.rekt.color = 'white';
+					}
+					// now compare obj diagonals to establish se / ne / etc
+					this.rekt.update();
+					obj.rekt.update();
+					/*
+					let a = this.bound.center();
+					let b = obj.bound.center();
+				let c = pts.pt(this.bound.center());
+				let d = pts.pt(obj.bound.center());
+				if (c.y >= d.y)
+					this.rekt.color = 'red';
+				else if (c.y <= d.y)
+					this.rekt.color = 'green';
+					else
+					this.rekt.color = 'white';
+					*/
+					this.rekt.update();
 				}
 			}
 		}

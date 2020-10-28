@@ -4,52 +4,58 @@ import Rekt from "../../objrekt/Rekt";
 
 class Man extends Obj {
 
-    rekt: Rekt
+	rekt: Rekt
 
-    constructor() {
-        super();
-    }
+	constructor() {
+		super();
+	}
 
-    produce() {
-        return;
-        this.rekt = new Rekt;
-        this.rekt.tile = this.tile;
-        this.rekt.size = [22, 25];
-        this.rekt.asset = 'egyt/pumpkin'
+	man_produce() {
+		return;
+		//this.rekt = new Rekt;
+		//this.rekt.tile = this.tile;
+		//this.rekt.size = [22, 25];
+		//this.rekt.asset = 'egyt/pumpkin';
 
-        this.rekt.use();
+		this.rekt.use();
 
-        this.rekt.mesh.renderOrder = 1;
-    }
+		this.rekt.mesh.renderOrder = 1;
+	}
 
-    deproduce() {
+	deproduce() {
 
-    }
+	}
 
-    update() {
-        
-    }
+	update_tick() {
+		
+	}
 }
 
 class Ply extends Man {
-    
-    constructor() {
-        super();
+	
+	constructor() {
+		super();
 
-        this.depth = 9;
-    }
+		this.sst = {
+			img: 'blah',
+			size: [10, 10],
+			area: [1, 1],
+			offset: [0, 0]
+		}
+		this.depth = 9;
+	}
 
-    produce() {
-        super.produce();
-    }
+	man_produce() {
+		super.man_produce();
+	}
 
-    deproduce() {
+	deproduce() {
 
-    }
+	}
 
-    update() {
+	update_tick() {
 
-    }
+	}
 }
 
 export { Man, Ply }

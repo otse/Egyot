@@ -12,14 +12,12 @@ import aabb2 from "../lib/aabb2";
 class Rekt {
 	name: string
 	tile: vec2 = [0, 0]
-	offset: vec2 = [0, 0]
-	size: vec2 = [1, 1]
-	screen: aabb2
+	sst: Asset
 	obj?: Obj
-	asset?: string
 	color?: string
 	flip?: boolean
 	opacity: number = 1
+	bound?: aabb2
 
 	mesh: Mesh
 	meshShadow: Mesh
@@ -70,11 +68,11 @@ class Rekt {
 		this.used = true;
 
 		this.geometry = new PlaneBufferGeometry(
-			this.size[0], this.size[1], 2, 2);
+			this.sst.size[0], this.sst.size[1], 2, 2);
 
 		let map;
-		if (this.asset)
-			map = Renderer.loadtexture(`assets/${this.asset}.png`);
+		if (this.sst)
+			map = Renderer.loadtexture(`assets/${this.sst.img}.png`);
 
 		this.material = new MeshBasicMaterial({
 			map: map,
@@ -106,15 +104,10 @@ class Rekt {
 		else
 			return Renderer.scene;
 	}
-	dual() {
-		let xy = pts.add(this.tile, this.offset);
-
-		return xy;
-	}
 	update() {
 		let x, y;
 
-		let xy = pts.add(this.tile, this.offset);
+		let xy = pts.add(this.tile, this.sst.offset || [0, 0]);
 
 		//let squared = this.size[0] / 2 / Lumber.HALVE;
 		//console.log('squared',squared);
@@ -135,10 +128,13 @@ class Rekt {
 			this.center = [x, y];
 
 			// middle bottom
-			const w = this.size[0] / 2;
-			const h = this.size[1] / 2;
+			const w = this.sst.size[0] / 2;
+			const h = this.sst.size[1] / 2;
 
 			y += h;
+
+			this.bound = new aabb2([-this.sst.size[0], 0], [0, this.sst.size[1]]);
+			this.bound.translate([x, y]);
 		}
 
 		this.position = [x, y, 0];

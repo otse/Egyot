@@ -228,133 +228,6 @@ void main() {
         }
     }
 
-    class Rekt {
-        constructor() {
-            this.tile = [0, 0];
-            this.offset = [0, 0];
-            this.size = [1, 1];
-            this.opacity = 1;
-            this.center = [0, 0];
-            this.position = [0, 0, 0];
-            //low = false
-            this.used = false;
-            this.flick = false;
-            this.plain = false;
-            Rekt.num++;
-        }
-        unset() {
-            Rekt.num--;
-            this.unuse();
-        }
-        paint_alternate() {
-            var _a;
-            if (!LUMBER$1.PAINT_OBJ_TICK_RATE)
-                return;
-            if (!this.used)
-                return;
-            this.flick = !this.flick;
-            this.material.color.set(new THREE.Color(this.flick ? 'red' : 'blue'));
-            if ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk)
-                this.obj.chunk.changed = true;
-        }
-        unuse() {
-            if (!this.used)
-                return;
-            this.used = false;
-            this.getgroup().remove(this.mesh);
-            Rekt.active--;
-            this.geometry.dispose();
-            this.material.dispose();
-        }
-        use() {
-            if (this.used)
-                console.warn('rekt already inuse');
-            Rekt.active++;
-            this.used = true;
-            this.geometry = new THREE.PlaneBufferGeometry(this.size[0], this.size[1], 2, 2);
-            let map;
-            if (this.asset)
-                map = Renderer$1.loadtexture(`assets/${this.asset}.png`);
-            this.material = new THREE.MeshBasicMaterial({
-                map: map,
-                transparent: true,
-                opacity: this.opacity,
-                color: 0xffffff
-            });
-            this.mesh = new THREE.Mesh(this.geometry, this.material);
-            this.mesh.frustumCulled = false;
-            this.mesh.matrixAutoUpdate = false;
-            this.mesh.scale.set(1, 1, 1);
-            if (this.flip)
-                this.mesh.scale.x = -this.mesh.scale.x;
-            //UV.FlipPlane(this.geometry, 0, true);
-            this.update();
-            this.getgroup().add(this.mesh);
-        }
-        getgroup() {
-            var _a, _b;
-            let c;
-            if (c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk)
-                if (((_b = this.obj) === null || _b === void 0 ? void 0 : _b.rtt) && LUMBER$1.USE_CHUNK_RT)
-                    return c.grouprt;
-                else
-                    return c.group;
-            else
-                return Renderer$1.scene;
-        }
-        dual() {
-            let xy = pts.add(this.tile, this.offset);
-            return xy;
-        }
-        update() {
-            var _a, _b, _c;
-            let x, y;
-            let xy = pts.add(this.tile, this.offset);
-            //let squared = this.size[0] / 2 / Lumber.HALVE;
-            //console.log('squared',squared);
-            if (this.plain) {
-                x = xy[0];
-                y = xy[1];
-            }
-            else {
-                xy = pts.mult(xy, LUMBER$1.EVEN);
-                if (LUMBER$1.OFFSET_CHUNK_OBJ_REKT && ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk))
-                    xy = pts.subtract(xy, this.obj.chunk.rekt_offset);
-                x = xy[0] / 2 + xy[1] / 2;
-                y = xy[1] / 4 - xy[0] / 4;
-                this.center = [x, y];
-                // middle bottom
-                const w = this.size[0] / 2;
-                const h = this.size[1] / 2;
-                y += h;
-            }
-            this.position = [x, y, 0];
-            if (this.mesh) {
-                this.setdepth();
-                this.mesh.position.fromArray(this.position);
-                this.mesh.updateMatrix();
-                this.material.color = new THREE.Color(((_c = (_b = this.obj) === null || _b === void 0 ? void 0 : _b.chunk) === null || _c === void 0 ? void 0 : _c.childobjscolor) || this.color || 0xffffff);
-            }
-        }
-        setdepth() {
-            var _a;
-            if (this.mesh) {
-                let depth = ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.depth) || Rekt.simpledepth(this.tile);
-                this.mesh.renderOrder = depth;
-            }
-        }
-    }
-    (function (Rekt) {
-        Rekt.num = 0;
-        Rekt.active = 0;
-        //export type Struct = Rekt['struct']
-        function simpledepth(t) {
-            return -t[1] + t[0];
-        }
-        Rekt.simpledepth = simpledepth;
-    })(Rekt || (Rekt = {}));
-    var Rekt$1 = Rekt;
-
     var TEST;
     (function (TEST) {
         TEST[TEST["Outside"] = 0] = "Outside";
@@ -397,6 +270,129 @@ void main() {
     }
     aabb2.TEST = TEST;
 
+    class Rekt {
+        constructor() {
+            this.tile = [0, 0];
+            this.opacity = 1;
+            this.center = [0, 0];
+            this.position = [0, 0, 0];
+            //low = false
+            this.used = false;
+            this.flick = false;
+            this.plain = false;
+            Rekt.num++;
+        }
+        unset() {
+            Rekt.num--;
+            this.unuse();
+        }
+        paint_alternate() {
+            var _a;
+            if (!LUMBER$1.PAINT_OBJ_TICK_RATE)
+                return;
+            if (!this.used)
+                return;
+            this.flick = !this.flick;
+            this.material.color.set(new THREE.Color(this.flick ? 'red' : 'blue'));
+            if ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk)
+                this.obj.chunk.changed = true;
+        }
+        unuse() {
+            if (!this.used)
+                return;
+            this.used = false;
+            this.getgroup().remove(this.mesh);
+            Rekt.active--;
+            this.geometry.dispose();
+            this.material.dispose();
+        }
+        use() {
+            if (this.used)
+                console.warn('rekt already inuse');
+            Rekt.active++;
+            this.used = true;
+            this.geometry = new THREE.PlaneBufferGeometry(this.sst.size[0], this.sst.size[1], 2, 2);
+            let map;
+            if (this.sst)
+                map = Renderer$1.loadtexture(`assets/${this.sst.img}.png`);
+            this.material = new THREE.MeshBasicMaterial({
+                map: map,
+                transparent: true,
+                opacity: this.opacity,
+                color: 0xffffff
+            });
+            this.mesh = new THREE.Mesh(this.geometry, this.material);
+            this.mesh.frustumCulled = false;
+            this.mesh.matrixAutoUpdate = false;
+            this.mesh.scale.set(1, 1, 1);
+            if (this.flip)
+                this.mesh.scale.x = -this.mesh.scale.x;
+            //UV.FlipPlane(this.geometry, 0, true);
+            this.update();
+            this.getgroup().add(this.mesh);
+        }
+        getgroup() {
+            var _a, _b;
+            let c;
+            if (c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk)
+                if (((_b = this.obj) === null || _b === void 0 ? void 0 : _b.rtt) && LUMBER$1.USE_CHUNK_RT)
+                    return c.grouprt;
+                else
+                    return c.group;
+            else
+                return Renderer$1.scene;
+        }
+        update() {
+            var _a, _b, _c;
+            let x, y;
+            let xy = pts.add(this.tile, this.sst.offset || [0, 0]);
+            //let squared = this.size[0] / 2 / Lumber.HALVE;
+            //console.log('squared',squared);
+            if (this.plain) {
+                x = xy[0];
+                y = xy[1];
+            }
+            else {
+                xy = pts.mult(xy, LUMBER$1.EVEN);
+                if (LUMBER$1.OFFSET_CHUNK_OBJ_REKT && ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk))
+                    xy = pts.subtract(xy, this.obj.chunk.rekt_offset);
+                x = xy[0] / 2 + xy[1] / 2;
+                y = xy[1] / 4 - xy[0] / 4;
+                this.center = [x, y];
+                // middle bottom
+                const w = this.sst.size[0] / 2;
+                const h = this.sst.size[1] / 2;
+                y += h;
+                this.bound = new aabb2([-this.sst.size[0], 0], [0, this.sst.size[1]]);
+                this.bound.translate([x, y]);
+            }
+            this.position = [x, y, 0];
+            if (this.mesh) {
+                this.setdepth();
+                this.mesh.position.fromArray(this.position);
+                this.mesh.updateMatrix();
+                this.material.color = new THREE.Color(((_c = (_b = this.obj) === null || _b === void 0 ? void 0 : _b.chunk) === null || _c === void 0 ? void 0 : _c.childobjscolor) || this.color || 0xffffff);
+            }
+        }
+        setdepth() {
+            var _a;
+            if (this.mesh) {
+                let depth = ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.depth) || Rekt.simpledepth(this.tile);
+                this.mesh.renderOrder = depth;
+            }
+        }
+    }
+    (function (Rekt) {
+        Rekt.num = 0;
+        Rekt.active = 0;
+        //export type Struct = Rekt['struct']
+        function simpledepth(t) {
+            return -t[1] + t[0];
+        }
+        Rekt.simpledepth = simpledepth;
+    })(Rekt || (Rekt = {}));
+    var Rekt$1 = Rekt;
+
     class Obj {
         //screen: aabb2 | null = null
         //height_in_halves = 0
@@ -404,8 +400,6 @@ void main() {
             this.depth = 0;
             this.rate = 1;
             this.rtt = true;
-            this.size = [24, 12];
-            this.area = [1, 1];
             this.tile = [0, 0];
             this.rekt = null;
             this.chunk = null;
@@ -414,7 +408,7 @@ void main() {
         comes() {
             var _a;
             Obj.active++;
-            this.manualupdate();
+            this.update_manual();
             (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.use();
         }
         goes() {
@@ -428,43 +422,29 @@ void main() {
             (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unset();
         }
         finish() {
-            this.setarea();
+            if (!this.sst)
+                console.warn('obj no asset');
+            this.set_area();
         }
-        setarea() {
-            this.bound = new aabb2([-this.area[0], 0], [0, this.area[1]]);
+        set_area() {
+            if (!this.sst.area)
+                return;
+            this.bound = new aabb2([-this.sst.area[0], 0], [0, this.sst.area[1]]);
             this.bound.translate(this.tile);
-            this.wide = new aabb2([-this.size[0], 0], [0, this.size[1]]);
-            this.wide.translate(pts.mult(this.tile, LUMBER$1.EVEN));
         }
-        update() {
+        update_tick() {
             var _a;
             if (LUMBER$1.PAINT_OBJ_TICK_RATE)
                 (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.paint_alternate();
         }
-        manualupdate() {
+        update_manual() {
             var _a;
-            this.setarea();
-            this.fitarea();
+            this.set_area();
+            this.fit_area();
             (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.update();
         }
-        static translate(a, d, m) {
-            const w = [
-                [0, 1],
-                [-1, 0],
-                [0, -1],
-                [1, 0]
-            ];
-            let copy = aabb2.dupe(a);
-            if (d < 4)
-                copy.translate(pts.mult(w[d], m));
-            return copy;
-        }
-        fitarea() {
-            //const mult = pts.mult(this.tile, Lumber.EVEN);
-            //const pt = pts.pt(mult);
-            //this.screen = new aabb2(
-            //	[pt.x, pt.x + this.size[0]],
-            //	[pt.y, pt.y + this.size[1]]);
+        fit_area() {
+            var _a, _b;
             this.depth = Rekt$1.simpledepth(this.tile);
             if (!this.bound || !this.rekt)
                 return;
@@ -480,30 +460,68 @@ void main() {
                 if (c) {
                     for (const t of c.objs.tuple.tuple) {
                         const obj = t[0];
-                        if (obj == this)
+                        if (obj == this || !((_a = this.rekt) === null || _a === void 0 ? void 0 : _a.bound) || !((_b = obj.rekt) === null || _b === void 0 ? void 0 : _b.bound))
                             continue;
+                        // image clip
+                        if (!this.rekt.bound.test(obj.rekt.bound))
+                            continue;
+                        const a = this.bound;
+                        const b = obj.bound;
+                        // n ne e se s sw w nw
                         if (this.bound.test(obj.bound)) {
-                            for (let i = 0; i <= 3; i++) {
-                                let bb = Obj.translate(obj.bound, i, 1);
-                                if (bb.test(this.bound)) {
-                                    this.rekt.color = ['blue', 'red', 'yellow', 'green'][i];
-                                    break;
-                                }
-                            }
-                            /*
-                            let a = this.bound.center();
-                            let b = obj.bound.center();
-                        let c = pts.pt(this.bound.center());
-                        let d = pts.pt(obj.bound.center());
-                        if (c.y >= d.y)
                             this.rekt.color = 'red';
-                        else if (c.y <= d.y)
-                            this.rekt.color = 'green';
-                            else
-                            this.rekt.color = 'white';
-                            */
-                            this.rekt.update();
                         }
+                        else if (a.min[0] < b.max[0] && a.max[0] > b.min[0] && a.min[1] >= b.max[1]) // n
+                         {
+                            this.rekt.color = 'blue';
+                        }
+                        else if (a.min[0] >= b.max[0] && a.min[1] >= b.max[1]) // ne
+                         {
+                            this.rekt.color = 'purple';
+                        }
+                        else if (a.min[0] >= b.max[0] && a.max[1] > b.min[1]) // e
+                         {
+                            this.rekt.color = 'cyan';
+                        }
+                        else if (a.min[0] >= b.max[0] && a.max[1] <= b.min[1]) // se
+                         {
+                            this.rekt.color = 'salmon';
+                        }
+                        else if (a.max[0] > b.min[0] && a.max[1] <= b.min[1]) // s
+                         {
+                            this.rekt.color = 'pink';
+                        }
+                        else if (a.max[0] <= b.min[0] && a.max[1] <= b.min[1]) // sw
+                         {
+                            this.rekt.color = 'orange';
+                        }
+                        else if (a.max[0] <= b.min[0] && a.min[1] < b.max[1]) // w
+                         {
+                            this.rekt.color = 'yellow';
+                        }
+                        else if (a.max[0] <= b.min[0] && a.min[1] >= b.min[1]) // nw
+                         {
+                            this.rekt.color = 'gold';
+                        }
+                        else {
+                            this.rekt.color = 'white';
+                        }
+                        // now compare obj diagonals to establish se / ne / etc
+                        this.rekt.update();
+                        obj.rekt.update();
+                        /*
+                        let a = this.bound.center();
+                        let b = obj.bound.center();
+                    let c = pts.pt(this.bound.center());
+                    let d = pts.pt(obj.bound.center());
+                    if (c.y >= d.y)
+                        this.rekt.color = 'red';
+                    else if (c.y <= d.y)
+                        this.rekt.color = 'green';
+                        else
+                        this.rekt.color = 'white';
+                        */
+                        this.rekt.update();
                     }
                 }
             }
@@ -664,7 +682,7 @@ void main() {
             for (let t of this.tuple.tuple) {
                 let rate = t[1]--;
                 if (rate <= 0) {
-                    t[0].update();
+                    t[0].update_tick();
                     t[1] = this.rate(t[0]);
                 }
             }
@@ -809,10 +827,13 @@ void main() {
             this.camera = Renderer$1.ortographiccamera(this.width, this.height);
             // todo, pts.make(blah)
             let t = pts.mult(this.chunk.p2, this.chunk.master.span);
+            const img = {
+                img: 'egyt/tenbyten',
+                size: [this.width, this.height]
+            };
             this.rekt = new Rekt$1;
             this.rekt.tile = t;
-            this.rekt.size = [this.width, this.height];
-            this.rekt.asset = 'egyt/tenbyten';
+            this.rekt.sst = img;
         }
         // todo pool the rts?
         comes() {
@@ -841,334 +862,31 @@ void main() {
         constructor() {
             super();
         }
-        produce() {
+        man_produce() {
             return;
         }
         deproduce() {
         }
-        update() {
+        update_tick() {
         }
     }
     class Ply extends Man {
         constructor() {
             super();
+            this.sst = {
+                img: 'blah',
+                size: [10, 10],
+                area: [1, 1],
+                offset: [0, 0]
+            };
             this.depth = 9;
         }
-        produce() {
-            super.produce();
+        man_produce() {
+            super.man_produce();
         }
         deproduce() {
         }
-        update() {
-        }
-    }
-
-    class Building extends Obj$1 {
-        constructor(pst) {
-            super();
-            this.pst = pst;
-            //this.rtt = false;
-        }
-        finish() {
-            this.area = this.pst.area;
-            this.size = this.pst.size;
-            this.rekt = new Rekt$1;
-            this.rekt.obj = this;
-            this.rekt.tile = this.tile;
-            this.rekt.size = this.size;
-            this.rekt.asset = this.pst.asset;
-            this.rekt.offset = this.pst.offset;
-            super.finish();
-        }
-    }
-    (function (Building) {
-        Building.TwoTwo = {
-            asset: 'twotwo',
-            size: [48, 24],
-            area: [2, 2],
-            offset: [0, 0],
-        };
-        Building.ThreeThree = {
-            asset: 'threethree',
-            size: [72, 36],
-            area: [3, 3],
-            offset: [0, 0],
-        };
-        Building.SandHovel1 = {
-            asset: 'balmora/hovel1',
-            size: [192, 149],
-            area: [6, 8],
-            offset: [0, 0],
-        };
-        Building.SandHovel2 = {
-            asset: 'balmora/hovel2',
-            size: [168, 143],
-            area: [5, 7],
-            offset: [0, 0],
-        };
-        Building.SandAlleyGate = {
-            asset: 'balmora/alleygate',
-            size: [144, 96],
-            area: [1, 4],
-            offset: [0, 0],
-        };
-        Building.Stairs2 = {
-            asset: 'balmora/stairs2',
-            size: [120, 72],
-            area: [4, 2],
-            offset: [0, 0],
-        };
-        Building.Stairs3 = {
-            asset: 'balmora/stairs3',
-            size: [120, 72],
-            area: [5, 3],
-            offset: [0, 0],
-        };
-        Building.Platform22 = {
-            asset: 'balmora/platform22',
-            size: [48, 52],
-            area: [2, 2],
-            offset: [0, 0],
-        };
-        Building.Platform23 = {
-            asset: 'balmora/platform23',
-            size: [72, 65],
-            area: [3, 3],
-            offset: [0, 0],
-        };
-    })(Building || (Building = {}));
-    var Building$1 = Building;
-
-    var Ploppables;
-    (function (Ploppables) {
-        Ploppables.types = [
-            'twotwo',
-            'threethree',
-            'sandhovel1',
-            'sandhovel2',
-            'sandalleygate',
-            'stairs2',
-            'stairs3',
-            'platform22',
-            'platform23',
-            'tree'
-        ];
-        Ploppables.index = 0;
-        Ploppables.ghost = null;
-        function update() {
-            let remake = false;
-            let obj = null;
-            if (Ploppables.ghost) {
-                if (App$1.wheel < 0 && Ploppables.index + 1 < Ploppables.types.length) {
-                    Ploppables.index++;
-                    remake = true;
-                }
-                else if (App$1.wheel > 0 && Ploppables.index - 1 >= 0) {
-                    Ploppables.index--;
-                    remake = true;
-                }
-            }
-            const shortcuts = {
-                'y': 'twotwo',
-                'b': 'sandhovel1',
-                't': 'tree'
-            };
-            for (const s in shortcuts) {
-                if (App$1.keys[s]) {
-                    Ploppables.index = Ploppables.types.indexOf(shortcuts[s]);
-                    remake = true;
-                    break;
-                }
-            }
-            if (remake) {
-                LUMBER$1.wlrd.wheelable = false;
-                obj = factory(Ploppables.types[Ploppables.index]);
-                obj.finish();
-                obj.comes();
-                Ploppables.ghost === null || Ploppables.ghost === void 0 ? void 0 : Ploppables.ghost.unset();
-                Ploppables.ghost = obj;
-            }
-            if (Ploppables.ghost) {
-                Ploppables.ghost.tile = LUMBER$1.wlrd.mtil;
-                if (Ploppables.ghost.rekt)
-                    Ploppables.ghost.rekt.tile = Ploppables.ghost.tile;
-                Ploppables.ghost.manualupdate();
-                Ploppables.ghost.update();
-            }
-            if (Ploppables.ghost && App$1.buttons[0]) {
-                LUMBER$1.wlrd.wheelable = true;
-                console.log('plop');
-                Ploppables.ghost.goes();
-                LUMBER$1.wlrd.add(Ploppables.ghost);
-                Ploppables.ghost = null;
-            }
-            if (Ploppables.ghost && App$1.keys['escape'] == 1) {
-                LUMBER$1.wlrd.wheelable = true;
-                console.log('unplop');
-                Ploppables.ghost.unset();
-                Ploppables.ghost = null;
-            }
-            if (App$1.keys['x'] == 1) {
-                let ct = LUMBER$1.wlrd.fg.big(LUMBER$1.wlrd.mtil);
-                let c = LUMBER$1.wlrd.fg.at(ct[0], ct[1]);
-                if (c) {
-                    let obj = c.objs.get(LUMBER$1.wlrd.mtil);
-                    if (obj) {
-                        LUMBER$1.wlrd.remove(obj);
-                        obj.unset();
-                    }
-                    else
-                        console.log('no obj there at', pts.to_string(LUMBER$1.wlrd.mtil));
-                }
-            }
-        }
-        Ploppables.update = update;
-        function factory(type) {
-            if (type == 'twotwo')
-                return new Building$1(Building$1.TwoTwo);
-            else if (type == 'threethree')
-                return new Building$1(Building$1.ThreeThree);
-            else if (type == 'sandhovel1')
-                return new Building$1(Building$1.SandHovel1);
-            else if (type == 'sandhovel2')
-                return new Building$1(Building$1.SandHovel2);
-            else if (type == 'sandalleygate')
-                return new Building$1(Building$1.SandAlleyGate);
-            else if (type == 'stairs2')
-                return new Building$1(Building$1.Stairs2);
-            else if (type == 'stairs3')
-                return new Building$1(Building$1.Stairs3);
-            else if (type == 'platform22')
-                return new Building$1(Building$1.Platform22);
-            else if (type == 'platform23')
-                return new Building$1(Building$1.Platform23);
-            else if (type == 'tree')
-                return new Tree();
-            else
-                return new Obj$1;
-        }
-        Ploppables.factory = factory;
-        function plant_trees() {
-            return;
-        }
-        Ploppables.plant_trees = plant_trees;
-        function place_tile(chance, asset, pos) {
-            if (Math.random() > chance / 100)
-                return;
-            let tile = new Tile(asset);
-            tile.tile = pos;
-            tile.asset = asset;
-            tile.finish();
-            LUMBER$1.wlrd.add(tile);
-            return tile;
-        }
-        Ploppables.place_tile = place_tile;
-        function area_tile(chance, asset, aabb) {
-            const every = (pos) => place_tile(chance, asset, pos);
-            pts.area_every(aabb, every);
-        }
-        Ploppables.area_tile = area_tile;
-        function area_tile_sampled(chance, assets, aabb) {
-            const every = (pos) => place_tile(chance, LUMBER$1.sample(assets), pos);
-            pts.area_every(aabb, every);
-        }
-        Ploppables.area_tile_sampled = area_tile_sampled;
-        function place_wheat(growth, tile) {
-            if (Math.random() > 99 / 100)
-                return;
-            let crop = new Wheat(growth);
-            crop.tile = tile;
-            crop.finish();
-            LUMBER$1.wlrd.add(crop);
-            return crop;
-        }
-        Ploppables.place_wheat = place_wheat;
-        function area_wheat(growth, aabb) {
-            const every = (pos) => place_wheat(growth, pos);
-            pts.area_every(aabb, every);
-        }
-        Ploppables.area_wheat = area_wheat;
-        function place_old_wall(growth, tile) {
-            if (Math.random() > 50 / 100)
-                return;
-            let crop = new Wheat(growth);
-            crop.tile = tile;
-            crop.finish();
-            LUMBER$1.wlrd.add(crop);
-            return crop;
-        }
-        Ploppables.place_old_wall = place_old_wall;
-        function area_fort(something, aabb) {
-            const every = (pos) => place_wheat(1, pos);
-            pts.area_every(aabb, every);
-        }
-        Ploppables.area_fort = area_fort;
-    })(Ploppables || (Ploppables = {}));
-    const trees = [
-        'egyt/tree/oaktree3',
-        'egyt/tree/oaktree4',
-    ];
-    const tillering = [
-        'egyt/farm/wheat_i',
-        'egyt/farm/wheat_i',
-        'egyt/farm/wheat_il',
-        'egyt/farm/wheat_il',
-        'egyt/farm/wheat_il',
-        'egyt/farm/wheat_ili',
-    ];
-    const ripening = [
-        'egyt/farm/wheat_il',
-        'egyt/farm/wheat_ili',
-        'egyt/farm/wheat_ili',
-        'egyt/farm/wheat_ilil',
-        'egyt/farm/wheat_ilil',
-    ];
-    class Tree extends Obj$1 {
-        constructor() {
-            super();
-            this.rate = 10;
-            Tree.trees.push(this);
-        }
-        finish() {
-            this.rekt = new Rekt$1;
-            this.rekt.obj = this;
-            this.rekt.asset = LUMBER$1.sample(trees);
-            this.rekt.tile = this.tile;
-            this.rekt.offset = [1, -1];
-            this.rekt.size = [120, 132];
-        }
-    }
-    Tree.trees = [];
-    class Tile extends Obj$1 {
-        constructor(asset) {
-            super();
-            this.asset = 'egyt/ground/stone1';
-            //this.rtt = false;
-        }
-        finish() {
-            this.rekt = new Rekt$1;
-            this.rekt.obj = this;
-            this.rekt.asset = this.asset;
-            this.rekt.tile = this.tile;
-            this.rekt.size = [24, 12];
-        }
-    }
-    class Wheat extends Obj$1 {
-        constructor(growth) {
-            super();
-            this.growth = growth;
-            this.flick = false;
-            this.rate = 2.0;
-        }
-        finish() {
-            this.rekt = new Rekt$1;
-            this.rekt.obj = this;
-            this.rekt.asset =
-                this.growth == 1 ? LUMBER$1.sample(tillering) :
-                    this.growth == 2 ? LUMBER$1.sample(ripening) :
-                        this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
-            this.rekt.tile = this.tile;
-            this.rekt.size = [22, 22];
+        update_tick() {
         }
     }
 
@@ -1222,6 +940,7 @@ void main() {
             this.bg = new ChunkMaster(Chunk, 20);
             LUMBER$1.ply = new Ply;
             LUMBER$1.ply.tile = [0, 0];
+            LUMBER$1.ply.finish();
             LUMBER$1.ply.comes();
             this.preloads();
             //this.populate();
@@ -1299,13 +1018,6 @@ void main() {
             this.focal = [-p[0], -p[1], 0];
         }
         populate() {
-            //pts.area_every(new aabb2([-10, -10], [10, 10]), every);
-            let building1 = new Rekt$1;
-            building1.tile = [6, -1];
-            building1.size = [181, 146];
-            building1.asset = 'balmora/building1';
-            building1.use();
-            return;
         }
     }
     (function (World) {
@@ -1398,6 +1110,288 @@ void main() {
         Board.raw = raw;
     })(Board || (Board = {}));
 
+    class Building extends Obj$1 {
+        constructor(pst) {
+            super();
+            this.pst = pst;
+            //this.rtt = false;
+        }
+        finish() {
+            console.log('asset', this.pst.asset);
+            this.sst = this.pst.asset;
+            this.rekt = new Rekt$1;
+            this.rekt.obj = this;
+            this.rekt.tile = this.tile;
+            this.rekt.sst = this.pst.asset;
+            super.finish();
+        }
+    }
+    (function (Building) {
+        Building.TwoTwo = {
+            asset: {
+                img: 'twotwo',
+                size: [48, 24],
+                area: [2, 2],
+            }
+        };
+        Building.ThreeThree = {
+            asset: {
+                img: 'threethree',
+                size: [72, 36],
+                area: [3, 3],
+            }
+        };
+        Building.SandHovel1 = {
+            asset: {
+                img: 'balmora/hovel1',
+                size: [192, 149],
+                area: [6, 8],
+            }
+        };
+        Building.SandHovel2 = {
+            asset: {
+                img: 'balmora/hovel2',
+                size: [168, 143],
+                area: [5, 7],
+            }
+        };
+        Building.SandAlleyGate = {
+            asset: {
+                img: 'balmora/alleygate',
+                size: [144, 96],
+                area: [1, 4],
+            }
+        };
+        Building.Stairs2 = {
+            asset: {
+                img: 'balmora/stairs2',
+                size: [120, 72],
+                area: [4, 2],
+            }
+        };
+        Building.Stairs3 = {
+            asset: {
+                img: 'balmora/stairs3',
+                size: [120, 72],
+                area: [5, 3],
+            }
+        };
+        Building.Platform22 = {
+            asset: {
+                img: 'balmora/platform22',
+                size: [48, 52],
+                area: [2, 2],
+            }
+        };
+        Building.Platform23 = {
+            asset: {
+                img: 'balmora/platform23',
+                size: [72, 65],
+                area: [3, 3],
+            }
+        };
+    })(Building || (Building = {}));
+    var Building$1 = Building;
+
+    var Ploppables;
+    (function (Ploppables) {
+        Ploppables.types = [
+            'twotwo',
+            'threethree',
+            'sandhovel1',
+            'sandhovel2',
+            'sandalleygate',
+            'stairs2',
+            'stairs3',
+            'platform22',
+            'platform23',
+            'tree'
+        ];
+        Ploppables.index = 0;
+        Ploppables.ghost = null;
+        function update() {
+            let remake = false;
+            let obj = null;
+            if (Ploppables.ghost) {
+                if (App$1.wheel < 0 && Ploppables.index + 1 < Ploppables.types.length) {
+                    Ploppables.index++;
+                    remake = true;
+                }
+                else if (App$1.wheel > 0 && Ploppables.index - 1 >= 0) {
+                    Ploppables.index--;
+                    remake = true;
+                }
+            }
+            const shortcuts = {
+                'y': 'twotwo',
+                'b': 'sandhovel1',
+                'p': 'platform22',
+                't': 'tree'
+            };
+            for (const s in shortcuts) {
+                if (App$1.keys[s]) {
+                    Ploppables.index = Ploppables.types.indexOf(shortcuts[s]);
+                    remake = true;
+                    break;
+                }
+            }
+            if (remake) {
+                LUMBER$1.wlrd.wheelable = false;
+                obj = factory(Ploppables.types[Ploppables.index]);
+                obj.finish();
+                obj.comes();
+                Ploppables.ghost === null || Ploppables.ghost === void 0 ? void 0 : Ploppables.ghost.unset();
+                Ploppables.ghost = obj;
+            }
+            if (Ploppables.ghost) {
+                Ploppables.ghost.tile = LUMBER$1.wlrd.mtil;
+                if (Ploppables.ghost.rekt)
+                    Ploppables.ghost.rekt.tile = Ploppables.ghost.tile;
+                Ploppables.ghost.update_manual();
+                Ploppables.ghost.update_tick();
+            }
+            if (Ploppables.ghost && App$1.buttons[0]) {
+                LUMBER$1.wlrd.wheelable = true;
+                console.log('plop');
+                Ploppables.ghost.goes();
+                LUMBER$1.wlrd.add(Ploppables.ghost);
+                Ploppables.ghost = null;
+            }
+            if (Ploppables.ghost && App$1.keys['escape'] == 1) {
+                LUMBER$1.wlrd.wheelable = true;
+                console.log('unplop');
+                Ploppables.ghost.unset();
+                Ploppables.ghost = null;
+            }
+            if (App$1.keys['x'] == 1) {
+                let ct = LUMBER$1.wlrd.fg.big(LUMBER$1.wlrd.mtil);
+                let c = LUMBER$1.wlrd.fg.at(ct[0], ct[1]);
+                if (c) {
+                    let obj = c.objs.get(LUMBER$1.wlrd.mtil);
+                    if (obj) {
+                        LUMBER$1.wlrd.remove(obj);
+                        obj.unset();
+                    }
+                    else
+                        console.log('no obj there at', pts.to_string(LUMBER$1.wlrd.mtil));
+                }
+            }
+        }
+        Ploppables.update = update;
+        function factory(type) {
+            if (type == 'twotwo')
+                return new Building$1(Building$1.TwoTwo);
+            else if (type == 'threethree')
+                return new Building$1(Building$1.ThreeThree);
+            else if (type == 'sandhovel1')
+                return new Building$1(Building$1.SandHovel1);
+            else if (type == 'sandhovel2')
+                return new Building$1(Building$1.SandHovel2);
+            else if (type == 'sandalleygate')
+                return new Building$1(Building$1.SandAlleyGate);
+            else if (type == 'stairs2')
+                return new Building$1(Building$1.Stairs2);
+            else if (type == 'stairs3')
+                return new Building$1(Building$1.Stairs3);
+            else if (type == 'platform22')
+                return new Building$1(Building$1.Platform22);
+            else if (type == 'platform23')
+                return new Building$1(Building$1.Platform23);
+            else if (type == 'tree')
+                return new Tree();
+            else
+                return new Obj$1;
+        }
+        Ploppables.factory = factory;
+    })(Ploppables || (Ploppables = {}));
+    const trees = [
+        {
+            img: 'egyt/tree/oaktree3',
+            offset: [1, -1],
+            size: [120, 132],
+            area: [1, 1]
+        },
+        {
+            img: 'egyt/tree/oaktree4',
+            offset: [1, -1],
+            size: [120, 132],
+            area: [1, 1]
+        }
+        //'egyt/birchtree1',
+        //'egyt/birchtree2',
+        //'egyt/birchtree3',
+    ];
+    class Tree extends Obj$1 {
+        constructor() {
+            super();
+            this.rate = 10;
+            Tree.trees.push(this);
+        }
+        finish() {
+            this.rekt = new Rekt$1;
+            this.rekt.obj = this;
+            this.rekt.sst = LUMBER$1.sample(trees);
+            this.rekt.tile = this.tile;
+        }
+    }
+    Tree.trees = [];
+    /*
+    export class Tile extends Obj {
+        asset: string = 'egyt/ground/stone1'
+        constructor(asset) {
+            super();
+            //this.rtt = false;
+        }
+        finish() {
+            this.rekt = new Rekt;
+            this.rekt.obj = this;
+            this.rekt.asset = this.asset;
+            this.rekt.tile = this.tile;
+            this.rekt.size = [24, 12];
+        }
+    }
+    */
+    /*
+    const wheat: Asset = {
+        img
+    }
+
+    export class Wheat extends Obj {
+        flick = false
+
+        constructor(public growth: number) {
+            super();
+            this.rate = 2.0;
+        }
+        finish() {
+            this.rekt = new Rekt;
+            this.rekt.obj = this;
+            this.rekt.asset =
+            this.growth == 1 ? LUMBER.sample(tillering) :
+            this.growth == 2 ? LUMBER.sample(ripening) :
+            this.growth == 3 ? 'egyt/farm/wheat_ilili' : '';
+            this.rekt.tile = this.tile;
+            this.rekt.size = [22, 22];
+        }
+    }
+    */
+    /*
+    export class Wall extends Obj {
+        asset: string = 'egyt/ground/stone1'
+        constructor(asset) {
+            super();
+            //this.rtt = false;
+        }
+        finish() {
+            this.rekt = new Rekt;
+            this.rekt.obj = this;
+            this.rekt.asset = this.asset;
+            this.rekt.tile = this.tile;
+            this.rekt.size = [24, 12];
+        }
+    }
+    */
+
     var LUMBER;
     (function (LUMBER) {
         LUMBER.USE_CHUNK_RT = false;
@@ -1457,7 +1451,6 @@ void main() {
             if (window.location.href.indexOf("#nochunkrt") != -1)
                 LUMBER.USE_CHUNK_RT = false;
             LUMBER.wlrd.populate();
-            Ploppables.plant_trees();
             Board.init();
             Board.raw(`
 		<!-- <div>May have to reload for latest version<br/> -->

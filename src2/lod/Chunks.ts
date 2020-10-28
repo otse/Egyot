@@ -202,7 +202,7 @@ class Objs {
 		for (let t of this.tuple.tuple) {
 			let rate = t[1]--;
 			if (rate <= 0) {
-				t[0].update();
+				t[0].update_tick();
 				t[1] = this.rate(t[0]);
 			}
 		}
@@ -371,10 +371,13 @@ class RtChunk {
 
 		let t = pts.mult(this.chunk.p2, this.chunk.master.span);
 
+		const img: Asset = {
+			img: 'egyt/tenbyten',
+			size: [this.width, this.height]
+		}
 		this.rekt = new Rekt;
 		this.rekt.tile = t;
-		this.rekt.size = [this.width, this.height];
-		this.rekt.asset = 'egyt/tenbyten';
+		this.rekt.sst = img;
 	}
 	// todo pool the rts?
 	comes() {
