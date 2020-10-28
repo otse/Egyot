@@ -35,8 +35,8 @@ class aabb2 {
 	}
 	test(b: aabb2)
 	{
-		if (this.max[0] <= b.min[0] || this.min[0] >= b.max[0] ||
-			this.max[1] <= b.min[1] || this.min[1] >= b.max[1])
+		if (this.max[0] < b.min[0] || this.min[0] > b.max[0] ||
+			this.max[1] < b.min[1] || this.min[1] > b.max[1])
 			return 0;
 		if (this.min[0] <= b.min[0] && this.max[0] >= b.max[0] &&
 			this.min[1] <= b.min[1] && this.max[1] >= b.max[1])

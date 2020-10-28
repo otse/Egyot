@@ -41,7 +41,7 @@ class Obj {
 	set_area() {
 		if (!this.sst.area)
 			return;
-		this.bound = new aabb2([-this.sst.area[0], 0], [0, this.sst.area[1]]);
+		this.bound = new aabb2([-this.sst.area[0]+1, 0], [0, this.sst.area[1]-1]);
 		this.bound.translate(this.tile);
 	}
 	update_tick() {
@@ -80,45 +80,25 @@ class Obj {
 						continue;
 					const a = this.bound;
 					const b = obj.bound;
-					// n ne e se s sw w nw
-					if (this.bound.test(obj.bound)) {
+					const test = this.bound.test(obj.bound);
+					if (test == 1) {
 						this.rekt.color = 'red';
+						this.depth = obj.depth + 1;
 					}
-					else if (a.min[0] < b.max[0] && a.max[0] > b.min[0] && a.min[1] >= b.max[1]) // n
-					{
-						this.rekt.color = 'blue';
-					}
-					else if (a.min[0] >= b.max[0] && a.min[1] >= b.max[1]) // ne
-					{
-						this.rekt.color = 'purple';
-					}
-					else if (a.min[0] >= b.max[0] && a.max[1] > b.min[1]) // e
+					else if (test == 2)
 					{
 						this.rekt.color = 'cyan';
+						this.depth = obj.depth + 1;
 					}
-					else if (a.min[0] >= b.max[0] && a.max[1] <= b.min[1]) // se
-					{
-						this.rekt.color = 'salmon';
+					else if ( // nwnw
+						a.min[0] <= b.max[0] && a.max[0] >= b.min[0] && a.min[1] > b.max[1] ||
+						a.max[0] < b.min[0] && a.max[1] >= b.min[1] && a.min[1] <= b.max[1] ||
+						a.min[0] < b.min[0] && a.max[1] > b.max[1]) {
+						this.rekt.color = 'blue';
+						this.depth = obj.depth - 1;
 					}
-					else if (a.max[0] > b.min[0] && a.max[1] <= b.min[1]) // s
-					{
-						this.rekt.color = 'pink';
-					}
-					else if (a.max[0] <= b.min[0] && a.max[1] <= b.min[1]) // sw
-					{
-						this.rekt.color = 'orange';
-					}
-					else if (a.max[0] <= b.min[0] && a.min[1] < b.max[1]) // w
-					{
-						this.rekt.color = 'yellow';
-					}
-					else if (a.max[0] <= b.min[0] && a.min[1] >= b.min[1]) // nw
-					{
-						this.rekt.color = 'gold';
-					}
-					else {
-						this.rekt.color = 'white';
-					}
+					else
+						this.depth = obj.depth + 1;
 					// now compare obj diagonals to establish se / ne / etc
 					this.rekt.update();
 					obj.rekt.update();
@@ -151,3 +131,60 @@ namespace Obj {
 }
 
 export default Obj;
+
+/*
+					let obscured = false;
+					// n ne e se s sw w nw
+					if (this.bound.test(obj.bound)) {
+						this.rekt.color = 'red';
+					}
+					else if (a.min[0] < b.max[0] && a.max[0] > b.min[0] && a.min[1] >= b.max[1]) // n
+					{
+						obscured = true;
+						//this.rekt.color = 'blue';
+					}
+					else if (a.min[0] >= b.max[0] && a.min[1] >= b.max[1]) // ne
+					{
+						obscured = false;
+						//this.rekt.color = 'purple';
+					}
+					else if (a.min[0] >= b.max[0] && a.max[1] > b.min[1]) // e
+					{
+						obscured = false;
+						//this.rekt.color = 'cyan';
+					}
+					else if (a.min[0] >= b.max[0] && a.max[1] <= b.min[1]) // se
+					{
+						obscured = false;
+						//this.rekt.color = 'salmon';
+					}
+					else if (a.max[0] > b.min[0] && a.max[1] <= b.min[1]) // s
+					{
+						obscured = false;
+						//this.rekt.color = 'pink';
+					}
+					else if (a.max[0] <= b.min[0] && a.max[1] <= b.min[1]) // sw
+					{
+						obscured = false;
+						//this.rekt.color = 'orange';
+					}
+					else if (a.max[0] <= b.min[0] && a.min[1] < b.max[1]) // w
+					{
+						obscured = true;
+						//this.rekt.color = 'yellow';
+					}
+					else if (a.max[0] <= b.min[0] && a.min[1] >= b.min[1]) // nw
+					{
+						obscured = true;
+						//this.rekt.color = 'gold';
+					}
+					else {
+						//this.rekt.color = 'white';
+					}
+					if (obscured) {
+						this.depth = obj.depth - 1;
+					}
+					else {
+						this.depth = obj.depth + 1;
+					}
+					*/
