@@ -133,7 +133,7 @@ class Rekt {
 
 			y += h;
 
-			this.bound = new aabb2([-this.sst.size[0], 0], [0, this.sst.size[1]]);
+			this.bound = new aabb2([0, 0], this.sst.size);
 			this.bound.translate([x, y]);
 		}
 

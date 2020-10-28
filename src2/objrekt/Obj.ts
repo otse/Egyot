@@ -41,7 +41,7 @@ class Obj {
 	set_area() {
 		if (!this.sst.area)
 			return;
-		this.bound = new aabb2([-this.sst.area[0]+1, 0], [0, this.sst.area[1]-1]);
+		this.bound = new aabb2([-this.sst.area[0] + 1, 0], [0, this.sst.area[1] - 1]);
 		this.bound.translate(this.tile);
 	}
 	update_tick() {
@@ -70,57 +70,44 @@ class Obj {
 		for (const a of around) {
 			let p = pts.add(big, a);
 			let c = LUMBER.wlrd.fg.at(p[0], p[1]);
-			if (c) {
-				for (const t of c.objs.tuple.tuple) {
-					const obj = t[0];
-					if (obj == this || !this.rekt?.bound || !obj.rekt?.bound)
-						continue;
-					// image clip
-					if (!this.rekt.bound.test(obj.rekt.bound))
-						continue;
-					const a = this.bound;
-					const b = obj.bound;
-					const test = this.bound.test(obj.bound);
-					if (test == 1) {
-						this.rekt.color = 'red';
-						this.depth = obj.depth + 1;
-					}
-					else if (test == 2)
-					{
-						this.rekt.color = 'cyan';
-						this.depth = obj.depth + 1;
-					}
-					else if ( // nwnw
-						a.min[0] <= b.max[0] && a.max[0] >= b.min[0] && a.min[1] > b.max[1] ||
-						a.max[0] < b.min[0] && a.max[1] >= b.min[1] && a.min[1] <= b.max[1] ||
-						a.min[0] < b.min[0] && a.max[1] > b.max[1]) {
-						this.rekt.color = 'blue';
-						this.depth = obj.depth - 1;
-					}
-					else
-						this.depth = obj.depth + 1;
-					// now compare obj diagonals to establish se / ne / etc
-					this.rekt.update();
-					obj.rekt.update();
-					/*
-					let a = this.bound.center();
-					let b = obj.bound.center();
-				let c = pts.pt(this.bound.center());
-				let d = pts.pt(obj.bound.center());
-				if (c.y >= d.y)
-					this.rekt.color = 'red';
-				else if (c.y <= d.y)
-					this.rekt.color = 'green';
-					else
+			if (!c)
+				continue;
+			for (const t of c.objs.tuple.tuple) {
+				const obj = t[0];
+				if (obj == this || !this.rekt?.bound || !obj.rekt?.bound)
+					continue;
+				// image clip
+				if (!this.rekt.bound.test(obj.rekt.bound)) {
 					this.rekt.color = 'white';
-					*/
-					this.rekt.update();
+					continue;
 				}
+				this.rekt.color = 'pink';
+				const a = this.bound;
+				const b = obj.bound;
+				const test = this.bound.test(obj.bound);
+				let front = true;
+				if (test == 1) {
+					this.rekt.color = 'red';
+				}
+				else if (test == 2) {
+					this.rekt.color = 'cyan';
+				}
+				else if ( // nwnw
+					a.min[0] <= b.max[0] && a.max[0] >= b.min[0] && a.min[1] > b.max[1] ||
+					a.max[0] < b.min[0] && a.max[1] >= b.min[1] && a.min[1] <= b.max[1] ||
+					a.min[0] < b.min[0] && a.max[1] > b.max[1]) {
+					front = false;
+					this.rekt.color = 'blue';
+				}
+				if (front)
+					this.depth = obj.depth + Math.abs(this.depth);
+				else
+					this.depth = obj.depth - Math.abs(this.depth);
+				// now compare obj diagonals to establish se / ne / etc
 			}
 		}
-
+		this.rekt.update();
 	}
-
 }
 
 namespace Obj {
