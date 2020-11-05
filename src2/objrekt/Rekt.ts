@@ -54,7 +54,7 @@ class Rekt {
 		if (!this.used)
 			return;
 		this.used = false;
-		this.getgroup().remove(this.mesh);
+		this.get_group().remove(this.mesh);
 		Rekt.active--;
 		this.geometry.dispose();
 		this.material.dispose();
@@ -92,9 +92,9 @@ class Rekt {
 
 		this.update();
 
-		this.getgroup().add(this.mesh);
+		this.get_group().add(this.mesh);
 	}
-	getgroup() {
+	get_group() {
 		let c: Chunk | null | undefined;
 		if (c = this.obj?.chunk)
 			if (this.obj?.rtt && LUMBER.USE_CHUNK_RT)
@@ -139,19 +139,19 @@ class Rekt {
 
 		this.position = [x, y, 0];
 
-		
 		if (this.mesh) {
-			this.setdepth();
+			this.set_depth();
 			this.mesh.position.fromArray(this.position);
 			this.mesh.updateMatrix();
 			this.material.color = new Color(this.obj?.chunk?.childobjscolor || this.color || 0xffffff);
 		}
 	}
-	setdepth() {
-		if (this.mesh) {
-			let depth = this.obj?.depth || Rekt.simpledepth(this.tile);
+	set_depth() {
+		let depth = Rekt.ptdepth(this.tile);
+		if (this.obj && this.obj.weight.weight != NaN)
+			depth = this.obj.weight.weight;
+		if (this.mesh)
 			this.mesh.renderOrder = depth;
-		}
 	}
 }
 
@@ -161,7 +161,7 @@ namespace Rekt {
 
 	//export type Struct = Rekt['struct']
 
-	export function simpledepth(t: vec2) {
+	export function ptdepth(t: vec2) {
 		return -t[1] + t[0];
 	}
 }

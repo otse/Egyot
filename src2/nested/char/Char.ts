@@ -36,7 +36,7 @@ class Ply extends Man {
 	constructor() {
 		super();
 
-		this.sst = {
+		this.asset = {
 			img: 'blah',
 			size: [10, 10],
 			area: [1, 1],

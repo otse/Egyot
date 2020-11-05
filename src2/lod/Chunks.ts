@@ -6,7 +6,7 @@ import Rekt from "../objrekt/Rekt";
 import pts from "../lib/pts";
 import aabb2 from "../lib/aabb2";
 
-import {  Group, WebGLRenderTarget, OrthographicCamera } from "three";
+import { Group, WebGLRenderTarget, OrthographicCamera } from "three";
 
 const count = (c: Chunk, prop: string) => {
 	let num = 0;
@@ -56,9 +56,8 @@ class Chunk {
 
 		this.set_bounds();
 	}
-	anchor()
-	{
-		
+	anchor() {
+
 	}
 	set_bounds() {
 		const pt = pts.pt(this.p);
@@ -66,7 +65,7 @@ class Chunk {
 		let p3 = pts.clone(this.p);
 
 		this.basest_tile = pts.mult(this.p2, this.master.span * LUMBER.EVEN);
-		this.north = 	   pts.mult(p3, 	 this.master.span * LUMBER.EVEN);
+		this.north = pts.mult(p3, this.master.span * LUMBER.EVEN);
 
 		this.order_tile = this.north;
 
@@ -79,7 +78,7 @@ class Chunk {
 			this.group.position.fromArray(zxc);
 			this.grouprt.position.fromArray(zxc);
 
-			const depth = Rekt.simpledepth(this.order_tile);
+			const depth = Rekt.ptdepth(this.order_tile);
 
 			this.group.renderOrder = depth;
 			this.grouprt.renderOrder = depth;
@@ -192,7 +191,7 @@ class Objs {
 	}
 	get(tile: vec2) {
 		for (let t of this.tuple.tuple)
-			if(pts.equals(t[0].tile, tile))
+			if (pts.equals(t[0].tile, tile))
 				return t[0];
 	}
 	remove(obj: Obj) {
@@ -251,7 +250,7 @@ class ChunkMaster<T extends Chunk> {
 	atmake(x, y): T {
 		return this.at(x, y) || this.make(x, y);
 	}
-	attile(t: vec2): T {
+	at_tile(t: vec2): T {
 		let b = this.big(t);
 		let c = this.atmake(b[0], b[1]);
 		return c;
@@ -382,7 +381,7 @@ class RtChunk {
 	// todo pool the rts?
 	comes() {
 		this.rekt.use();
-		this.rekt.mesh.renderOrder = Rekt.simpledepth(this.chunk.order_tile);
+		this.rekt.mesh.renderOrder = Rekt.ptdepth(this.chunk.order_tile);
 		this.target = Renderer.rendertarget(this.width, this.height);
 	}
 	goes() {
@@ -406,4 +405,4 @@ class RtChunk {
 	}
 }
 
-export { Chunk, ChunkMaster }
+export { Chunk, Tuple, ChunkMaster }

@@ -301,7 +301,7 @@ void main() {
             if (!this.used)
                 return;
             this.used = false;
-            this.getgroup().remove(this.mesh);
+            this.get_group().remove(this.mesh);
             Rekt.active--;
             this.geometry.dispose();
             this.material.dispose();
@@ -329,9 +329,9 @@ void main() {
                 this.mesh.scale.x = -this.mesh.scale.x;
             //UV.FlipPlane(this.geometry, 0, true);
             this.update();
-            this.getgroup().add(this.mesh);
+            this.get_group().add(this.mesh);
         }
-        getgroup() {
+        get_group() {
             var _a, _b;
             let c;
             if (c = (_a = this.obj) === null || _a === void 0 ? void 0 : _a.chunk)
@@ -368,34 +368,84 @@ void main() {
             }
             this.position = [x, y, 0];
             if (this.mesh) {
-                this.setdepth();
+                this.set_depth();
                 this.mesh.position.fromArray(this.position);
                 this.mesh.updateMatrix();
                 this.material.color = new THREE.Color(((_c = (_b = this.obj) === null || _b === void 0 ? void 0 : _b.chunk) === null || _c === void 0 ? void 0 : _c.childobjscolor) || this.color || 0xffffff);
             }
         }
-        setdepth() {
-            var _a;
-            if (this.mesh) {
-                let depth = ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.depth) || Rekt.simpledepth(this.tile);
+        set_depth() {
+            let depth = Rekt.ptdepth(this.tile);
+            if (this.obj && this.obj.weight.weight != NaN)
+                depth = this.obj.weight.weight;
+            if (this.mesh)
                 this.mesh.renderOrder = depth;
-            }
         }
     }
     (function (Rekt) {
         Rekt.num = 0;
         Rekt.active = 0;
         //export type Struct = Rekt['struct']
-        function simpledepth(t) {
+        function ptdepth(t) {
             return -t[1] + t[0];
         }
-        Rekt.simpledepth = simpledepth;
+        Rekt.ptdepth = ptdepth;
     })(Rekt || (Rekt = {}));
     var Rekt$1 = Rekt;
 
+    class Weight {
+        constructor(obj) {
+            this.obj = obj;
+            this.weight = NaN;
+            this.min = NaN;
+            this.childs = [];
+            this.parents = [];
+        }
+        array(child) {
+            return child ? this.childs : this.parents;
+        }
+        add(obj, child) {
+            let a = this.array(child);
+            let i = a.indexOf(obj);
+            if (i == -1)
+                a.push(obj);
+            if (!child)
+                this.weigh();
+        }
+        remove(obj, child) {
+            let a = this.array(child);
+            let i = a.indexOf(obj);
+            if (i != -1)
+                a.splice(i, 1);
+        }
+        clear() {
+            this.weight = NaN;
+            this.min = NaN;
+            const rm = (child) => {
+                for (let obj of this.array(child))
+                    obj.weight.remove(this.obj, !child);
+                this.array(child).length = 0;
+            };
+            rm(true);
+            rm(false);
+        }
+        weigh() {
+            var _a;
+            const parents = this.array(false);
+            if (parents.length == 0)
+                return;
+            for (let parent of parents) {
+                this.min = Math.min(parents[0].depth, parent.depth);
+            }
+            console.log('min parent depth', this.min);
+            this.weight = this.min - 1;
+            (_a = this.obj.rekt) === null || _a === void 0 ? void 0 : _a.set_depth();
+            console.log('parents', this.parents.length, 'this weight', this.weight);
+            //for (let obj of this.array(true))
+            //obj.weight.weigh();
+        }
+    }
     class Obj {
-        //screen: aabb2 | null = null
-        //height_in_halves = 0
         constructor() {
             this.depth = 0;
             this.rate = 1;
@@ -404,6 +454,7 @@ void main() {
             this.rekt = null;
             this.chunk = null;
             Obj.num++;
+            this.weight = new Weight(this);
         }
         comes() {
             var _a;
@@ -415,21 +466,24 @@ void main() {
             var _a;
             Obj.active--;
             (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unuse();
+            this.weight.clear();
         }
         unset() {
             var _a;
             Obj.num--;
+            this.goes();
             (_a = this.rekt) === null || _a === void 0 ? void 0 : _a.unset();
         }
         finish() {
-            if (!this.sst)
+            if (!this.asset)
                 console.warn('obj no asset');
             this.set_area();
         }
         set_area() {
-            if (!this.sst.area)
+            if (!this.asset.area)
                 return;
-            this.bound = new aabb2([-this.sst.area[0] + 1, 0], [0, this.sst.area[1] - 1]);
+            let pt = pts.pt(pts.subtract(this.asset.area, [1, 1]));
+            this.bound = new aabb2([-pt.x, 0], [0, pt.y]);
             this.bound.translate(this.tile);
         }
         update_tick() {
@@ -445,7 +499,8 @@ void main() {
         }
         fit_area() {
             var _a, _b;
-            this.depth = Rekt$1.simpledepth(this.tile);
+            this.depth = Rekt$1.ptdepth(this.tile);
+            this.weight.clear();
             if (!this.bound || !this.rekt)
                 return;
             const around = [
@@ -473,24 +528,24 @@ void main() {
                     const b = obj.bound;
                     const test = this.bound.test(obj.bound);
                     let front = true;
-                    if (test == 1) {
-                        this.rekt.color = 'red';
-                    }
-                    else if (test == 2) {
-                        this.rekt.color = 'cyan';
-                    }
-                    else if ( // nwnw
-                    a.min[0] <= b.max[0] && a.max[0] >= b.min[0] && a.min[1] > b.max[1] ||
+                    this.rekt.color = ['white', 'red', 'cyan'][test];
+                    // nwnw test
+                    if (test)
+                        ;
+                    else if (a.min[0] <= b.max[0] && a.max[0] >= b.min[0] && a.min[1] > b.max[1] ||
                         a.max[0] < b.min[0] && a.max[1] >= b.min[1] && a.min[1] <= b.max[1] ||
-                        a.min[0] < b.min[0] && a.max[1] > b.max[1]) {
+                        a.min[0] < b.min[0] && a.max[1] > b.max[1])
                         front = false;
-                        this.rekt.color = 'blue';
+                    if (front) {
+                        this.rekt.color = 'salmon';
+                        this.weight.add(obj, true);
+                        obj.weight.add(this, false);
                     }
-                    if (front)
-                        this.depth = obj.depth + Math.abs(this.depth);
-                    else
-                        this.depth = obj.depth - Math.abs(this.depth);
-                    // now compare obj diagonals to establish se / ne / etc
+                    else { // behind
+                        this.rekt.color = 'purple';
+                        this.weight.add(obj, false);
+                        obj.weight.add(this, true);
+                    }
                 }
             }
             this.rekt.update();
@@ -595,7 +650,7 @@ void main() {
                 const zxc = [...zx, 0];
                 this.group.position.fromArray(zxc);
                 this.grouprt.position.fromArray(zxc);
-                const depth = Rekt$1.simpledepth(this.order_tile);
+                const depth = Rekt$1.ptdepth(this.order_tile);
                 this.group.renderOrder = depth;
                 this.grouprt.renderOrder = depth;
             }
@@ -748,7 +803,7 @@ void main() {
         atmake(x, y) {
             return this.at(x, y) || this.make(x, y);
         }
-        attile(t) {
+        at_tile(t) {
             let b = this.big(t);
             let c = this.atmake(b[0], b[1]);
             return c;
@@ -863,7 +918,7 @@ void main() {
         // todo pool the rts?
         comes() {
             this.rekt.use();
-            this.rekt.mesh.renderOrder = Rekt$1.simpledepth(this.chunk.order_tile);
+            this.rekt.mesh.renderOrder = Rekt$1.ptdepth(this.chunk.order_tile);
             this.target = Renderer$1.rendertarget(this.width, this.height);
         }
         goes() {
@@ -898,7 +953,7 @@ void main() {
     class Ply extends Man {
         constructor() {
             super();
-            this.sst = {
+            this.asset = {
                 img: 'blah',
                 size: [10, 10],
                 area: [1, 1],
@@ -930,7 +985,7 @@ void main() {
             return new World;
         }
         add(obj) {
-            let c = this.fg.attile(obj.tile);
+            let c = this.fg.at_tile(obj.tile);
             if (c.objs.add(obj)) {
                 obj.chunk = c;
                 obj.chunk.changed = true;
@@ -1139,11 +1194,11 @@ void main() {
         constructor(pst) {
             super();
             this.pst = pst;
-            //this.rtt = false;
+            this.rtt = false;
         }
         finish() {
             console.log('asset', this.pst.asset);
-            this.sst = this.pst.asset;
+            this.asset = this.pst.asset;
             this.rekt = new Rekt$1;
             this.rekt.obj = this;
             this.rekt.tile = this.tile;
@@ -1198,7 +1253,7 @@ void main() {
             asset: {
                 img: 'balmora/stairs3',
                 size: [120, 72],
-                area: [5, 3],
+                area: [4, 3],
             }
         };
         Building.Platform22 = {
@@ -1269,10 +1324,12 @@ void main() {
                 Ploppables.ghost = obj;
             }
             if (Ploppables.ghost) {
+                let changed = !pts.equals(LUMBER$1.wlrd.mtil, Ploppables.ghost.tile);
                 Ploppables.ghost.tile = LUMBER$1.wlrd.mtil;
                 if (Ploppables.ghost.rekt)
                     Ploppables.ghost.rekt.tile = Ploppables.ghost.tile;
-                Ploppables.ghost.update_manual();
+                if (changed)
+                    Ploppables.ghost.update_manual();
                 Ploppables.ghost.update_tick();
             }
             if (Ploppables.ghost && App$1.buttons[0]) {

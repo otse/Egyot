@@ -11,12 +11,12 @@ interface Preset {
 class Building extends Obj {
 	constructor(private pst: Preset) {
 		super();
-		//this.rtt = false;
+		this.rtt = false;
 	}
 	finish() {
 		console.log('asset',this.pst.asset);
 		
-		this.sst = this.pst.asset;
+		this.asset = this.pst.asset;
 		this.rekt = new Rekt;
 		this.rekt.obj = this;
 		this.rekt.tile = this.tile;
@@ -78,7 +78,7 @@ namespace Building {
 		asset: {
 			img: 'balmora/stairs3',
 			size: [120, 72],
-			area: [5, 3],
+			area: [4, 3],
 		}
 	}
 

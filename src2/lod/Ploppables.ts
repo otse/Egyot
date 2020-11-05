@@ -68,10 +68,12 @@ export namespace Ploppables {
 		}
 
 		if (ghost) {
+			let changed = !pts.equals(LUMBER.wlrd.mtil, ghost.tile);
 			ghost.tile = LUMBER.wlrd.mtil;
 			if (ghost.rekt)
 				ghost.rekt.tile = ghost.tile;
-			ghost.update_manual();
+			if (changed)
+				ghost.update_manual();
 			ghost.update_tick();
 		}
 

@@ -4,21 +4,73 @@ import Rekt from "./Rekt";
 import pts from "../lib/pts";
 import aabb2 from "../lib/aabb2";
 
+class Weight {
+	weight = NaN
+	min = NaN
+	childs: Obj[] = []
+	parents: Obj[] = []
+	constructor(private obj: Obj) {
+
+	}
+	array(child: boolean) {
+		return child ? this.childs : this.parents;
+	}
+	add(obj: Obj, child: boolean) {
+		let a = this.array(child);
+		let i = a.indexOf(obj);
+		if (i == -1)
+			a.push(obj);
+		if (!child)
+			this.weigh();
+	}
+	remove(obj: Obj, child: boolean) {
+		let a = this.array(child);
+		let i = a.indexOf(obj);
+		if (i != -1)
+			a.splice(i, 1);
+	}
+	clear() {
+		this.weight = NaN;
+		this.min = NaN;
+		const rm = (child: boolean) => {
+			for (let obj of this.array(child))
+				obj.weight.remove(this.obj, !child);
+			this.array(child).length = 0;
+		};
+		rm(true);
+		rm(false);
+	}
+	weigh() {
+		const parents = this.array(false);
+		if (parents.length == 0)
+			return;
+		for (let parent of parents) {
+			this.min = Math.min(parents[0].depth, parent.depth);
+		}
+		console.log('min parent depth', this.min);
+		this.weight = this.min - 1;
+		this.obj.rekt?.set_depth();
+		console.log('parents', this.parents.length, 'this weight', this.weight);
+		//for (let obj of this.array(true))
+		//obj.weight.weigh();
+	}
+}
+
 class Obj {
 	depth = 0
 	rate = 1
 	rtt = true
-	sst: Asset
+	asset: Asset
 	tile: vec2 = [0, 0]
 	rekt: Rekt | null = null
 	chunk: Chunk | null = null
 	bound: aabb2
 	screen: aabb2
-	//screen: aabb2 | null = null
-	//height_in_halves = 0
+	weight: Weight
 
 	constructor() {
 		Obj.num++;
+		this.weight = new Weight(this);
 	}
 	comes() {
 		Obj.active++;
@@ -28,20 +80,23 @@ class Obj {
 	goes() {
 		Obj.active--;
 		this.rekt?.unuse();
+		this.weight.clear();
 	}
 	unset() {
 		Obj.num--;
+		this.goes();
 		this.rekt?.unset();
 	}
 	finish() {
-		if (!this.sst)
+		if (!this.asset)
 			console.warn('obj no asset');
 		this.set_area();
 	}
 	set_area() {
-		if (!this.sst.area)
+		if (!this.asset.area)
 			return;
-		this.bound = new aabb2([-this.sst.area[0] + 1, 0], [0, this.sst.area[1] - 1]);
+		let pt = pts.pt(pts.subtract(this.asset.area, [1, 1]));
+		this.bound = new aabb2([-pt.x, 0], [0, pt.y]);
 		this.bound.translate(this.tile);
 	}
 	update_tick() {
@@ -54,7 +109,9 @@ class Obj {
 		this.rekt?.update();
 	}
 	fit_area() {
-		this.depth = Rekt.simpledepth(this.tile);
+		this.depth = Rekt.ptdepth(this.tile);
+
+		this.weight.clear();
 
 		if (!this.bound || !this.rekt)
 			return;
@@ -86,24 +143,24 @@ class Obj {
 				const b = obj.bound;
 				const test = this.bound.test(obj.bound);
 				let front = true;
-				if (test == 1) {
-					this.rekt.color = 'red';
-				}
-				else if (test == 2) {
-					this.rekt.color = 'cyan';
-				}
-				else if ( // nwnw
+				this.rekt.color = ['white', 'red', 'cyan'][test];
+				// nwnw test
+				if (test) 0;
+				else if (
 					a.min[0] <= b.max[0] && a.max[0] >= b.min[0] && a.min[1] > b.max[1] ||
 					a.max[0] < b.min[0] && a.max[1] >= b.min[1] && a.min[1] <= b.max[1] ||
-					a.min[0] < b.min[0] && a.max[1] > b.max[1]) {
+					a.min[0] < b.min[0] && a.max[1] > b.max[1])
 					front = false;
-					this.rekt.color = 'blue';
+				if (front) {
+					this.rekt.color = 'salmon';
+					this.weight.add(obj, true);
+					obj.weight.add(this, false);
 				}
-				if (front)
-					this.depth = obj.depth + Math.abs(this.depth);
-				else
-					this.depth = obj.depth - Math.abs(this.depth);
-				// now compare obj diagonals to establish se / ne / etc
+				else { // behind
+					this.rekt.color = 'purple';
+					this.weight.add(obj, false);
+					obj.weight.add(this, true);
+				}
 			}
 		}
 		this.rekt.update();

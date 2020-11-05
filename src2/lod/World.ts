@@ -59,7 +59,7 @@ class World {
 		console.log('world');
 	}
 	add(obj: Obj) {
-		let c = this.fg.attile(obj.tile);
+		let c = this.fg.at_tile(obj.tile);
 
 		if (c.objs.add(obj)) {
 			obj.chunk = c;
@@ -77,6 +77,7 @@ class World {
 	update() {
 		this.move();
 		this.mark_mouse();
+		
 		this.fg.update();
 		this.bg.update();
 	}
