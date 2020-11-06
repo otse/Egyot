@@ -7,7 +7,7 @@ import Renderer from "../Renderer";
 import { ArrowHelper, Vector3 } from "three";
 
 class Weight {
-	min = 0
+	min = 999
 	childs: Obj[] = []
 	parents: Obj[] = []
 	constructor(private obj: Obj) {
@@ -34,15 +34,18 @@ class Weight {
 			this.array(child).length = 0;
 		}
 	}
-	weigh() {
+	get_min() {
 		this.min = this.obj.depth;
 		const parents = this.array(false);
 		if (parents.length >= 1) {
 			this.min = parents[0].weight.min;
 			for (let parent of parents)
 				this.min = Math.min(this.min, parent.weight.min);
-			this.min -= 1;
+			this.min -= 10;
 		}
+	}
+	weigh() {
+		this.get_min();
 		this.obj.rekt?.update();
 		for (let child of this.array(true))
 			child.weight.weigh();
@@ -120,6 +123,7 @@ class Obj {
 
 		for (const a of around) {
 			let p = pts.add(big, a);
+			console.log('p', pts.to_string(p));
 			let c = LUMBER.wlrd.fg.at(p[0], p[1]);
 			if (!c)
 				continue;

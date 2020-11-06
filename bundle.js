@@ -395,7 +395,7 @@ void main() {
     class Weight {
         constructor(obj) {
             this.obj = obj;
-            this.min = 0;
+            this.min = 999;
             this.childs = [];
             this.parents = [];
         }
@@ -421,16 +421,19 @@ void main() {
                 this.array(child).length = 0;
             }
         }
-        weigh() {
-            var _a;
+        get_min() {
             this.min = this.obj.depth;
             const parents = this.array(false);
             if (parents.length >= 1) {
                 this.min = parents[0].weight.min;
                 for (let parent of parents)
                     this.min = Math.min(this.min, parent.weight.min);
-                this.min -= 1;
+                this.min -= 10;
             }
+        }
+        weigh() {
+            var _a;
+            this.get_min();
             (_a = this.obj.rekt) === null || _a === void 0 ? void 0 : _a.update();
             for (let child of this.array(true))
                 child.weight.weigh();
@@ -503,6 +506,7 @@ void main() {
             let big = LUMBER$1.wlrd.fg.big(this.tile);
             for (const a of around) {
                 let p = pts.add(big, a);
+                console.log('p', pts.to_string(p));
                 let c = LUMBER$1.wlrd.fg.at(p[0], p[1]);
                 if (!c)
                     continue;
