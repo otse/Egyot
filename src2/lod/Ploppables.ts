@@ -63,6 +63,7 @@ export namespace Ploppables {
 			obj = factory(types[index]);
 			obj.finish();
 			obj.comes();
+			obj.update_manual();
 			ghost?.unset();
 			ghost = obj;
 		}

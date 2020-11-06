@@ -37,11 +37,18 @@ class Weight {
 	get_min() {
 		this.min = this.obj.depth;
 		const parents = this.array(false);
+		const childs = this.array(true);
 		if (parents.length >= 1) {
 			this.min = parents[0].weight.min;
 			for (let parent of parents)
 				this.min = Math.min(this.min, parent.weight.min);
-			this.min -= 10;
+			this.min -= 20;
+		} else if (childs.length >= 1)
+		{
+			this.min = childs[0].weight.min;
+			for (let child of childs)
+				this.min = Math.min(this.min, child.weight.min);
+			this.min += 10;
 		}
 	}
 	weigh() {
@@ -123,7 +130,7 @@ class Obj {
 
 		for (const a of around) {
 			let p = pts.add(big, a);
-			console.log('p', pts.to_string(p));
+			//console.log('p', pts.to_string(p));
 			let c = LUMBER.wlrd.fg.at(p[0], p[1]);
 			if (!c)
 				continue;
