@@ -376,7 +376,7 @@ void main() {
         }
         set_depth() {
             var _a;
-            let depth = ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.weight.min) || Rekt.ptdepth(this.tile);
+            let depth = ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.weight.order) || Rekt.ptdepth(this.tile);
             if (this.mesh)
                 this.mesh.renderOrder = depth;
         }
@@ -395,7 +395,9 @@ void main() {
     class Weight {
         constructor(obj) {
             this.obj = obj;
+            this.order = 0;
             this.min = 999;
+            this.max = -999;
             this.childs = [];
             this.parents = [];
         }
@@ -422,28 +424,41 @@ void main() {
             }
         }
         get_min() {
-            this.min = this.obj.depth;
             const parents = this.array(false);
+            if (parents.length == 0)
+                return;
+            this.min = parents[0].weight.min;
+            for (let parent of parents)
+                this.min = Math.min(this.min, parent.weight.min);
+            this.min -= 10;
+        }
+        get_max() {
             const childs = this.array(true);
-            if (parents.length >= 1) {
-                this.min = parents[0].weight.min;
-                for (let parent of parents)
-                    this.min = Math.min(this.min, parent.weight.min);
-                this.min -= 20;
-            }
-            else if (childs.length >= 1) {
-                this.min = childs[0].weight.min;
-                for (let child of childs)
-                    this.min = Math.min(this.min, child.weight.min);
-                this.min += 10;
-            }
+            if (childs.length == 0)
+                return;
+            this.max = childs[0].weight.max;
+            for (let child of childs)
+                this.max = Math.max(this.max, child.weight.max);
+            this.max += 10;
         }
         weigh() {
             var _a;
+            this.min = this.max = this.obj.depth;
+            const childs = this.array(true);
+            const parents = this.array(false);
             this.get_min();
+            this.get_max();
+            if (!childs.length && parents.length)
+                this.order = this.min;
+            else if (childs.length && !parent.length)
+                this.order = this.max;
+            //	this.order = this.min;
+            //else if (parents.length &&)
+            //this.order = this.min;
+            //if (this.array(true).length >= 1)
             (_a = this.obj.rekt) === null || _a === void 0 ? void 0 : _a.update();
-            for (let child of this.array(true))
-                child.weight.weigh();
+            //for (let child of childs)
+            //	child.weight.weigh();
         }
     }
     class Obj {
@@ -1347,6 +1362,7 @@ void main() {
                 console.log('plop');
                 Ploppables.ghost.goes();
                 LUMBER$1.wlrd.add(Ploppables.ghost);
+                Ploppables.ghost.update_manual();
                 Ploppables.ghost = null;
             }
             if (Ploppables.ghost && App$1.keys['escape'] == 1) {

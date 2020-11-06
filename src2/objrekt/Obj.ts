@@ -7,7 +7,9 @@ import Renderer from "../Renderer";
 import { ArrowHelper, Vector3 } from "three";
 
 class Weight {
+	order = 0
 	min = 999
+	max = -999
 	childs: Obj[] = []
 	parents: Obj[] = []
 	constructor(private obj: Obj) {
@@ -35,27 +37,40 @@ class Weight {
 		}
 	}
 	get_min() {
-		this.min = this.obj.depth;
 		const parents = this.array(false);
+		if (parents.length == 0)
+			return;
+		this.min = parents[0].weight.min;
+		for (let parent of parents)
+			this.min = Math.min(this.min, parent.weight.min);
+		this.min -= 10;
+	}
+	get_max() {
 		const childs = this.array(true);
-		if (parents.length >= 1) {
-			this.min = parents[0].weight.min;
-			for (let parent of parents)
-				this.min = Math.min(this.min, parent.weight.min);
-			this.min -= 20;
-		} else if (childs.length >= 1)
-		{
-			this.min = childs[0].weight.min;
-			for (let child of childs)
-				this.min = Math.min(this.min, child.weight.min);
-			this.min += 10;
-		}
+		if (childs.length == 0)
+			return;
+		this.max = childs[0].weight.max;
+		for (let child of childs)
+			this.max = Math.max(this.max, child.weight.max);
+		this.max += 10;
 	}
 	weigh() {
+		this.min = this.max = this.obj.depth;
+		const childs = this.array(true);
+		const parents = this.array(false);
 		this.get_min();
+		this.get_max();
+		if (!childs.length && parents.length)
+			this.order = this.min;
+		else if (childs.length && !parent.length)
+			this.order = this.max;
+		//	this.order = this.min;
+		//else if (parents.length &&)
+		//this.order = this.min;
+		//if (this.array(true).length >= 1)
 		this.obj.rekt?.update();
-		for (let child of this.array(true))
-			child.weight.weigh();
+		//for (let child of childs)
+		//	child.weight.weigh();
 	}
 }
 

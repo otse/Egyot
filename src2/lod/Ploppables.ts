@@ -83,6 +83,7 @@ export namespace Ploppables {
 			console.log('plop');
 			ghost.goes();
 			LUMBER.wlrd.add(ghost);
+			ghost.update_manual();
 			ghost = null;
 		}
 
