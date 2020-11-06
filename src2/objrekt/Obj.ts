@@ -144,20 +144,24 @@ class Obj {
 				this.rekt.color = ['white', 'red', 'cyan'][test];
 				// nwnw test
 				if (test) 0;
-				else if (
+				else if ( // behind aka n w nw
 					a.min[0] <= b.max[0] && a.max[0] >= b.min[0] && a.min[1] > b.max[1] ||
 					a.max[0] < b.min[0] && a.max[1] >= b.min[1] && a.min[1] <= b.max[1] ||
-					a.min[0] < b.min[0] && a.max[1] > b.max[1])
-					front = false;
-				if (front) {
-					this.rekt.color = 'salmon';
-					this.weight.add(obj, true);
-					obj.weight.add(this, false);
-				}
-				else { // behind
+					a.min[0] < b.min[0] && a.max[1] > b.max[1]) {
 					this.rekt.color = 'purple';
 					obj.weight.add(this, true);
 					this.weight.add(obj, false);
+				}
+				else if ( // diagonal dont care
+					a.max[0] < b.min[0] && a.max[1] < b.min[1] ||
+					a.min[0] > b.max[0] && a.min[1] > b.max[1]
+				) {
+					this.rekt.color = 'green';
+				}
+				else {
+					this.rekt.color = 'salmon';
+					this.weight.add(obj, true);
+					obj.weight.add(this, false);
 				}
 			}
 		}
