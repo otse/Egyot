@@ -36,41 +36,40 @@ class Weight {
 			this.array(child).length = 0;
 		}
 	}
-	get_min() {
-		const parents = this.array(false);
-		if (parents.length == 0)
-			return;
-		this.min = parents[0].weight.order;
-		for (let parent of parents)
-			this.min = Math.min(this.min, parent.weight.order);
+	get_min(child: boolean) {
+		const array = this.array(child);
+		if (array.length == 0)
+			return this.order;
+		let min = array[0].weight.order;
+		for (let obj of array)
+			min = Math.min(min, obj.weight.order);
+		return min;
 	}
-	get_max() {
-		const childs = this.array(true);
-		if (childs.length == 0)
-			return;
-		this.max = childs[0].weight.order;
-		for (let child of childs)
-			this.max = Math.max(this.max, child.weight.order);
+	get_max(child: boolean) {
+		const array = this.array(child);
+		if (array.length == 0)
+			return this.order;
+		let max = array[0].weight.order;
+		for (let obj of array)
+			max = Math.max(max, obj.weight.order);
+		return max;
 	}
 	weigh() {
-		this.min = this.max = this.obj.depth;
+		this.order = this.min = this.max = this.obj.depth;
 		const childs = this.array(true);
 		const parents = this.array(false);
 		if (!childs.length && parents.length) {
 			console.log('get min');
-			this.get_min();
-			this.order = this.min - 10;
+			let min = this.get_min(false);
+			this.order = min - 10;
 		}
 		else if (childs.length && !parents.length) {
 			console.log('get max');
-			this.get_max();
-			this.order = this.max + 10;
+			let max = this.get_max(true);
+			this.order = max + 10;
 		}
-		else if (childs.length && parents.length)
-		{
+		else if (childs.length && parents.length) {
 			// tween insert
-			this.get_min();
-			this.get_max();
 			console.log('tween');
 			this.order = this.min + this.max;
 		}
