@@ -51,7 +51,7 @@ export namespace Ploppables {
 		}
 
 		for (const s in shortcuts) {
-			if (App.keys[s]) {
+			if (App.keys[s] == 1) {
 				index = types.indexOf(shortcuts[s]);
 				remake = true;
 				break;

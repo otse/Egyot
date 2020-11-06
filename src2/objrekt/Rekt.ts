@@ -147,9 +147,7 @@ class Rekt {
 		}
 	}
 	set_depth() {
-		let depth = Rekt.ptdepth(this.tile);
-		if (this.obj && this.obj.weight.weight != NaN)
-			depth = this.obj.weight.weight;
+		let depth = this.obj?.weight.min || Rekt.ptdepth(this.tile);
 		if (this.mesh)
 			this.mesh.renderOrder = depth;
 	}

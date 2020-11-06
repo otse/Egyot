@@ -375,9 +375,8 @@ void main() {
             }
         }
         set_depth() {
-            let depth = Rekt.ptdepth(this.tile);
-            if (this.obj && this.obj.weight.weight != NaN)
-                depth = this.obj.weight.weight;
+            var _a;
+            let depth = ((_a = this.obj) === null || _a === void 0 ? void 0 : _a.weight.min) || Rekt.ptdepth(this.tile);
             if (this.mesh)
                 this.mesh.renderOrder = depth;
         }
@@ -396,8 +395,7 @@ void main() {
     class Weight {
         constructor(obj) {
             this.obj = obj;
-            this.weight = NaN;
-            this.min = NaN;
+            this.min = 0;
             this.childs = [];
             this.parents = [];
         }
@@ -409,8 +407,6 @@ void main() {
             let i = a.indexOf(obj);
             if (i == -1)
                 a.push(obj);
-            if (!child)
-                this.weigh();
         }
         remove(obj, child) {
             let a = this.array(child);
@@ -419,34 +415,30 @@ void main() {
                 a.splice(i, 1);
         }
         clear() {
-            this.weight = NaN;
-            this.min = NaN;
-            const rm = (child) => {
+            for (let child of [true, false]) {
                 for (let obj of this.array(child))
                     obj.weight.remove(this.obj, !child);
                 this.array(child).length = 0;
-            };
-            rm(true);
-            rm(false);
+            }
         }
         weigh() {
             var _a;
+            this.min = this.obj.depth;
             const parents = this.array(false);
-            if (parents.length == 0)
-                return;
-            for (let parent of parents) {
-                this.min = Math.min(parents[0].depth, parent.depth);
+            if (parents.length >= 1) {
+                this.min = parents[0].weight.min;
+                for (let parent of parents)
+                    this.min = Math.min(this.min, parent.weight.min);
+                this.min -= 1;
             }
-            console.log('min parent depth', this.min);
-            this.weight = this.min - 1;
-            (_a = this.obj.rekt) === null || _a === void 0 ? void 0 : _a.set_depth();
-            console.log('parents', this.parents.length, 'this weight', this.weight);
-            //for (let obj of this.array(true))
-            //obj.weight.weigh();
+            (_a = this.obj.rekt) === null || _a === void 0 ? void 0 : _a.update();
+            for (let child of this.array(true))
+                child.weight.weigh();
         }
     }
     class Obj {
         constructor() {
+            this.name = 'An Obj';
             this.depth = 0;
             this.rate = 1;
             this.rtt = true;
@@ -477,7 +469,7 @@ void main() {
         finish() {
             if (!this.asset)
                 console.warn('obj no asset');
-            this.set_area();
+            this.update_manual();
         }
         set_area() {
             if (!this.asset.area)
@@ -543,11 +535,12 @@ void main() {
                     }
                     else { // behind
                         this.rekt.color = 'purple';
-                        this.weight.add(obj, false);
                         obj.weight.add(this, true);
+                        this.weight.add(obj, false);
                     }
                 }
             }
+            this.weight.weigh();
             this.rekt.update();
         }
     }
@@ -1195,9 +1188,10 @@ void main() {
             super();
             this.pst = pst;
             this.rtt = false;
+            this.name = 'Hovel ' + Building.lastName++;
         }
         finish() {
-            console.log('asset', this.pst.asset);
+            //console.log('asset',this.pst.asset);
             this.asset = this.pst.asset;
             this.rekt = new Rekt$1;
             this.rekt.obj = this;
@@ -1206,6 +1200,7 @@ void main() {
             super.finish();
         }
     }
+    Building.lastName = 1;
     (function (Building) {
         Building.TwoTwo = {
             asset: {
@@ -1309,7 +1304,7 @@ void main() {
                 't': 'tree'
             };
             for (const s in shortcuts) {
-                if (App$1.keys[s]) {
+                if (App$1.keys[s] == 1) {
                     Ploppables.index = Ploppables.types.indexOf(shortcuts[s]);
                     remake = true;
                     break;

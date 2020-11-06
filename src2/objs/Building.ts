@@ -9,12 +9,14 @@ interface Preset {
 };
 
 class Building extends Obj {
+	static lastName = 1
 	constructor(private pst: Preset) {
 		super();
 		this.rtt = false;
+		this.name = 'Hovel ' + Building.lastName++;
 	}
 	finish() {
-		console.log('asset',this.pst.asset);
+		//console.log('asset',this.pst.asset);
 		
 		this.asset = this.pst.asset;
 		this.rekt = new Rekt;

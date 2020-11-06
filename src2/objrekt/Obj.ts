@@ -3,14 +3,14 @@ import { Chunk } from "../lod/Chunks";
 import Rekt from "./Rekt";
 import pts from "../lib/pts";
 import aabb2 from "../lib/aabb2";
+import Renderer from "../Renderer";
+import { ArrowHelper, Vector3 } from "three";
 
 class Weight {
-	weight = NaN
-	min = NaN
+	min = 0
 	childs: Obj[] = []
 	parents: Obj[] = []
 	constructor(private obj: Obj) {
-
 	}
 	array(child: boolean) {
 		return child ? this.childs : this.parents;
@@ -20,8 +20,6 @@ class Weight {
 		let i = a.indexOf(obj);
 		if (i == -1)
 			a.push(obj);
-		if (!child)
-			this.weigh();
 	}
 	remove(obj: Obj, child: boolean) {
 		let a = this.array(child);
@@ -30,33 +28,29 @@ class Weight {
 			a.splice(i, 1);
 	}
 	clear() {
-		this.weight = NaN;
-		this.min = NaN;
-		const rm = (child: boolean) => {
+		for (let child of [true, false]) {
 			for (let obj of this.array(child))
 				obj.weight.remove(this.obj, !child);
 			this.array(child).length = 0;
-		};
-		rm(true);
-		rm(false);
+		}
 	}
 	weigh() {
+		this.min = this.obj.depth;
 		const parents = this.array(false);
-		if (parents.length == 0)
-			return;
-		for (let parent of parents) {
-			this.min = Math.min(parents[0].depth, parent.depth);
+		if (parents.length >= 1) {
+			this.min = parents[0].weight.min;
+			for (let parent of parents)
+				this.min = Math.min(this.min, parent.weight.min);
+			this.min -= 1;
 		}
-		console.log('min parent depth', this.min);
-		this.weight = this.min - 1;
-		this.obj.rekt?.set_depth();
-		console.log('parents', this.parents.length, 'this weight', this.weight);
-		//for (let obj of this.array(true))
-		//obj.weight.weigh();
+		this.obj.rekt?.update();
+		for (let child of this.array(true))
+			child.weight.weigh();
 	}
 }
 
 class Obj {
+	name = 'An Obj'
 	depth = 0
 	rate = 1
 	rtt = true
@@ -90,7 +84,7 @@ class Obj {
 	finish() {
 		if (!this.asset)
 			console.warn('obj no asset');
-		this.set_area();
+		this.update_manual();
 	}
 	set_area() {
 		if (!this.asset.area)
@@ -158,11 +152,12 @@ class Obj {
 				}
 				else { // behind
 					this.rekt.color = 'purple';
-					this.weight.add(obj, false);
 					obj.weight.add(this, true);
+					this.weight.add(obj, false);
 				}
 			}
 		}
+		this.weight.weigh();
 		this.rekt.update();
 	}
 }
