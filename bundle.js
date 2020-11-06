@@ -396,8 +396,6 @@ void main() {
         constructor(obj) {
             this.obj = obj;
             this.order = 0;
-            this.min = 999;
-            this.max = -999;
             this.childs = [];
             this.parents = [];
         }
@@ -423,8 +421,8 @@ void main() {
                 this.array(child).length = 0;
             }
         }
-        get_min(child) {
-            const array = this.array(child);
+        get_min(which) {
+            const array = this.array(which);
             if (array.length == 0)
                 return this.order;
             let min = array[0].weight.order;
@@ -432,8 +430,8 @@ void main() {
                 min = Math.min(min, obj.weight.order);
             return min;
         }
-        get_max(child) {
-            const array = this.array(child);
+        get_max(which) {
+            const array = this.array(which);
             if (array.length == 0)
                 return this.order;
             let max = array[0].weight.order;
@@ -441,25 +439,30 @@ void main() {
                 max = Math.max(max, obj.weight.order);
             return max;
         }
+        adapt(which) {
+        }
         weigh() {
             var _a;
-            this.order = this.min = this.max = this.obj.depth;
+            const spread = 20;
+            this.order = this.obj.depth;
             const childs = this.array(true);
             const parents = this.array(false);
             if (!childs.length && parents.length) {
                 console.log('get min');
                 let min = this.get_min(false);
-                this.order = min - 10;
+                this.order = min - spread;
             }
             else if (childs.length && !parents.length) {
                 console.log('get max');
                 let max = this.get_max(true);
-                this.order = max + 10;
+                this.order = max + spread;
             }
             else if (childs.length && parents.length) {
                 // tween insert
                 console.log('tween');
-                this.order = this.min + this.max;
+                let min = this.get_min(false);
+                let max = this.get_max(true);
+                this.order = (min - max) / 2 + max;
             }
             //	this.order = this.min;
             //else if (parents.length &&)

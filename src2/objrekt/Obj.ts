@@ -8,8 +8,6 @@ import { ArrowHelper, Vector3 } from "three";
 
 class Weight {
 	order = 0
-	min = 999
-	max = -999
 	childs: Obj[] = []
 	parents: Obj[] = []
 	constructor(private obj: Obj) {
@@ -36,8 +34,8 @@ class Weight {
 			this.array(child).length = 0;
 		}
 	}
-	get_min(child: boolean) {
-		const array = this.array(child);
+	get_min(which: boolean) {
+		const array = this.array(which);
 		if (array.length == 0)
 			return this.order;
 		let min = array[0].weight.order;
@@ -45,8 +43,8 @@ class Weight {
 			min = Math.min(min, obj.weight.order);
 		return min;
 	}
-	get_max(child: boolean) {
-		const array = this.array(child);
+	get_max(which: boolean) {
+		const array = this.array(which);
 		if (array.length == 0)
 			return this.order;
 		let max = array[0].weight.order;
@@ -54,24 +52,30 @@ class Weight {
 			max = Math.max(max, obj.weight.order);
 		return max;
 	}
+	adapt(which: boolean) {
+
+	}
 	weigh() {
-		this.order = this.min = this.max = this.obj.depth;
+		const spread = 20;
+		this.order = this.obj.depth;
 		const childs = this.array(true);
 		const parents = this.array(false);
 		if (!childs.length && parents.length) {
 			console.log('get min');
 			let min = this.get_min(false);
-			this.order = min - 10;
+			this.order = min - spread;
 		}
 		else if (childs.length && !parents.length) {
 			console.log('get max');
 			let max = this.get_max(true);
-			this.order = max + 10;
+			this.order = max + spread;
 		}
 		else if (childs.length && parents.length) {
 			// tween insert
 			console.log('tween');
-			this.order = this.min + this.max;
+			let min = this.get_min(false);
+			let max = this.get_max(true);
+			this.order = (min - max) / 2 + max;
 		}
 		//	this.order = this.min;
 		//else if (parents.length &&)
