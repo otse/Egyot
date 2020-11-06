@@ -427,31 +427,40 @@ void main() {
             const parents = this.array(false);
             if (parents.length == 0)
                 return;
-            this.min = parents[0].weight.min;
+            this.min = parents[0].weight.order;
             for (let parent of parents)
-                this.min = Math.min(this.min, parent.weight.min);
-            this.min -= 10;
+                this.min = Math.min(this.min, parent.weight.order);
         }
         get_max() {
             const childs = this.array(true);
             if (childs.length == 0)
                 return;
-            this.max = childs[0].weight.max;
+            this.max = childs[0].weight.order;
             for (let child of childs)
-                this.max = Math.max(this.max, child.weight.max);
-            this.max += 10;
+                this.max = Math.max(this.max, child.weight.order);
         }
         weigh() {
             var _a;
             this.min = this.max = this.obj.depth;
             const childs = this.array(true);
             const parents = this.array(false);
-            this.get_min();
-            this.get_max();
-            if (!childs.length && parents.length)
-                this.order = this.min;
-            else if (childs.length && !parent.length)
-                this.order = this.max;
+            if (!childs.length && parents.length) {
+                console.log('get min');
+                this.get_min();
+                this.order = this.min - 10;
+            }
+            else if (childs.length && !parents.length) {
+                console.log('get max');
+                this.get_max();
+                this.order = this.max + 10;
+            }
+            else if (childs.length && parents.length) {
+                // tween insert
+                this.get_min();
+                this.get_max();
+                console.log('tween');
+                this.order = this.min + this.max;
+            }
             //	this.order = this.min;
             //else if (parents.length &&)
             //this.order = this.min;
@@ -1344,7 +1353,6 @@ void main() {
                 obj = factory(Ploppables.types[Ploppables.index]);
                 obj.finish();
                 obj.comes();
-                obj.update_manual();
                 Ploppables.ghost === null || Ploppables.ghost === void 0 ? void 0 : Ploppables.ghost.unset();
                 Ploppables.ghost = obj;
             }
