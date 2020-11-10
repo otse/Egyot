@@ -12,8 +12,8 @@ class Weight {
 	parents: Obj[] = []
 	constructor(private obj: Obj) {
 	}
-	ar(child: boolean) {
-		return child ? this.childs : this.parents;
+	ar(b: boolean) {
+		return b ? this.childs : this.parents;
 	}
 	add(obj: Obj, b: boolean) {
 		if (-1 == this.ar(b).indexOf(obj))
@@ -31,33 +31,26 @@ class Weight {
 			this.ar(b).length = 0;
 		}
 	}
-	get_min_max(b: boolean, max: boolean) {
+	range(b: boolean, max: boolean, seed: number = 0) {
 		let res = this.order;
 		if (this.ar(b).length == 0)
 			return res;
 		res = this.ar(b)[0].weight.order;
 		for (let obj of this.ar(b))
 			res = (!max ? Math.min : Math.max)(res, obj.weight.order);
-		return res;
-	}
-	adapt(which: boolean) {
-
+		return res + seed;
 	}
 	weigh() {
-		const spread = 20;
 		this.order = this.obj.depth;
 		if (!this.ar(true).length && this.ar(false).length) {
-			let min = this.get_min_max(false, false);
-			this.order = min - spread;
+			this.order = this.range(false, false, -20);
 		}
 		else if (this.ar(true).length && !this.ar(false).length) {
-			let max = this.get_min_max(true, true);
-			this.order = max + spread;
+			this.order = this.range(true, true, 20);
 		}
 		else if (this.ar(true).length && this.ar(false).length) {
-			console.log('tween');
-			let min = this.get_min_max(false, false);
-			let max = this.get_min_max(true, true);
+			let min = this.range(false, false, 0);
+			let max = this.range(true, true, 0);
 			this.order = (min - max) / 2 + max;
 		}
 		this.obj.rekt?.update();
