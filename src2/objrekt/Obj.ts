@@ -12,45 +12,33 @@ class Weight {
 	parents: Obj[] = []
 	constructor(private obj: Obj) {
 	}
-	array(child: boolean) {
+	ar(child: boolean) {
 		return child ? this.childs : this.parents;
 	}
-	add(obj: Obj, child: boolean) {
-		let a = this.array(child);
-		let i = a.indexOf(obj);
-		if (i == -1)
-			a.push(obj);
+	add(obj: Obj, b: boolean) {
+		if (-1 == this.ar(b).indexOf(obj))
+			this.ar(b).push(obj);
 	}
-	remove(obj: Obj, child: boolean) {
-		let a = this.array(child);
-		let i = a.indexOf(obj);
+	remove(obj: Obj, b: boolean) {
+		let i = this.ar(b).indexOf(obj);
 		if (i != -1)
-			a.splice(i, 1);
+			this.ar(b).splice(i, 1);
 	}
 	clear() {
-		for (let child of [true, false]) {
-			for (let obj of this.array(child))
-				obj.weight.remove(this.obj, !child);
-			this.array(child).length = 0;
+		for (let b of [true, false]) {
+			for (let obj of this.ar(b))
+				obj.weight.remove(this.obj, !b);
+			this.ar(b).length = 0;
 		}
 	}
-	get_min(which: boolean) {
-		const array = this.array(which);
-		if (array.length == 0)
-			return this.order;
-		let min = array[0].weight.order;
-		for (let obj of array)
-			min = Math.min(min, obj.weight.order);
-		return min;
-	}
-	get_max(which: boolean) {
-		const array = this.array(which);
-		if (array.length == 0)
-			return this.order;
-		let max = array[0].weight.order;
-		for (let obj of array)
-			max = Math.max(max, obj.weight.order);
-		return max;
+	get_min_max(b: boolean, max: boolean) {
+		let res = this.order;
+		if (this.ar(b).length == 0)
+			return res;
+		res = this.ar(b)[0].weight.order;
+		for (let obj of this.ar(b))
+			res = (!max ? Math.min : Math.max)(res, obj.weight.order);
+		return res;
 	}
 	adapt(which: boolean) {
 
@@ -58,32 +46,21 @@ class Weight {
 	weigh() {
 		const spread = 20;
 		this.order = this.obj.depth;
-		const childs = this.array(true);
-		const parents = this.array(false);
-		if (!childs.length && parents.length) {
-			console.log('get min');
-			let min = this.get_min(false);
+		if (!this.ar(true).length && this.ar(false).length) {
+			let min = this.get_min_max(false, false);
 			this.order = min - spread;
 		}
-		else if (childs.length && !parents.length) {
-			console.log('get max');
-			let max = this.get_max(true);
+		else if (this.ar(true).length && !this.ar(false).length) {
+			let max = this.get_min_max(true, true);
 			this.order = max + spread;
 		}
-		else if (childs.length && parents.length) {
-			// tween insert
+		else if (this.ar(true).length && this.ar(false).length) {
 			console.log('tween');
-			let min = this.get_min(false);
-			let max = this.get_max(true);
+			let min = this.get_min_max(false, false);
+			let max = this.get_min_max(true, true);
 			this.order = (min - max) / 2 + max;
 		}
-		//	this.order = this.min;
-		//else if (parents.length &&)
-		//this.order = this.min;
-		//if (this.array(true).length >= 1)
 		this.obj.rekt?.update();
-		//for (let child of childs)
-		//	child.weight.weigh();
 	}
 }
 
