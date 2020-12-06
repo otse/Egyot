@@ -73,58 +73,50 @@ void main() {
                 format: THREE__default['default'].RGBFormat
             });
             Renderer.renderer = new THREE.WebGLRenderer({ antialias: false });
-            Renderer.renderer.setPixelRatio(1);
-            Renderer.renderer.setSize(window.innerWidth, window.innerHeight);
+            Renderer.renderer.setPixelRatio(Renderer.ndpi);
+            Renderer.renderer.setSize(100, 100);
             Renderer.renderer.autoClear = true;
             Renderer.renderer.setClearColor(0xffffff, 0);
             document.body.appendChild(Renderer.renderer.domElement);
             window.addEventListener('resize', onWindowResize, false);
-            someMore();
-            onWindowResize();
-            window.Renderer = Renderer;
-        }
-        Renderer.init = init;
-        function someMore() {
-            /*materialBg = new ShaderMaterial({
-                uniforms: { time: { value: 0.0 } },
-                vertexShader: vertexScreen,
-                fragmentShader: fragmentBackdrop
-            });*/
             Renderer.materialPost = new THREE.ShaderMaterial({
                 uniforms: { tDiffuse: { value: Renderer.target.texture } },
                 vertexShader: vertexScreen,
                 fragmentShader: fragmentPost,
                 depthWrite: false
             });
-            Renderer.plane = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
-            /*let quad = new Mesh(plane, materialBg);
-            quad.position.z = -100;
-            scene.add(quad);*/
+            onWindowResize();
             Renderer.quadPost = new THREE.Mesh(Renderer.plane, Renderer.materialPost);
             Renderer.quadPost.position.z = -100;
+            //quadPost.position.x = (-(w2 - w)) / 2;
+            //quadPost.position.y = (h2 - h) / 2;
+            console.log('neg -(w2 - w)', Renderer.quadPost.position.x);
             Renderer.scene2.add(Renderer.quadPost);
+            window.Renderer = Renderer;
         }
+        Renderer.init = init;
         function onWindowResize() {
             Renderer.w = window.innerWidth;
             Renderer.h = window.innerHeight;
-            if (Renderer.w % 2 != 0) {
-                Renderer.w -= 1;
+            Renderer.w2 = Renderer.w * Renderer.ndpi;
+            Renderer.h2 = Renderer.h * Renderer.ndpi;
+            Renderer.w3 = Renderer.w2 - (Renderer.w2 - Renderer.w);
+            Renderer.h3 = Renderer.h2 - (Renderer.h2 - Renderer.h);
+            if (Renderer.w2 % 2 != 0 && Renderer.ndpi > 1) {
+                Renderer.w2 -= 1;
             }
-            if (Renderer.h % 2 != 0) {
-                Renderer.h -= 1;
+            if (Renderer.h2 % 2 != 0 && Renderer.ndpi > 1) {
+                Renderer.h2 -= 1;
             }
-            let targetwidth = Renderer.w;
-            let targetheight = Renderer.h;
-            //if (ndpi == 2) {
-            //	targetwidth *= ndpi;
-            //	targetheight *= ndpi;
-            //}
-            Renderer.plane = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
-            Renderer.quadPost.geometry = Renderer.plane;
-            Renderer.target.setSize(targetwidth, targetheight);
-            Renderer.camera = ortographiccamera(Renderer.w, Renderer.h);
+            Renderer.target.setSize(Renderer.w2, Renderer.h2);
+            Renderer.plane = new THREE.PlaneBufferGeometry(Renderer.w2, Renderer.h2);
+            if (Renderer.quadPost)
+                Renderer.quadPost.geometry = Renderer.plane;
+            Renderer.camera = ortographiccamera(Renderer.w2, Renderer.h2);
             Renderer.camera.updateProjectionMatrix();
             Renderer.renderer.setSize(Renderer.w, Renderer.h);
+            //renderer.domElement.width = renderer.domElement.clientWidth;// * ndpi;
+            //renderer.domElement.height = renderer.domElement.clientHeight;// * ndpi;
         }
         let mem = [];
         function loadtexture(file, key, cb) {
@@ -399,78 +391,47 @@ void main() {
             this.childs = [];
             this.parents = [];
         }
-        array(child) {
-            return child ? this.childs : this.parents;
+        array(b) {
+            return b ? this.childs : this.parents;
         }
-        add(obj, child) {
-            let a = this.array(child);
-            let i = a.indexOf(obj);
-            if (i == -1)
-                a.push(obj);
+        add(obj, b) {
+            if (-1 == this.array(b).indexOf(obj))
+                this.array(b).push(obj);
         }
-        remove(obj, child) {
-            let a = this.array(child);
-            let i = a.indexOf(obj);
+        remove(obj, b) {
+            let i = this.array(b).indexOf(obj);
             if (i != -1)
-                a.splice(i, 1);
+                this.array(b).splice(i, 1);
         }
         clear() {
-            for (let child of [true, false]) {
-                for (let obj of this.array(child))
-                    obj.weight.remove(this.obj, !child);
-                this.array(child).length = 0;
+            for (let b of [true, false]) {
+                for (let obj of this.array(b))
+                    obj.weight.remove(this.obj, !b);
+                this.array(b).length = 0;
             }
         }
-        get_min(which) {
-            const array = this.array(which);
-            if (array.length == 0)
-                return this.order;
-            let min = array[0].weight.order;
-            for (let obj of array)
-                min = Math.min(min, obj.weight.order);
-            return min;
-        }
-        get_max(which) {
-            const array = this.array(which);
-            if (array.length == 0)
-                return this.order;
-            let max = array[0].weight.order;
-            for (let obj of array)
-                max = Math.max(max, obj.weight.order);
-            return max;
-        }
-        adapt(which) {
+        range(b, max, seed = 0) {
+            let res = this.order;
+            if (this.array(b).length == 0)
+                return res;
+            res = this.array(b)[0].weight.order;
+            for (let obj of this.array(b))
+                res = (!max ? Math.min : Math.max)(res, obj.weight.order);
+            return res + seed;
         }
         weigh() {
             var _a;
-            const spread = 20;
             this.order = this.obj.depth;
-            const childs = this.array(true);
-            const parents = this.array(false);
-            if (!childs.length && parents.length) {
-                console.log('get min');
-                let min = this.get_min(false);
-                this.order = min - spread;
-            }
-            else if (childs.length && !parents.length) {
-                console.log('get max');
-                let max = this.get_max(true);
-                this.order = max + spread;
-            }
-            else if (childs.length && parents.length) {
-                // tween insert
-                console.log('tween');
-                let min = this.get_min(false);
-                let max = this.get_max(true);
+            if (!this.childs.length && this.parents.length)
+                this.order = this.range(false, false, -20);
+            else if (this.childs.length && !this.parents.length)
+                this.order = this.range(true, true, 20);
+            else if (this.childs.length && this.parents.length) {
+                let min = this.range(false, false, 0);
+                let max = this.range(true, true, 0);
                 this.order = (min - max) / 2 + max;
             }
-            //	this.order = this.min;
-            //else if (parents.length &&)
-            //this.order = this.min;
-            //if (this.array(true).length >= 1)
             (_a = this.obj.rekt) === null || _a === void 0 ? void 0 : _a.update();
-            //for (let child of childs)
-            //	child.weight.weigh();
         }
     }
     class Obj {
@@ -509,9 +470,7 @@ void main() {
             this.update_manual();
         }
         set_area() {
-            if (!this.asset.area)
-                return;
-            let pt = pts.pt(pts.subtract(this.asset.area, [1, 1]));
+            let pt = pts.pt(pts.subtract(this.asset.area || [1, 1], [1, 1]));
             this.bound = new aabb2([-pt.x, 0], [0, pt.y]);
             this.bound.translate(this.tile);
         }
@@ -550,14 +509,14 @@ void main() {
                         continue;
                     // image clip
                     if (!this.rekt.bound.test(obj.rekt.bound)) {
-                        this.rekt.color = 'white';
+                        //this.rekt.color = 'white';
                         continue;
                     }
-                    this.rekt.color = 'pink';
+                    //this.rekt.color = 'pink';
                     const a = this.bound;
                     const b = obj.bound;
                     const test = this.bound.test(obj.bound);
-                    this.rekt.color = ['white', 'red', 'cyan'][test];
+                    //this.rekt.color = ['white', 'red', 'cyan'][test];
                     // nwnw test
                     if (test)
                         ;
@@ -565,17 +524,15 @@ void main() {
                     a.min[0] <= b.max[0] && a.max[0] >= b.min[0] && a.min[1] > b.max[1] ||
                         a.max[0] < b.min[0] && a.max[1] >= b.min[1] && a.min[1] <= b.max[1] ||
                         a.min[0] < b.min[0] && a.max[1] > b.max[1]) {
-                        this.rekt.color = 'purple';
+                        //this.rekt.color = 'purple';
                         obj.weight.add(this, true);
                         this.weight.add(obj, false);
                     }
                     else if ( // diagonal dont care
                     a.max[0] < b.min[0] && a.max[1] < b.min[1] ||
-                        a.min[0] > b.max[0] && a.min[1] > b.max[1]) {
-                        this.rekt.color = 'green';
-                    }
+                        a.min[0] > b.max[0] && a.min[1] > b.max[1]) ;
                     else {
-                        this.rekt.color = 'salmon';
+                        //this.rekt.color = 'salmon';
                         this.weight.add(obj, true);
                         obj.weight.add(this, false);
                     }
@@ -1013,6 +970,21 @@ void main() {
             this.wheelable = true;
             this.init();
             this.view = new aabb2([0, 0], [0, 0]);
+            const frustum = {
+                img: 'egyt/128',
+                size: [1, 1],
+                area: [1, 1],
+                offset: [0, 0]
+            };
+            {
+                this.frustum = new Rekt$1;
+                this.frustum.name = 'Frustum';
+                this.frustum.sst = frustum;
+                this.frustum.plain = true;
+                this.frustum.use();
+                this.frustum.mesh.renderOrder = 9999999;
+                this.frustum.material.wireframe = true;
+            }
             console.log('world');
         }
         static rig() {
@@ -1048,6 +1020,7 @@ void main() {
             p = pts.add(p, m);
             const unprojected = World.unproject(p);
             this.mtil = unprojected.tiled;
+            this.mtil = pts.floor(this.mtil); // fix for ndpi? no
         }
         init() {
             this.fg = new ChunkMaster(Chunk, 20);
@@ -1121,8 +1094,8 @@ void main() {
             Renderer$1.scene.scale.set(this.scale, this.scale, 1);
             let p2 = pts.mult(this.pos, this.scale);
             Renderer$1.scene.position.set(p2[0], p2[1], 0);
-            let w = window.innerWidth; // tq.target.width;
-            let h = window.innerHeight; // tq.target.height;
+            let w = Renderer$1.w; // tq.target.width;
+            let h = Renderer$1.h; // tq.target.height;
             //console.log(`tq target ${w} x ${h}`)
             let w2 = w / this.dpi / this.scale;
             let h2 = h / this.dpi / this.scale;
@@ -1130,6 +1103,12 @@ void main() {
             this.view.min = pts.floor(this.view.min);
             this.view.max = pts.floor(this.view.max);
             this.focal = [-p[0], -p[1], 0];
+            //return;
+            {
+                this.frustum.mesh.scale.set(w2, h2, 1);
+                this.frustum.tile = pts.divide(this.focal, LUMBER$1.EVEN);
+                this.frustum.update();
+            }
         }
         populate() {
         }

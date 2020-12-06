@@ -12,43 +12,41 @@ class Weight {
 	parents: Obj[] = []
 	constructor(private obj: Obj) {
 	}
-	ar(b: boolean) {
+	array(b: boolean) {
 		return b ? this.childs : this.parents;
 	}
 	add(obj: Obj, b: boolean) {
-		if (-1 == this.ar(b).indexOf(obj))
-			this.ar(b).push(obj);
+		if (-1 == this.array(b).indexOf(obj))
+			this.array(b).push(obj);
 	}
 	remove(obj: Obj, b: boolean) {
-		let i = this.ar(b).indexOf(obj);
+		let i = this.array(b).indexOf(obj);
 		if (i != -1)
-			this.ar(b).splice(i, 1);
+			this.array(b).splice(i, 1);
 	}
 	clear() {
 		for (let b of [true, false]) {
-			for (let obj of this.ar(b))
+			for (let obj of this.array(b))
 				obj.weight.remove(this.obj, !b);
-			this.ar(b).length = 0;
+			this.array(b).length = 0;
 		}
 	}
 	range(b: boolean, max: boolean, seed: number = 0) {
 		let res = this.order;
-		if (this.ar(b).length == 0)
+		if (this.array(b).length == 0)
 			return res;
-		res = this.ar(b)[0].weight.order;
-		for (let obj of this.ar(b))
+		res = this.array(b)[0].weight.order;
+		for (let obj of this.array(b))
 			res = (!max ? Math.min : Math.max)(res, obj.weight.order);
 		return res + seed;
 	}
 	weigh() {
 		this.order = this.obj.depth;
-		if (!this.ar(true).length && this.ar(false).length) {
+		if (!this.childs.length && this.parents.length)
 			this.order = this.range(false, false, -20);
-		}
-		else if (this.ar(true).length && !this.ar(false).length) {
+		else if (this.childs.length && !this.parents.length)
 			this.order = this.range(true, true, 20);
-		}
-		else if (this.ar(true).length && this.ar(false).length) {
+		else if (this.childs.length && this.parents.length) {
 			let min = this.range(false, false, 0);
 			let max = this.range(true, true, 0);
 			this.order = (min - max) / 2 + max;
@@ -95,9 +93,7 @@ class Obj {
 		this.update_manual();
 	}
 	set_area() {
-		if (!this.asset.area)
-			return;
-		let pt = pts.pt(pts.subtract(this.asset.area, [1, 1]));
+		let pt = pts.pt(pts.subtract(this.asset.area || [1, 1], [1, 1]));
 		this.bound = new aabb2([-pt.x, 0], [0, pt.y]);
 		this.bound.translate(this.tile);
 	}
@@ -138,22 +134,22 @@ class Obj {
 					continue;
 				// image clip
 				if (!this.rekt.bound.test(obj.rekt.bound)) {
-					this.rekt.color = 'white';
+					//this.rekt.color = 'white';
 					continue;
 				}
-				this.rekt.color = 'pink';
+				//this.rekt.color = 'pink';
 				const a = this.bound;
 				const b = obj.bound;
 				const test = this.bound.test(obj.bound);
 				let front = true;
-				this.rekt.color = ['white', 'red', 'cyan'][test];
+				//this.rekt.color = ['white', 'red', 'cyan'][test];
 				// nwnw test
 				if (test) 0;
 				else if ( // behind aka n w nw
 					a.min[0] <= b.max[0] && a.max[0] >= b.min[0] && a.min[1] > b.max[1] ||
 					a.max[0] < b.min[0] && a.max[1] >= b.min[1] && a.min[1] <= b.max[1] ||
 					a.min[0] < b.min[0] && a.max[1] > b.max[1]) {
-					this.rekt.color = 'purple';
+					//this.rekt.color = 'purple';
 					obj.weight.add(this, true);
 					this.weight.add(obj, false);
 				}
@@ -161,10 +157,10 @@ class Obj {
 					a.max[0] < b.min[0] && a.max[1] < b.min[1] ||
 					a.min[0] > b.max[0] && a.min[1] > b.max[1]
 				) {
-					this.rekt.color = 'green';
+					//this.rekt.color = 'green';
 				}
 				else {
-					this.rekt.color = 'salmon';
+					//this.rekt.color = 'salmon';
 					this.weight.add(obj, true);
 					obj.weight.add(this, false);
 				}

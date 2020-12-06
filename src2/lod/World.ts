@@ -12,7 +12,7 @@ import { Chunk, ChunkMaster } from "./Chunks";
 import { Ply } from "../nested/char/Char";
 import { Ploppables } from "./Ploppables";
 
-const SHOW_FRUSTUM = false;
+const SHOW_FRUSTUM = true;
 
 class World {
 	static rig() {
@@ -92,7 +92,9 @@ class World {
 
 		const unprojected = World.unproject(p);
 
-		this.mtil = unprojected.tiled;;
+		this.mtil = unprojected.tiled;
+
+		this.mtil = pts.floor(this.mtil); // fix for ndpi? no
 	}
 	init() {
 		this.fg = new ChunkMaster<Chunk>(Chunk, 20);
@@ -178,8 +180,8 @@ class World {
 
 		Renderer.scene.position.set(p2[0], p2[1], 0);
 
-		let w = window.innerWidth // tq.target.width;
-		let h = window.innerHeight // tq.target.height;
+		let w = Renderer.w; // tq.target.width;
+		let h = Renderer.h; // tq.target.height;
 
 		//console.log(`tq target ${w} x ${h}`)
 

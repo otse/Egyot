@@ -90,8 +90,6 @@ namespace Renderer {
 		renderer.render(scene2, camera);
 	}
 
-	export var w;
-	export var h;
 	export var wh: vec2;
 	export var plane;
 
@@ -114,7 +112,7 @@ namespace Renderer {
 			console.warn('Dpi i> 1. Game may scale.');
 		}
 
-		target = new WebGLRenderTarget( 
+		target = new WebGLRenderTarget(
 			window.innerWidth, window.innerHeight,
 			{
 				minFilter: THREE.NearestFilter,
@@ -123,28 +121,14 @@ namespace Renderer {
 			});
 
 		renderer = new WebGLRenderer({ antialias: false });
-		renderer.setPixelRatio(1);
-		renderer.setSize(
-			window.innerWidth, window.innerHeight);
+		renderer.setPixelRatio(ndpi);
+		renderer.setSize(100, 100);
 		renderer.autoClear = true;
 		renderer.setClearColor(0xffffff, 0);
 
 		document.body.appendChild(renderer.domElement);
 
 		window.addEventListener('resize', onWindowResize, false);
-
-		someMore();
-		onWindowResize();
-
-		(window as any).Renderer = Renderer;
-	}
-
-	function someMore() {
-		/*materialBg = new ShaderMaterial({
-			uniforms: { time: { value: 0.0 } },
-			vertexShader: vertexScreen,
-			fragmentShader: fragmentBackdrop
-		});*/
 
 		materialPost = new ShaderMaterial({
 			uniforms: { tDiffuse: { value: target.texture } },
@@ -153,79 +137,83 @@ namespace Renderer {
 			depthWrite: false
 		});
 
-		plane = new PlaneBufferGeometry(
-			window.innerWidth, window.innerHeight);
-
-		/*let quad = new Mesh(plane, materialBg);
-		quad.position.z = -100;
-		scene.add(quad);*/
+		onWindowResize();
 
 		quadPost = new Mesh(plane, materialPost);
 		quadPost.position.z = -100;
+		//quadPost.position.x = (-(w2 - w)) / 2;
+		//quadPost.position.y = (h2 - h) / 2;
+		console.log('neg -(w2 - w)', quadPost.position.x);
+
 		scene2.add(quadPost);
+
+		(window as any).Renderer = Renderer;
 	}
 
-	function onWindowResize() {
+	export var w, h, w2, h2, w3, h3;
 
+	function onWindowResize() {
 		w = window.innerWidth;
 		h = window.innerHeight;
-		if (w % 2 != 0) {
-			w -= 1;
+		w2 = w * ndpi;
+		h2 = h * ndpi;
+		w3 = w2 - (w2 - w);
+		h3 = h2 - (h2 - h);
+
+		if (w2 % 2 != 0 && ndpi > 1) {
+			w2 -= 1;
 		}
-		if (h % 2 != 0) {
-			h -= 1;
+		if (h2 % 2 != 0 && ndpi > 1) {
+			h2 -= 1;
 		}
-		let targetwidth = w;
-		let targetheight = h;
-		//if (ndpi == 2) {
-		//	targetwidth *= ndpi;
-		//	targetheight *= ndpi;
-		//}
-		plane = new PlaneBufferGeometry(window.innerWidth, window.innerHeight);
-		quadPost.geometry = plane;
-		target.setSize(targetwidth, targetheight);
-		camera = ortographiccamera(w, h);
+		target.setSize(w2, h2);
+		plane = new PlaneBufferGeometry(w2, h2);
+		if (quadPost)
+			quadPost.geometry = plane;
+		camera = ortographiccamera(w2, h2);
 		camera.updateProjectionMatrix();
 		renderer.setSize(w, h);
+		//renderer.domElement.width = renderer.domElement.clientWidth;// * ndpi;
+		//renderer.domElement.height = renderer.domElement.clientHeight;// * ndpi;
 	}
 
 	let mem = [];
 
-    export function loadtexture(file: string, key?: string, cb?): Texture {
-        if (mem[key || file])
-            return mem[key || file];
+	export function loadtexture(file: string, key?: string, cb?): Texture {
+		if (mem[key || file])
+			return mem[key || file];
 
-        let texture = new TextureLoader().load(file + `?v=${App.salt}`, cb);
+		let texture = new TextureLoader().load(file + `?v=${App.salt}`, cb);
 
-        texture.magFilter = THREE.NearestFilter;
-        texture.minFilter = THREE.NearestFilter;
+		texture.magFilter = THREE.NearestFilter;
+		texture.minFilter = THREE.NearestFilter;
 
-        mem[key || file] = texture;
+		mem[key || file] = texture;
 
-        return texture;
-    }
+		return texture;
+	}
 
-    export function rendertarget(w, h) {
-        const o = {
-            minFilter: NearestFilter,
-            magFilter: NearestFilter,
-            format: RGBAFormat
-        };
-        let target = new WebGLRenderTarget(w, h, o);
-        return target;
-    }
+	export function rendertarget(w, h) {
+		const o = {
+			minFilter: NearestFilter,
+			magFilter: NearestFilter,
+			format: RGBAFormat
+		};
+		let target = new WebGLRenderTarget(w, h, o);
+		return target;
+	}
 
-    export function ortographiccamera(w, h) {
-        let camera = new OrthographicCamera(w / - 2, w / 2, h / 2, h / - 2, - 100, 100);
-        camera.updateProjectionMatrix();
+	export function ortographiccamera(w, h) {
+		let camera = new OrthographicCamera(w / - 2, w / 2, h / 2, h / - 2, - 100, 100);
+		camera.updateProjectionMatrix();
 
-        return camera;
-    }
+		return camera;
+	}
 
-    export function erase_children(group: Group) {
-        while (group.children.length > 0)
+	export function erase_children(group: Group) {
+		while (group.children.length > 0)
 			group.remove(group.children[0]);
-    }
+	}
 }
 
 export default Renderer;
