@@ -102,10 +102,10 @@ void main() {
             Renderer.h2 = Renderer.h * Renderer.ndpi;
             Renderer.w3 = Renderer.w2 - (Renderer.w2 - Renderer.w);
             Renderer.h3 = Renderer.h2 - (Renderer.h2 - Renderer.h);
-            if (Renderer.w2 % 2 != 0 && Renderer.ndpi > 1) {
+            if (Renderer.w2 % 2 != 0) {
                 Renderer.w2 -= 1;
             }
-            if (Renderer.h2 % 2 != 0 && Renderer.ndpi > 1) {
+            if (Renderer.h2 % 2 != 0) {
                 Renderer.h2 -= 1;
             }
             Renderer.target.setSize(Renderer.w2, Renderer.h2);

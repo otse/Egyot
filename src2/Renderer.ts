@@ -160,10 +160,10 @@ namespace Renderer {
 		w3 = w2 - (w2 - w);
 		h3 = h2 - (h2 - h);
 
-		if (w2 % 2 != 0 && ndpi > 1) {
+		if (w2 % 2 != 0) {
 			w2 -= 1;
 		}
-		if (h2 % 2 != 0 && ndpi > 1) {
+		if (h2 % 2 != 0) {
 			h2 -= 1;
 		}
 		target.setSize(w2, h2);
